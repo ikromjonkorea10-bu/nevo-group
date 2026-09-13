@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:local": "vite --mode emulator",
     "build": "vite build",
     "preview": "vite preview",
+    "seed": "node scripts/seed.js",
+    "supabase:local": "node scripts/local-supabase.mjs --seed",
     "test:db": "node scripts/test-db.mjs"
   },
   "devDependencies": {

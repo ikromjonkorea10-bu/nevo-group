@@ -1,2 +1,9 @@
 node_modules/
 dist/
+
+# Muhit o'zgaruvchilari (kalitlar)
+.env
+.env.*
+!.env.example
+!.env.emulator
+*.local

@@ -1,0 +1,37 @@
+[
+  {
+    "slug": "truba-va-fitinglar",
+    "name_uz": "Truba va fitinglar",
+    "short_desc_uz": "PPR, polietilen, kompression",
+    "image_url": "/mahsulot/fit-burchak.webp",
+    "sort_order": 10
+  },
+  {
+    "slug": "zapor-armatura",
+    "name_uz": "Zapor armatura",
+    "short_desc_uz": "Zadvijka, zatvor, filtr, flanets",
+    "image_url": "/mahsulot/zadvijka-chuyan.webp",
+    "sort_order": 20
+  },
+  {
+    "slug": "yongin-jihozlari",
+    "name_uz": "Yong'in jihozlari",
+    "short_desc_uz": "Shlang, gidrant, yong'in krani",
+    "image_url": "/mahsulot/yongin-gidrant.webp",
+    "sort_order": 30
+  },
+  {
+    "slug": "isitish-tizimi",
+    "name_uz": "Isitish tizimi",
+    "short_desc_uz": "Suv isitgichlar",
+    "image_url": "/mahsulot/boyler-oq.webp",
+    "sort_order": 40
+  },
+  {
+    "slug": "elektr-jihozlari",
+    "name_uz": "Elektr jihozlari",
+    "short_desc_uz": "Transformator podstansiyalari",
+    "image_url": "/mahsulot/ktp-ktps.webp",
+    "sort_order": 50
+  }
+]
