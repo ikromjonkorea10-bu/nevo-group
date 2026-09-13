@@ -10,3 +10,6 @@ dist/
 
 # Supabase CLI lokal holati (linked project, versiyalar)
 supabase/.temp/
+
+# Vercel CLI link holati
+.vercel
