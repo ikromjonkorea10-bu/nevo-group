@@ -1,7 +1,9 @@
 import { icon } from '../icons.js';
-import { CATEGORIES } from '../data/categories.js';
-import { PRODUCTS } from '../data/products.js';
+import { getCatalog } from '../lib/catalog.js';
+import { esc } from '../lib/format.js';
 import { renderProductCard } from '../components/ProductCard.js';
+
+const PAGE_SIZE = 48;
 
 let state = {
   selectedCategory: 'all',
@@ -9,10 +11,13 @@ let state = {
   searchQuery: '',
   sortBy: 'default',
   viewMode: 'grid',
-  isFilterOpen: false
+  isFilterOpen: false,
+  visibleCount: PAGE_SIZE
 };
 
 export function renderCatalogPage(params = {}) {
+  const { categories, products } = getCatalog();
+
   // Update state from params if passed
   if (params.category) state.selectedCategory = params.category;
   if (params.sub) state.selectedSubcategory = params.sub;
@@ -20,7 +25,7 @@ export function renderCatalogPage(params = {}) {
   if (params.sort) state.sortBy = params.sort;
 
   // Filter products
-  let filtered = [...PRODUCTS];
+  let filtered = [...products];
 
   if (state.selectedCategory && state.selectedCategory !== 'all') {
     filtered = filtered.filter(p => p.categorySlug === state.selectedCategory);
@@ -50,45 +55,40 @@ export function renderCatalogPage(params = {}) {
   }
 
   // Get active category object
-  const activeCatObj = CATEGORIES.find(c => c.slug === state.selectedCategory);
+  const activeCatObj = categories.find(c => c.slug === state.selectedCategory);
   const title = activeCatObj ? activeCatObj.name : 'Katalog';
   const subtext = activeCatObj ? `${activeCatObj.count} ta mahsulot narxi bilan` : 'Mahsulotni qidiring, bo\'lim va narx bo\'yicha saralang';
 
-  // Available subcategories based on category
-  const allSubcategories = [
-    { name: 'Polietilen fitinglar', count: 241 },
-    { name: 'Zadvijkalar', count: 47 },
-    { name: 'Trubalar', count: 41 },
-    { name: 'Kompression fitinglar', count: 37 },
-    { name: 'Xomut va mahkamlagichlar', count: 33 },
-    { name: 'Flanets va kompensator', count: 31 },
-    { name: 'PPR fitinglar', count: 24 },
-    { name: 'Zatvor va klapanlar', count: 22 },
-    { name: 'Suv isitgichlar', count: 16 },
-    { name: 'Filtr va vantuz', count: 13 },
-    { name: 'Transformator podstansiyalari', count: 11 },
-    { name: "Yong'in shlangi va fitingi", count: 11 },
-    { name: 'Gidrant va kran', count: 6 },
-    { name: 'Kran va ventillar', count: 6 }
-  ];
+  // Ichki bo'limlar — tanlangan bo'lim (yoki hammasi) bo'yicha bazadan hisoblanadi
+  const subCounts = new Map();
+  for (const p of products) {
+    if (!p.subcategory) continue;
+    if (activeCatObj && p.categoryId !== activeCatObj.id) continue;
+    subCounts.set(p.subcategory, (subCounts.get(p.subcategory) || 0) + 1);
+  }
+  const allSubcategories = [...subCounts.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+
+  const visible = filtered.slice(0, state.visibleCount);
 
   return `
     <div class="shell" style="padding-top: 24px; padding-bottom: 60px;">
       <!-- Catalog Page Header -->
       <div class="catalog-page-head">
-        <h1 class="catalog-page-title">${title}</h1>
-        <p class="catalog-page-sub">${subtext}</p>
-        
+        <h1 class="catalog-page-title">${esc(title)}</h1>
+        <p class="catalog-page-sub">${esc(subtext)}</p>
+
         <div class="catalog-search-bar">
           ${icon('search', '', 20)}
-          <input 
-            type="text" 
-            id="catalog-inner-search" 
-            placeholder="Katalogdan qidirish..." 
-            value="${state.searchQuery || ''}"
+          <input
+            type="text"
+            id="catalog-inner-search"
+            placeholder="Katalogdan qidirish..."
+            value="${esc(state.searchQuery || '')}"
           />
           ${state.searchQuery ? `
-            <button onclick="window.__clearCatalogSearch()" style="color: var(--muted); padding: 4px;">
+            <button onclick="window.__clearCatalogSearch()" style="color: var(--muted); padding: 4px;" aria-label="Qidiruvni tozalash">
               ${icon('x', '', 16)}
             </button>
           ` : ''}
@@ -102,18 +102,19 @@ export function renderCatalogPage(params = {}) {
 
       <!-- Quick Category Pills -->
       <div class="category-pills-row">
-        <button 
-          class="cat-pill ${state.selectedCategory === 'all' ? 'active' : ''}" 
+        <button
+          class="cat-pill ${state.selectedCategory === 'all' ? 'active' : ''}"
           onclick="window.__setCatalogCat('all')"
         >
-          Barchasi (539)
+          Barchasi (${products.length})
         </button>
-        ${CATEGORIES.map(c => `
-          <button 
-            class="cat-pill ${state.selectedCategory === c.slug ? 'active' : ''}" 
-            onclick="window.__setCatalogCat('${c.slug}')"
+        ${categories.map(c => `
+          <button
+            class="cat-pill ${state.selectedCategory === c.slug ? 'active' : ''}"
+            data-cat="${esc(c.slug)}"
+            onclick="window.__setCatalogCat(this.dataset.cat)"
           >
-            ${c.name} (${c.count})
+            ${esc(c.name)} (${c.count})
           </button>
         `).join('')}
       </div>
@@ -127,7 +128,7 @@ export function renderCatalogPage(params = {}) {
             ${state.selectedSubcategory !== 'all' ? '<span style="width: 8px; height: 8px; background: var(--nevo-blue); border-radius: 50%;"></span>' : ''}
           </button>
 
-          <select class="sort-select" id="catalog-sort-select" onchange="window.__setCatalogSort(this.value)">
+          <select class="sort-select" id="catalog-sort-select" onchange="window.__setCatalogSort(this.value)" aria-label="Saralash">
             <option value="default" ${state.sortBy === 'default' ? 'selected' : ''}>Mosligi bo'yicha</option>
             <option value="arzon" ${state.sortBy === 'arzon' ? 'selected' : ''}>Arzonroq oldin</option>
             <option value="qimmat" ${state.sortBy === 'qimmat' ? 'selected' : ''}>Qimmatroq oldin</option>
@@ -136,7 +137,7 @@ export function renderCatalogPage(params = {}) {
         </div>
 
         <div style="font-size: 14px; color: var(--muted); font-weight: 500;">
-          ${filtered.length} ta mahsulot ko'rsatilmoqda
+          ${filtered.length} ta mahsulot
         </div>
       </div>
 
@@ -157,8 +158,15 @@ export function renderCatalogPage(params = {}) {
           </div>
         ` : `
           <div class="products-grid">
-            ${filtered.map(renderProductCard).join('')}
+            ${visible.map(renderProductCard).join('')}
           </div>
+          ${filtered.length > visible.length ? `
+            <div style="text-align: center; margin-top: 28px;">
+              <button type="button" class="btn-secondary" onclick="window.__showMoreProducts()">
+                Yana ko'rsatish (${filtered.length - visible.length} ta qoldi)
+              </button>
+            </div>
+          ` : ''}
         `}
       </div>
 
@@ -175,36 +183,38 @@ export function renderCatalogPage(params = {}) {
           <div class="filter-modal-body">
             <div class="filter-group-label">BO'LIM</div>
             <div class="filter-pills-wrap">
-              <button 
+              <button
                 class="filter-choice-pill ${state.selectedCategory === 'all' ? 'active' : ''}"
                 onclick="window.__setFilterCategory('all')"
               >
                 Hammasi
               </button>
-              ${CATEGORIES.map(c => `
-                <button 
+              ${categories.map(c => `
+                <button
                   class="filter-choice-pill ${state.selectedCategory === c.slug ? 'active' : ''}"
-                  onclick="window.__setFilterCategory('${c.slug}')"
+                  data-cat="${esc(c.slug)}"
+                  onclick="window.__setFilterCategory(this.dataset.cat)"
                 >
-                  ${c.name}
+                  ${esc(c.name)}
                 </button>
               `).join('')}
             </div>
 
             <div class="filter-group-label">ICHKI BO'LIM</div>
             <div class="filter-pills-wrap">
-              <button 
+              <button
                 class="filter-choice-pill ${state.selectedSubcategory === 'all' ? 'active' : ''}"
                 onclick="window.__setFilterSubcategory('all')"
               >
                 Hammasi
               </button>
               ${allSubcategories.map(s => `
-                <button 
+                <button
                   class="filter-choice-pill ${state.selectedSubcategory.toLowerCase() === s.name.toLowerCase() ? 'active' : ''}"
-                  onclick="window.__setFilterSubcategory('${s.name}')"
+                  data-sub="${esc(s.name)}"
+                  onclick="window.__setFilterSubcategory(this.dataset.sub)"
                 >
-                  <span>${s.name}</span>
+                  <span>${esc(s.name)}</span>
                   <span class="count">${s.count}</span>
                 </button>
               `).join('')}
@@ -226,14 +236,20 @@ export function renderCatalogPage(params = {}) {
 }
 
 export function initCatalogEvents(rerenderCallback) {
+  const resetPaging = () => {
+    state.visibleCount = PAGE_SIZE;
+  };
+
   window.__setCatalogCat = (catSlug) => {
     state.selectedCategory = catSlug;
     state.selectedSubcategory = 'all';
+    resetPaging();
     rerenderCallback();
   };
 
   window.__setCatalogSort = (sort) => {
     state.sortBy = sort;
+    resetPaging();
     rerenderCallback();
   };
 
@@ -249,11 +265,13 @@ export function initCatalogEvents(rerenderCallback) {
   window.__setFilterCategory = (cat) => {
     state.selectedCategory = cat;
     state.selectedSubcategory = 'all';
+    resetPaging();
     rerenderCallback();
   };
 
   window.__setFilterSubcategory = (sub) => {
     state.selectedSubcategory = sub;
+    resetPaging();
     rerenderCallback();
   };
 
@@ -262,12 +280,19 @@ export function initCatalogEvents(rerenderCallback) {
     state.selectedSubcategory = 'all';
     state.searchQuery = '';
     state.sortBy = 'default';
+    resetPaging();
     window.__toggleFilterModal(false);
     rerenderCallback();
   };
 
   window.__clearCatalogSearch = () => {
     state.searchQuery = '';
+    resetPaging();
+    rerenderCallback();
+  };
+
+  window.__showMoreProducts = () => {
+    state.visibleCount += PAGE_SIZE;
     rerenderCallback();
   };
 
@@ -278,7 +303,13 @@ export function initCatalogEvents(rerenderCallback) {
       clearTimeout(timer);
       timer = setTimeout(() => {
         state.searchQuery = e.target.value.trim();
+        resetPaging();
         rerenderCallback();
+        const input = document.getElementById('catalog-inner-search');
+        if (input) {
+          input.focus();
+          input.setSelectionRange(input.value.length, input.value.length);
+        }
       }, 300);
     });
   }

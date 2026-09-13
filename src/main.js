@@ -1,7 +1,15 @@
+// /admin (oxirida "/" siz) SPA fallback orqali shu sahifaga tushsa — admin panelga yo'naltirish
+if (window.location.pathname.replace(/\/+$/, '') === '/admin') {
+  window.location.replace(`/admin/${window.location.hash}`);
+}
+
 import './style.css';
 import { icon } from './icons.js';
 import { store } from './store.js';
-import { renderHeader, initHeaderEvents } from './components/Header.js';
+import { isSupabaseConfigured } from './lib/supabase.js';
+import { getCatalog, loadCatalog, onCatalogChange } from './lib/catalog.js';
+import { renderPageSkeleton, renderLoadError, renderConfigError } from './components/StatusViews.js';
+import { renderHeader, initHeaderEvents, updateCartBadges } from './components/Header.js';
 import { renderFooter } from './components/Footer.js';
 import { renderMobileBottomNav } from './components/MobileBottomNav.js';
 import { renderHomePage, initHomeAnimations } from './pages/HomePage.js';
@@ -63,15 +71,37 @@ function parseRoute() {
   return { route, param, queryParams, raw: path };
 }
 
+const KNOWN_ROUTES = new Set(['home', 'catalog', 'bolim', 'product', 'tanlash', 'katta-buyurtma', 'savat', 'aloqa']);
+// Katalog tayyor bo'lishini kutmaydigan sahifalar (yuklanish holatini o'zi ko'rsatadi)
+const STATIC_ROUTES = new Set(['home', 'aloqa']);
+
+let lastRouteKey = null;
+
 function router() {
   const app = document.getElementById('app');
   if (!app) return;
 
-  const { route, param, queryParams } = parseRoute();
+  const parsed = parseRoute();
+  const route = KNOWN_ROUTES.has(parsed.route) ? parsed.route : 'home';
+  const { param, queryParams, raw } = parsed;
+  const routeKey = raw;
+  const isNewRoute = routeKey !== lastRouteKey;
+  lastRouteKey = routeKey;
   let pageHtml = '';
+  let pageReady = true;
 
-  // Render Page based on Route
-  if (route === 'home' || route === '') {
+  const needsCatalog = !STATIC_ROUTES.has(route);
+
+  if (needsCatalog && !isSupabaseConfigured) {
+    pageHtml = renderConfigError();
+    pageReady = false;
+  } else if (needsCatalog && getCatalog().status === 'error') {
+    pageHtml = renderLoadError(getCatalog().error, '__retryCatalog');
+    pageReady = false;
+  } else if (needsCatalog && getCatalog().status !== 'ready') {
+    pageHtml = renderPageSkeleton();
+    pageReady = false;
+  } else if (route === 'home' || route === '') {
     pageHtml = renderHomePage();
   } else if (route === 'catalog') {
     pageHtml = renderCatalogPage(queryParams);
@@ -109,7 +139,9 @@ function router() {
   // Initialize Page-Specific Events
   initHeaderEvents();
 
-  if (route === 'home' || route === '') {
+  if (!pageReady) {
+    // Skeleton yoki xatolik ekrani — sahifa hodisalari keyinroq ulanadi
+  } else if (route === 'home' || route === '') {
     initHomeAnimations();
   } else if (route === 'catalog' || route === 'bolim') {
     initCatalogEvents(router);
@@ -135,10 +167,25 @@ function router() {
     }
   });
 
-  window.scrollTo({ top: 0, behavior: 'instant' });
+  if (isNewRoute) {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
 }
+
+window.__retryCatalog = () => {
+  loadCatalog();
+};
+
+// Katalog holati o'zgarganda (yuklandi / xatolik) sahifani qayta chizish
+onCatalogChange((state) => {
+  if (state.status === 'ready') store.syncWithCatalog();
+  router();
+});
+
+// Savat o'zgarganda nishonlarni yangilash (bir marta ulanadi)
+store.subscribe(({ count }) => updateCartBadges(count));
 
 // Router Event Listeners
 window.addEventListener('hashchange', router);
-window.addEventListener('DOMContentLoaded', router);
+if (isSupabaseConfigured) loadCatalog();
 router();

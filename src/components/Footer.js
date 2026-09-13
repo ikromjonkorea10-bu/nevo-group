@@ -1,7 +1,9 @@
 import { icon } from '../icons.js';
-import { CATEGORIES } from '../data/categories.js';
+import { getCatalog } from '../lib/catalog.js';
+import { esc } from '../lib/format.js';
 
 export function renderFooter() {
+  const { categories } = getCatalog();
   return `
     <footer class="main-footer">
       <div class="shell">
@@ -35,9 +37,9 @@ export function renderFooter() {
           <div class="footer-col">
             <h5>Bo'limlar</h5>
             <ul class="footer-links-list">
-              ${CATEGORIES.map(c => `
-                <li><a href="#bolim/${c.slug}">${c.name}</a></li>
-              `).join('')}
+              ${categories.length ? categories.map(c => `
+                <li><a href="#bolim/${esc(c.slug)}">${esc(c.name)}</a></li>
+              `).join('') : `<li><a href="#catalog">Butun katalog</a></li>`}
             </ul>
           </div>
 

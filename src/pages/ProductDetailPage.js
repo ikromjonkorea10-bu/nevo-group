@@ -1,18 +1,26 @@
 import { icon } from '../icons.js';
-import { PRODUCTS } from '../data/products.js';
+import { getCatalog, getProductBySlug } from '../lib/catalog.js';
+import { esc } from '../lib/format.js';
 import { store } from '../store.js';
 import { renderProductCard } from '../components/ProductCard.js';
+import { renderNotFound } from '../components/StatusViews.js';
 
 let currentQty = 1;
 
-export function renderProductDetailPage(productId) {
-  const product = PRODUCTS.find(p => p.id === productId) || PRODUCTS[0];
+export function renderProductDetailPage(slug) {
+  const product = getProductBySlug(slug);
   currentQty = 1;
 
+  if (!product) {
+    return renderNotFound('Mahsulot topilmadi', "Bu mahsulot katalogdan olib tashlangan yoki havola noto'g'ri.");
+  }
+
   // Find related products in same category
-  const related = PRODUCTS
-    .filter(p => p.categorySlug === product.categorySlug && p.id !== product.id)
+  const related = getCatalog().products
+    .filter(p => p.categoryId === product.categoryId && p.id !== product.id && p.inStock)
     .slice(0, 4);
+  const size = product.specs["O'lchami"];
+  const material = product.specs['Materiali'];
 
   return `
     <div class="shell product-detail-wrap">
@@ -22,11 +30,10 @@ export function renderProductDetailPage(productId) {
         <span>›</span>
         <a href="#catalog">Katalog</a>
         <span>›</span>
-        <a href="#bolim/${product.categorySlug}">${product.category}</a>
+        <a href="#bolim/${esc(product.categorySlug)}">${esc(product.category)}</a>
+        ${product.subcategory ? `<span>›</span><span>${esc(product.subcategory)}</span>` : ''}
         <span>›</span>
-        <span>${product.subcategory}</span>
-        <span>›</span>
-        <span style="color: var(--ink); font-weight: 600;">${product.name}</span>
+        <span style="color: var(--ink); font-weight: 600;">${esc(product.name)}</span>
       </nav>
 
       <a href="#catalog" class="back-link">
@@ -38,27 +45,29 @@ export function renderProductDetailPage(productId) {
       <div class="product-detail-grid">
         <!-- Image Card -->
         <div class="product-detail-gallery">
-          <img 
-            src="${product.image}" 
-            alt="${product.name}"
-            onerror="this.src='/brand/nevo-logo-sm.png';"
+          <img
+            src="${esc(product.image)}"
+            alt="${esc(product.name)}"
+            onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';"
           />
         </div>
 
         <!-- Info & Buy Box -->
         <div class="product-detail-info">
           <div class="product-badges-row">
-            <span class="badge-subcat">${product.subcategory}</span>
-            <span class="badge-brand">${product.brand}</span>
+            ${product.inStock ? '' : '<span class="badge-out-of-stock">Hozir mavjud emas</span>'}
+            ${product.subcategory ? `<span class="badge-subcat">${esc(product.subcategory)}</span>` : ''}
+            ${product.brand ? `<span class="badge-brand">${esc(product.brand)}</span>` : ''}
           </div>
 
-          <h1 class="detail-title">${product.name}</h1>
-          <p class="detail-subtitle">${product.description || 'Suv liniyasi va qurilish uchun sifatli mahsulot'}</p>
+          <h1 class="detail-title">${esc(product.name)}</h1>
+          <p class="detail-subtitle">${esc(product.description || 'Suv liniyasi va qurilish uchun sifatli mahsulot')}</p>
 
           <div class="detail-buy-box">
             <div class="detail-price-row">
-              <span class="detail-price-val">${product.priceFormatted}</span>
-              <span class="detail-price-unit">/ ${product.unit}</span>
+              <span class="detail-price-val">${esc(product.priceFormatted)}</span>
+              <span class="detail-price-unit">/ ${esc(product.unit)}</span>
+              ${product.oldPrice && product.oldPrice > product.price ? `<span class="product-old-price">${esc(product.oldPriceFormatted)}</span>` : ''}
             </div>
 
             <p class="detail-price-disclaimer">
@@ -89,13 +98,14 @@ export function renderProductDetailPage(productId) {
             </div>
 
             <div class="detail-actions-col">
-              <button 
-                type="button" 
-                class="detail-add-btn" 
-                onclick="window.__addDetailProductToCart('${product.id}')"
+              <button
+                type="button"
+                class="detail-add-btn"
+                onclick="window.__addDetailProductToCart(${product.id})"
+                ${product.inStock ? '' : 'disabled'}
               >
                 ${icon('shopping-cart', '', 18)}
-                <span>Savatga qo'shish</span>
+                <span>${product.inStock ? "Savatga qo'shish" : 'Hozir mavjud emas'}</span>
               </button>
 
               <a 
@@ -109,9 +119,11 @@ export function renderProductDetailPage(productId) {
               </a>
             </div>
 
-            <div class="detail-sku-note">
-              Mahsulot kodi: <strong>${product.sku}</strong>
-            </div>
+            ${product.sku ? `
+              <div class="detail-sku-note">
+                Mahsulot kodi: <strong>${esc(product.sku)}</strong>
+              </div>
+            ` : ''}
           </div>
 
           <!-- Specs List -->
@@ -124,11 +136,11 @@ export function renderProductDetailPage(productId) {
               </li>
               <li>
                 ${icon('check', '', 18)}
-                <span>O'lchami: ${product.specs && product.specs["O'lchami"] ? product.specs["O'lchami"] : 'Standart'}</span>
+                <span>O'lchami: ${esc(size || 'Standart')}</span>
               </li>
               <li>
                 ${icon('check', '', 18)}
-                <span>Materiali: ${product.specs && product.specs['Materiali'] ? product.specs['Materiali'] : 'Yuqori sifatli xomashyo'}</span>
+                <span>Materiali: ${esc(material || 'Yuqori sifatli xomashyo')}</span>
               </li>
               <li>
                 ${icon('check', '', 18)}
@@ -151,7 +163,7 @@ export function renderProductDetailPage(productId) {
               <h2 class="section-title">O'xshash mahsulotlar</h2>
               <div class="section-subtitle">Ushbu bo'limdagi boshqa tovarlar</div>
             </div>
-            <a href="#bolim/${product.categorySlug}" class="section-link">
+            <a href="#bolim/${esc(product.categorySlug)}" class="section-link">
               <span>Bo'limdagi barcha tovarlar</span>
               ${icon('arrow-right', '', 16)}
             </a>

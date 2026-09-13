@@ -1,11 +1,63 @@
 import { icon } from '../icons.js';
-import { CATEGORIES, STATS, BENEFITS } from '../data/categories.js';
-import { PRODUCTS } from '../data/products.js';
+import { BENEFITS } from '../data/content.js';
+import { getCatalog } from '../lib/catalog.js';
+import { isSupabaseConfigured } from '../lib/supabase.js';
+import { esc } from '../lib/format.js';
 import { renderProductCard } from '../components/ProductCard.js';
+import { renderProductsGridSkeleton } from '../components/StatusViews.js';
+
+function renderInlineLoadError() {
+  return `
+    <div class="status-card" role="alert" style="padding: 32px 20px;">
+      <h3 class="status-title" style="font-size: 18px;">Ma'lumot yuklanmadi, qayta urinib ko'ring</h3>
+      <p class="status-text" style="margin-bottom: 16px;">
+        ${isSupabaseConfigured ? "Internet aloqangizni tekshiring." : "Sayt sozlanmagan: Supabase ulanish ma'lumotlari topilmadi."}
+      </p>
+      ${isSupabaseConfigured ? `<button type="button" class="btn-primary" onclick="window.__retryCatalog()">Qayta urinish</button>` : ''}
+    </div>
+  `;
+}
+
+function renderProductsBlock(products, catalog) {
+  if (!isSupabaseConfigured || catalog.status === 'error') return renderInlineLoadError();
+  if (catalog.status !== 'ready') return renderProductsGridSkeleton(4);
+  if (products.length === 0) {
+    return `<p style="color: var(--muted); font-size: 15px;">Hozircha mahsulotlar yo'q.</p>`;
+  }
+  return `<div class="products-grid">${products.map(renderProductCard).join('')}</div>`;
+}
+
+function renderCategoriesBlock(catalog) {
+  if (!isSupabaseConfigured || catalog.status === 'error') return renderInlineLoadError();
+  if (catalog.status !== 'ready') {
+    return `
+      <div class="popular-categories-grid" aria-hidden="true">
+        ${Array.from({ length: 5 }, () => '<div class="skeleton" style="height: 150px; border-radius: var(--radius-xl);"></div>').join('')}
+      </div>
+    `;
+  }
+  return `
+    <div class="popular-categories-grid">
+      ${catalog.categories.map(cat => `
+        <a href="#bolim/${esc(cat.slug)}" class="category-card" data-cat="${esc(cat.slug)}">
+          <div>
+            <h3 class="category-card-name">${esc(cat.name)}</h3>
+            <div class="category-card-desc">${esc(cat.shortDesc)}</div>
+            <div class="category-card-count">${cat.count} ta mahsulot</div>
+          </div>
+          <img src="${esc(cat.image)}" alt="${esc(cat.name)}" class="category-card-img" onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';">
+          <div class="category-card-arrow">${icon('arrow-right', '', 14)}</div>
+        </a>
+      `).join('')}
+    </div>
+  `;
+}
 
 export function renderHomePage() {
-  const featuredProducts = PRODUCTS.filter(p => p.featured).slice(0, 8);
-  const budgetProducts = PRODUCTS.filter(p => p.budget || (p.price < 5000 && p.category === 'Truba va fitinglar')).slice(0, 8);
+  const catalog = getCatalog();
+  const inStock = catalog.products.filter(p => p.inStock);
+  const featuredProducts = inStock.filter(p => p.featured).slice(0, 8);
+  const budgetProducts = inStock.filter(p => p.budget || (p.price < 5000 && p.categorySlug === 'truba-va-fitinglar')).slice(0, 8);
 
   return `
     <main class="home-page-content">
@@ -288,19 +340,7 @@ export function renderHomePage() {
               </div>
             </div>
 
-            <div class="popular-categories-grid">
-              ${CATEGORIES.map(cat => `
-                <a href="#bolim/${cat.slug}" class="category-card" data-cat="${cat.slug}">
-                  <div>
-                    <h3 class="category-card-name">${cat.name}</h3>
-                    <div class="category-card-desc">${cat.shortDesc}</div>
-                    <div class="category-card-count">${cat.count} ta mahsulot</div>
-                  </div>
-                  <img src="${cat.image}" alt="${cat.name}" class="category-card-img" onerror="this.src='/brand/nevo-logo-sm.png';">
-                  <div class="category-card-arrow">${icon('arrow-right', '', 14)}</div>
-                </a>
-              `).join('')}
-            </div>
+            ${renderCategoriesBlock(catalog)}
 
             <!-- Two Big Promo Cards Side by Side -->
             <div class="side-promos-grid">
@@ -347,9 +387,7 @@ export function renderHomePage() {
               </a>
             </div>
 
-            <div class="products-grid">
-              ${featuredProducts.map(renderProductCard).join('')}
-            </div>
+            ${renderProductsBlock(featuredProducts, catalog)}
           </section>
 
           <!-- 👨‍💼 Real Consultant Specialist Interactive Card -->
@@ -395,9 +433,7 @@ export function renderHomePage() {
               </a>
             </div>
 
-            <div class="products-grid">
-              ${budgetProducts.map(renderProductCard).join('')}
-            </div>
+            ${renderProductsBlock(budgetProducts, catalog)}
           </section>
 
           <!-- Nega NEVO GROUP? -->

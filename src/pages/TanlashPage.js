@@ -1,11 +1,11 @@
 import { icon } from '../icons.js';
-import { CATEGORIES } from '../data/categories.js';
-import { PRODUCTS } from '../data/products.js';
+import { getCatalog } from '../lib/catalog.js';
+import { esc } from '../lib/format.js';
 import { renderProductCard } from '../components/ProductCard.js';
 
 let step = 1;
 let answers = {
-  category: 'truba-va-fitinglar',
+  category: '',
   subcategory: '',
   size: '',
   quantity: '',
@@ -14,16 +14,32 @@ let answers = {
 let isCompleted = false;
 
 export function renderTanlashPage() {
+  const { categories, products } = getCatalog();
+  if (!answers.category && categories.length) answers.category = categories[0].slug;
+
   if (isCompleted) {
     // Generate 3 recommendations based on answers
-    let pool = PRODUCTS.filter(p => p.categorySlug === answers.category);
-    if (pool.length === 0) pool = PRODUCTS;
+    const available = products.filter(p => p.inStock);
+    let pool = available.filter(p => p.categorySlug === answers.category);
+    if (pool.length === 0) pool = available;
 
-    pool.sort((a, b) => a.price - b.price);
+    pool = [...pool].sort((a, b) => a.price - b.price);
 
-    const offer1 = pool[0] || pool[0]; // Budget/best match
-    const offer2 = pool[Math.floor(pool.length / 2)] || pool[1]; // Balanced
-    const offer3 = pool[pool.length - 1] || pool[2]; // Premium
+    const offer1 = pool[0]; // Budget/best match
+    const offer2 = pool[Math.floor(pool.length / 2)]; // Balanced
+    const offer3 = pool[pool.length - 1]; // Premium
+
+    if (!offer1) {
+      return `
+        <div class="shell quiz-page-wrap">
+          <div class="status-card" style="margin-top: 24px;">
+            <h2 class="status-title">Hozircha mos mahsulot topilmadi</h2>
+            <p class="status-text">Operatorimiz sizga mos variantni topib beradi.</p>
+            <a href="#aloqa" class="btn-primary">Bog'lanish</a>
+          </div>
+        </div>
+      `;
+    }
 
     return `
       <div class="shell quiz-page-wrap">
@@ -114,13 +130,14 @@ export function renderTanlashPage() {
           <p class="quiz-question-sub">Bo'limni tanlang</p>
 
           <div class="quiz-options-list">
-            ${CATEGORIES.map(c => `
-              <button 
-                type="button" 
-                class="quiz-option-btn ${answers.category === c.slug ? 'selected' : ''}" 
-                onclick="window.__selectQuizCat('${c.slug}')"
+            ${categories.map(c => `
+              <button
+                type="button"
+                class="quiz-option-btn ${answers.category === c.slug ? 'selected' : ''}"
+                data-value="${esc(c.slug)}"
+                onclick="window.__selectQuizCat(this.dataset.value)"
               >
-                <span>${c.name}</span>
+                <span>${esc(c.name)}</span>
                 <span style="font-size: 13px; font-weight: 500; opacity: 0.8;">${c.count} mahsulot</span>
               </button>
             `).join('')}
@@ -136,7 +153,8 @@ export function renderTanlashPage() {
               <button 
                 type="button" 
                 class="quiz-option-btn ${answers.size === sz ? 'selected' : ''}" 
-                onclick="window.__selectQuizSize('${sz}')"
+                data-value="${esc(sz)}"
+                onclick="window.__selectQuizSize(this.dataset.value)"
               >
                 <span>${sz}</span>
                 ${answers.size === sz ? icon('check', '', 16) : ''}
@@ -154,7 +172,8 @@ export function renderTanlashPage() {
               <button 
                 type="button" 
                 class="quiz-option-btn ${answers.quantity === qty ? 'selected' : ''}" 
-                onclick="window.__selectQuizQty('${qty}')"
+                data-value="${esc(qty)}"
+                onclick="window.__selectQuizQty(this.dataset.value)"
               >
                 <span>${qty}</span>
                 ${answers.quantity === qty ? icon('check', '', 16) : ''}
@@ -176,7 +195,8 @@ export function renderTanlashPage() {
               <button 
                 type="button" 
                 class="quiz-option-btn ${answers.pricePreference === opt.title ? 'selected' : ''}" 
-                onclick="window.__selectQuizPrice('${opt.title}')"
+                data-value="${esc(opt.title)}"
+                onclick="window.__selectQuizPrice(this.dataset.value)"
               >
                 <div>
                   <div style="font-weight: 700;">${opt.title}</div>

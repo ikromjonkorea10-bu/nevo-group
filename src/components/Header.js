@@ -1,10 +1,51 @@
 import { icon } from '../icons.js';
 import { store } from '../store.js';
-import { PRODUCTS } from '../data/products.js';
-import { CATEGORIES } from '../data/categories.js';
+import { getCatalog } from '../lib/catalog.js';
+import { esc } from '../lib/format.js';
+import { renderNavSkeleton } from './StatusViews.js';
+
+function renderCategoryNav(categories) {
+  return categories.map(cat => `
+            <div class="nav-category-item" data-cat="${esc(cat.slug)}">
+              <a href="#bolim/${esc(cat.slug)}" class="nav-category-link" data-cat="${esc(cat.slug)}">
+                <span>${esc(cat.name)}</span>
+                ${icon('chevron-down', '', 13)}
+              </a>
+              <div class="nav-mega-dropdown">
+                <div class="mega-dropdown-inner">
+                  <div class="mega-subcategories">
+                    <div class="mega-subcat-title">${esc(cat.name)} bo'limlari</div>
+                    <div class="mega-subcat-grid">
+                      ${cat.subcategories.map(sub => `
+                        <a href="#catalog?category=${encodeURIComponent(cat.slug)}&sub=${encodeURIComponent(sub.name)}" class="mega-subcat-link">
+                          <span class="subcat-dot"></span>
+                          <span class="subcat-name">${esc(sub.name)}</span>
+                          <span class="subcat-count">${sub.count}</span>
+                        </a>
+                      `).join('')}
+                    </div>
+                  </div>
+                  <div class="mega-featured-side">
+                    <div class="mega-thumb-wrap">
+                      <img src="${esc(cat.image)}" alt="${esc(cat.name)}" onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';">
+                    </div>
+                    <div class="mega-thumb-info">
+                      <div class="mega-cat-badge">${cat.count} ta mahsulot</div>
+                      <a href="#bolim/${esc(cat.slug)}" class="mega-view-all">
+                        <span>Bo'limga o'tish</span>
+                        ${icon('arrow-right', '', 14)}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `).join('');
+}
 
 export function renderHeader() {
   const cartCount = store.getCartCount();
+  const catalog = getCatalog();
 
   return `
     <aside class="top-bar">
@@ -72,42 +113,7 @@ export function renderHeader() {
         </div>
 
         <nav class="header-nav-subrow">
-          ${CATEGORIES.map(cat => `
-            <div class="nav-category-item" data-cat="${cat.slug}">
-              <a href="#bolim/${cat.slug}" class="nav-category-link">
-                <span>${cat.name}</span>
-                ${icon('chevron-down', '', 13)}
-              </a>
-              <div class="nav-mega-dropdown">
-                <div class="mega-dropdown-inner">
-                  <div class="mega-subcategories">
-                    <div class="mega-subcat-title">${cat.name} bo'limlari</div>
-                    <div class="mega-subcat-grid">
-                      ${cat.subcategories.map(sub => `
-                        <a href="#catalog?category=${cat.slug}&sub=${encodeURIComponent(sub.name)}" class="mega-subcat-link">
-                          <span class="subcat-dot"></span>
-                          <span class="subcat-name">${sub.name}</span>
-                          <span class="subcat-count">${sub.count}</span>
-                        </a>
-                      `).join('')}
-                    </div>
-                  </div>
-                  <div class="mega-featured-side">
-                    <div class="mega-thumb-wrap">
-                      <img src="${cat.image}" alt="${cat.name}" onerror="this.src='/brand/nevo-logo-sm.png';">
-                    </div>
-                    <div class="mega-thumb-info">
-                      <div class="mega-cat-badge">${cat.count} ta mahsulot</div>
-                      <a href="#bolim/${cat.slug}" class="mega-view-all">
-                        <span>Bo'limga o'tish</span>
-                        ${icon('arrow-right', '', 14)}
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          `).join('')}
+          ${catalog.status === 'ready' ? renderCategoryNav(catalog.categories) : catalog.status === 'loading' ? renderNavSkeleton() : ''}
         </nav>
       </div>
     </header>
@@ -132,36 +138,48 @@ export function initHeaderEvents() {
       }
 
       timeout = setTimeout(() => {
-        const matches = PRODUCTS.filter(p => 
+        const catalog = getCatalog();
+        if (catalog.status !== 'ready') {
+          dropdown.innerHTML = `
+            <div style="padding: 16px; text-align: center; color: var(--muted); font-size: 14px;">
+              ${catalog.status === 'error' ? "Katalog yuklanmadi, qayta urinib ko'ring." : 'Katalog yuklanmoqda…'}
+            </div>
+          `;
+          dropdown.classList.add('active');
+          return;
+        }
+
+        const allMatches = catalog.products.filter(p =>
           p.name.toLowerCase().includes(query) ||
           p.sku.toLowerCase().includes(query) ||
           p.category.toLowerCase().includes(query) ||
           p.subcategory.toLowerCase().includes(query)
-        ).slice(0, 6);
+        );
+        const matches = allMatches.slice(0, 6);
 
         if (matches.length === 0) {
           dropdown.innerHTML = `
             <div style="padding: 16px; text-align: center; color: var(--muted); font-size: 14px;">
-              "${query}" bo'yicha mahsulot topilmadi.
+              "${esc(query)}" bo'yicha mahsulot topilmadi.
             </div>
           `;
         } else {
           dropdown.innerHTML = matches.map(p => `
-            <a href="#product/${p.id}" class="search-result-item" onclick="document.getElementById('search-dropdown').classList.remove('active')">
-              <img src="${p.image}" alt="${p.name}" onerror="this.src='/brand/nevo-logo-sm.png';">
+            <a href="#product/${esc(p.slug)}" class="search-result-item" onclick="document.getElementById('search-dropdown').classList.remove('active')">
+              <img src="${esc(p.image)}" alt="${esc(p.name)}" onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';">
               <div class="search-result-info">
-                <div class="search-result-title">${p.name}</div>
+                <div class="search-result-title">${esc(p.name)}</div>
                 <div class="search-result-sub">
-                  <span>${p.subcategory}</span>
+                  <span>${esc(p.subcategory)}</span>
                   <span>·</span>
-                  <span>${p.sku}</span>
+                  <span>${esc(p.sku)}</span>
                 </div>
               </div>
-              <div class="search-result-price">${p.priceFormatted}</div>
+              <div class="search-result-price">${esc(p.priceFormatted)}</div>
             </a>
           `).join('') + `
             <a href="#catalog?search=${encodeURIComponent(query)}" style="display: block; padding: 10px; text-align: center; background: #f8fafc; font-size: 13.5px; font-weight: 600; color: var(--nevo-blue); border-top: 1px solid var(--border);">
-              Barcha natijalarni ko'rish (${matches.length}+) →
+              Barcha natijalarni ko'rish (${allMatches.length}) →
             </a>
           `;
         }
@@ -169,11 +187,18 @@ export function initHeaderEvents() {
       }, 200);
     });
 
-    document.addEventListener('click', (e) => {
-      if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.classList.remove('active');
-      }
-    });
+    // Hujjat darajasidagi tinglovchi har render'da qayta qo'shilmasligi uchun
+    // elementlarni har safar DOM'dan qidiradi va faqat bir marta ulanadi.
+    if (!window.__headerOutsideClickBound) {
+      window.__headerOutsideClickBound = true;
+      document.addEventListener('click', (e) => {
+        const input = document.getElementById('header-search-input');
+        const dd = document.getElementById('search-dropdown');
+        if (input && dd && !input.contains(e.target) && !dd.contains(e.target)) {
+          dd.classList.remove('active');
+        }
+      });
+    }
 
     if (form) {
       form.addEventListener('submit', (e) => {
@@ -186,18 +211,18 @@ export function initHeaderEvents() {
       });
     }
   }
+}
 
-  // Subscribe cart changes to update header cart badge
-  store.subscribe(({ count }) => {
-    const badge = document.getElementById('header-cart-badge');
-    if (badge) {
-      badge.textContent = count;
-      badge.style.display = count > 0 ? 'flex' : 'none';
-    }
-    const mobileBadge = document.getElementById('mobile-cart-badge');
-    if (mobileBadge) {
-      mobileBadge.textContent = count;
-      mobileBadge.style.display = count > 0 ? 'flex' : 'none';
-    }
-  });
+/** Savat nishonlarini yangilaydi — main.js'da bir marta store'ga ulanadi. */
+export function updateCartBadges(count) {
+  const badge = document.getElementById('header-cart-badge');
+  if (badge) {
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'flex' : 'none';
+  }
+  const mobileBadge = document.getElementById('mobile-cart-badge');
+  if (mobileBadge) {
+    mobileBadge.textContent = count;
+    mobileBadge.style.display = count > 0 ? 'flex' : 'none';
+  }
 }
