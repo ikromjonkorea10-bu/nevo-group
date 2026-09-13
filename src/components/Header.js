@@ -1,6 +1,6 @@
 import { icon } from '../icons.js';
 import { store } from '../store.js';
-import { getCatalog } from '../lib/catalog.js';
+import { getCatalog, matchesSearch } from '../lib/catalog.js';
 import { esc } from '../lib/format.js';
 import { renderNavSkeleton } from './StatusViews.js';
 
@@ -149,12 +149,7 @@ export function initHeaderEvents() {
           return;
         }
 
-        const allMatches = catalog.products.filter(p =>
-          p.name.toLowerCase().includes(query) ||
-          p.sku.toLowerCase().includes(query) ||
-          p.category.toLowerCase().includes(query) ||
-          p.subcategory.toLowerCase().includes(query)
-        );
+        const allMatches = catalog.products.filter(p => matchesSearch(p, query));
         const matches = allMatches.slice(0, 6);
 
         if (matches.length === 0) {

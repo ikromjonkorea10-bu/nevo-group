@@ -165,6 +165,25 @@ Majburan qayta yozish uchun (mahsulotlar slug bo'yicha yangilanadi):
 npm run seed -- --force
 ```
 
+### Haqiqiy prays-list katalogini import qilish
+
+`scripts/seed-data/nevo-katalog.csv` — NEVO GROUP prays-listlaridan 485 ta
+mahsulot (narxlar so'mda). Import CSV'da yo'q mahsulotlarni (namunalarni)
+**o'chiradi** va qolganlarini slug bo'yicha upsert qiladi — qayta ishga
+tushirish xavfsiz, dublikat bo'lmaydi. Buyurtma tarixi saqlanadi.
+
+```bash
+node scripts/import-catalog.js --dry-run   # faqat CSV'ni tekshiradi
+node scripts/import-catalog.js             # .env dagi bazaga yozadi
+```
+
+> `--dry-run` ni `npm run` orqali bermang: npm bu bayroqni o'zi yutib oladi.
+> Skript `npm_config_dry_run` ni ham tekshiradi, lekin `node` bilan ishlatish ishonchliroq.
+
+Lokal emulyatorga import qilish uchun muhitda `VITE_SUPABASE_URL`,
+`VITE_SUPABASE_ANON_KEY`, `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` ni
+emulyator qiymatlariga o'rnating (muhitdagi qiymat `.env` dagidan ustun).
+
 ## 7. Vercel'ga deploy
 
 1. https://vercel.com/new → GitHub reponi import qiling.

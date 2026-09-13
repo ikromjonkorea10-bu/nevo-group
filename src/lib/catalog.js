@@ -5,14 +5,15 @@
 import { getSupabase, isNetworkError } from './supabase.js';
 import { formatPrice } from './format.js';
 
-const CACHE_KEY = 'nevo_catalog_v1';
+const CACHE_KEY = 'nevo_catalog_v2';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const PAGE_SIZE = 1000;
 const FALLBACK_IMAGE = '/brand/nevo-logo-sm.png';
 
 export const PRODUCT_COLUMNS =
   'id, category_id, slug, name_uz, description_uz, price, old_price, image_url, in_stock, featured, ' +
-  'sort_order, sku, subcategory_uz, brand, unit, specs, budget';
+  'sort_order, sku, subcategory_uz, brand, unit, specs, budget, ' +
+  'group_name, size, size_label, pack_qty, supplier, price_date';
 
 const CATEGORY_COLUMNS = 'id, slug, name_uz, short_desc_uz, image_url, sort_order';
 
@@ -54,6 +55,12 @@ export function mapProduct(row, categoriesById) {
     oldPrice,
     oldPriceFormatted: oldPrice ? formatPrice(oldPrice) : '',
     unit: row.unit || '1 dona',
+    groupName: row.group_name || '',
+    size: row.size || '',
+    sizeLabel: row.size_label || '',
+    packQty: row.pack_qty || '',
+    supplier: row.supplier || '',
+    priceDate: row.price_date || '',
     image: row.image_url || FALLBACK_IMAGE,
     specs: row.specs && typeof row.specs === 'object' ? row.specs : {},
     featured: Boolean(row.featured),
@@ -202,6 +209,12 @@ export function invalidateCatalog() {
     // e'tiborsiz
   }
   state = { status: 'idle', categories: [], products: [], error: null };
+}
+
+/** Qidiruv: nomi, o'lchami, kodi, ichki bo'limi va brendi bo'yicha (q — kichik harfda). */
+export function matchesSearch(product, q) {
+  return [product.name, product.size, product.sku, product.subcategory, product.brand, product.category]
+    .some((v) => v && v.toLowerCase().includes(q));
 }
 
 export function getProductById(id) {

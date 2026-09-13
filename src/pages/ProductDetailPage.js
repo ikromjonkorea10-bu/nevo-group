@@ -19,8 +19,16 @@ export function renderProductDetailPage(slug) {
   const related = getCatalog().products
     .filter(p => p.categoryId === product.categoryId && p.id !== product.id && p.inStock)
     .slice(0, 4);
-  const size = product.specs["O'lchami"];
+  const size = product.size || product.specs["O'lchami"];
   const material = product.specs['Materiali'];
+  const characteristics = [
+    ['Brend', product.brand],
+    [product.sizeLabel || "O'lchami", size],
+    ["O'lchov birligi", product.unit],
+    ['Qutida (В/кар)', product.packQty ? `${product.packQty} ${/^\d+$/.test(product.packQty) ? product.unit : ''}`.trim() : ''],
+    ["Ichki bo'lim", product.subcategory],
+    ['Mahsulot kodi', product.sku],
+  ].filter(([, value]) => value);
 
   return `
     <div class="shell product-detail-wrap">
@@ -94,7 +102,7 @@ export function renderProductDetailPage(slug) {
                   ${icon('plus', '', 14)}
                 </button>
               </div>
-              <span style="font-size: 14px; color: var(--muted); font-weight: 500;">Dona / metr</span>
+              <span style="font-size: 14px; color: var(--muted); font-weight: 500;">${esc(product.unit)}${product.packQty ? ` · qutida ${esc(product.packQty)}` : ''}</span>
             </div>
 
             <div class="detail-actions-col">
@@ -126,6 +134,20 @@ export function renderProductDetailPage(slug) {
             ` : ''}
           </div>
 
+          ${characteristics.length ? `
+            <div class="detail-specs-block">
+              <h4>Xarakteristikalar</h4>
+              <dl class="detail-char-table">
+                ${characteristics.map(([label, value]) => `
+                  <div class="detail-char-row">
+                    <dt>${esc(label)}</dt>
+                    <dd>${esc(value)}</dd>
+                  </div>
+                `).join('')}
+              </dl>
+            </div>
+          ` : ''}
+
           <!-- Specs List -->
           <div class="detail-specs-block">
             <h4>Nima bilan yaxshi</h4>
@@ -134,14 +156,12 @@ export function renderProductDetailPage(slug) {
                 ${icon('check', '', 18)}
                 <span>Suv liniyasi va qurilishda ishonchli xizmat</span>
               </li>
-              <li>
-                ${icon('check', '', 18)}
-                <span>O'lchami: ${esc(size || 'Standart')}</span>
-              </li>
-              <li>
-                ${icon('check', '', 18)}
-                <span>Materiali: ${esc(material || 'Yuqori sifatli xomashyo')}</span>
-              </li>
+              ${material ? `
+                <li>
+                  ${icon('check', '', 18)}
+                  <span>Materiali: ${esc(material)}</span>
+                </li>
+              ` : ''}
               <li>
                 ${icon('check', '', 18)}
                 <span>Narx NEVO GROUP praysidan olingan</span>

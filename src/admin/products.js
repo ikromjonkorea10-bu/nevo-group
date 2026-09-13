@@ -88,7 +88,7 @@ export async function renderProductsPage(container, ctx) {
       if (listState.stock === 'in' && !p.in_stock) return false;
       if (listState.stock === 'out' && p.in_stock) return false;
       if (!q) return true;
-      return [p.name_uz, p.sku, p.slug, p.brand, p.subcategory_uz].some((v) => (v || '').toLowerCase().includes(q));
+      return [p.name_uz, p.size, p.sku, p.slug, p.brand, p.subcategory_uz].some((v) => (v || '').toLowerCase().includes(q));
     });
     countEl.textContent = `${products.length} ta mahsulot${filtered.length !== products.length ? ` · ${filtered.length} ta filtrlangan` : ''}`;
     const visible = filtered.slice(0, listState.visible);

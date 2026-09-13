@@ -1,5 +1,5 @@
 import { icon } from '../icons.js';
-import { getCatalog } from '../lib/catalog.js';
+import { getCatalog, matchesSearch } from '../lib/catalog.js';
 import { esc } from '../lib/format.js';
 import { renderProductCard } from '../components/ProductCard.js';
 
@@ -8,6 +8,7 @@ const PAGE_SIZE = 48;
 let state = {
   selectedCategory: 'all',
   selectedSubcategory: 'all',
+  selectedBrand: 'all',
   searchQuery: '',
   sortBy: 'default',
   viewMode: 'grid',
@@ -21,6 +22,7 @@ export function renderCatalogPage(params = {}) {
   // Update state from params if passed
   if (params.category) state.selectedCategory = params.category;
   if (params.sub) state.selectedSubcategory = params.sub;
+  if (params.brand) state.selectedBrand = params.brand;
   if (params.search) state.searchQuery = params.search;
   if (params.sort) state.sortBy = params.sort;
 
@@ -35,15 +37,25 @@ export function renderCatalogPage(params = {}) {
     filtered = filtered.filter(p => p.subcategory.toLowerCase() === state.selectedSubcategory.toLowerCase());
   }
 
+  // Brendlar — tanlangan bo'lim va ichki bo'lim doirasida (brend filtridan oldin) hisoblanadi
+  const brandCounts = new Map();
+  for (const p of filtered) {
+    if (p.brand) brandCounts.set(p.brand, (brandCounts.get(p.brand) || 0) + 1);
+  }
+  const allBrands = [...brandCounts.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+
+  if (state.selectedBrand && state.selectedBrand !== 'all') {
+    filtered = filtered.filter(p => p.brand.toLowerCase() === state.selectedBrand.toLowerCase());
+  }
+
   if (state.searchQuery) {
     const q = state.searchQuery.toLowerCase();
-    filtered = filtered.filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.sku.toLowerCase().includes(q) ||
-      p.subcategory.toLowerCase().includes(q) ||
-      p.category.toLowerCase().includes(q)
-    );
+    filtered = filtered.filter(p => matchesSearch(p, q));
   }
+
+  const activeFilterCount = (state.selectedSubcategory !== 'all' ? 1 : 0) + (state.selectedBrand !== 'all' ? 1 : 0);
 
   // Sort
   if (state.sortBy === 'arzon') {
@@ -84,7 +96,7 @@ export function renderCatalogPage(params = {}) {
           <input
             type="text"
             id="catalog-inner-search"
-            placeholder="Katalogdan qidirish..."
+            placeholder="Nomi yoki o'lchami bo'yicha qidirish (masalan: 32/20)"
             value="${esc(state.searchQuery || '')}"
           />
           ${state.searchQuery ? `
@@ -125,7 +137,7 @@ export function renderCatalogPage(params = {}) {
           <button class="btn-filter-trigger" onclick="window.__toggleFilterModal(true)">
             ${icon('filter', '', 16)}
             <span>Filtr</span>
-            ${state.selectedSubcategory !== 'all' ? '<span style="width: 8px; height: 8px; background: var(--nevo-blue); border-radius: 50%;"></span>' : ''}
+            ${activeFilterCount ? `<span class="filter-count-badge">${activeFilterCount}</span>` : ''}
           </button>
 
           <select class="sort-select" id="catalog-sort-select" onchange="window.__setCatalogSort(this.value)" aria-label="Saralash">
@@ -140,6 +152,21 @@ export function renderCatalogPage(params = {}) {
           ${filtered.length} ta mahsulot
         </div>
       </div>
+
+      ${activeFilterCount ? `
+        <div class="active-filters-row">
+          ${state.selectedSubcategory !== 'all' ? `
+            <button type="button" class="active-filter-chip" onclick="window.__setFilterSubcategory('all')" aria-label="Ichki bo'lim filtrini olib tashlash">
+              <span>${esc(state.selectedSubcategory)}</span>${icon('x', '', 14)}
+            </button>
+          ` : ''}
+          ${state.selectedBrand !== 'all' ? `
+            <button type="button" class="active-filter-chip" onclick="window.__setFilterBrand('all')" aria-label="Brend filtrini olib tashlash">
+              <span>Brend: ${esc(state.selectedBrand)}</span>${icon('x', '', 14)}
+            </button>
+          ` : ''}
+        </div>
+      ` : ''}
 
       <!-- Products Grid -->
       <div style="margin-top: 24px;">
@@ -219,6 +246,28 @@ export function renderCatalogPage(params = {}) {
                 </button>
               `).join('')}
             </div>
+
+            ${allBrands.length ? `
+              <div class="filter-group-label">BREND</div>
+              <div class="filter-pills-wrap">
+                <button
+                  class="filter-choice-pill ${state.selectedBrand === 'all' ? 'active' : ''}"
+                  onclick="window.__setFilterBrand('all')"
+                >
+                  Hammasi
+                </button>
+                ${allBrands.map(b => `
+                  <button
+                    class="filter-choice-pill ${state.selectedBrand.toLowerCase() === b.name.toLowerCase() ? 'active' : ''}"
+                    data-brand="${esc(b.name)}"
+                    onclick="window.__setFilterBrand(this.dataset.brand)"
+                  >
+                    <span>${esc(b.name)}</span>
+                    <span class="count">${b.count}</span>
+                  </button>
+                `).join('')}
+              </div>
+            ` : ''}
           </div>
 
           <div class="filter-modal-footer">
@@ -243,6 +292,7 @@ export function initCatalogEvents(rerenderCallback) {
   window.__setCatalogCat = (catSlug) => {
     state.selectedCategory = catSlug;
     state.selectedSubcategory = 'all';
+    state.selectedBrand = 'all';
     resetPaging();
     rerenderCallback();
   };
@@ -265,6 +315,7 @@ export function initCatalogEvents(rerenderCallback) {
   window.__setFilterCategory = (cat) => {
     state.selectedCategory = cat;
     state.selectedSubcategory = 'all';
+    state.selectedBrand = 'all';
     resetPaging();
     rerenderCallback();
   };
@@ -275,9 +326,16 @@ export function initCatalogEvents(rerenderCallback) {
     rerenderCallback();
   };
 
+  window.__setFilterBrand = (brand) => {
+    state.selectedBrand = brand;
+    resetPaging();
+    rerenderCallback();
+  };
+
   window.__resetAllFilters = () => {
     state.selectedCategory = 'all';
     state.selectedSubcategory = 'all';
+    state.selectedBrand = 'all';
     state.searchQuery = '';
     state.sortBy = 'default';
     resetPaging();
