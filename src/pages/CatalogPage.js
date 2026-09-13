@@ -26,6 +26,13 @@ export function renderCatalogPage(params = {}) {
   if (params.search) state.searchQuery = params.search;
   if (params.sort) state.sortBy = params.sort;
 
+  // Yashirilgan (bo'sh) yoki mavjud bo'lmagan kategoriya — eski havola bo'lishi mumkin
+  if (state.selectedCategory !== 'all' && !categories.some(c => c.slug === state.selectedCategory)) {
+    state.selectedCategory = 'all';
+    state.selectedSubcategory = 'all';
+    state.selectedBrand = 'all';
+  }
+
   // Filter products
   let filtered = [...products];
 
