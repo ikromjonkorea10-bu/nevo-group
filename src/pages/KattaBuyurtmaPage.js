@@ -1,36 +1,76 @@
 import { icon } from '../icons.js';
 import { store } from '../store.js';
+import { esc, formatOrderNumber } from '../lib/format.js';
+import { validateOrder, submitOrder } from '../lib/orders.js';
+import {
+  fieldError, errorAttrs, errorClass, renderFormAlert, renderSubmitButton, bindFormState, focusFirstError,
+} from '../lib/formHelpers.js';
 
-let selectedProjectType = 'Yakka tartibdagi uy';
-let isSubmitted = false;
+const PROJECT_TYPES = [
+  'Yakka tartibdagi uy',
+  'Ko\'p qavatli bino',
+  'Ta\'mirlash',
+  'Savdo/ofis obyekti',
+  'Issiqxona / ferma',
+  'Boshqa'
+];
+
+let selectedProjectType = PROJECT_TYPES[0];
+let includeCart = true;
+let isSubmitting = false;
+let form = { items_text: '', company_name: '', customer_name: '', phone: '', address: '', notes: '' };
+let errors = {};
+let formAlert = '';
+let placedOrder = null; // { id }
+
+const FIELD_ELEMENTS = {
+  items: 'bulk-items-text',
+  company_name: 'bulk-org',
+  customer_name: 'bulk-name',
+  phone: 'bulk-phone',
+  address: 'bulk-location',
+  comment: 'bulk-notes',
+};
+
+// element id -> [form kaliti, xato kaliti]
+const ELEMENT_FIELDS = {
+  'bulk-items-text': ['items_text', 'items'],
+  'bulk-org': 'company_name',
+  'bulk-name': 'customer_name',
+  'bulk-phone': 'phone',
+  'bulk-location': 'address',
+  'bulk-notes': ['notes', 'comment'],
+};
+
+function breadcrumbs() {
+  return `
+    <nav class="breadcrumbs">
+      <a href="#home">Bosh sahifa</a>
+      <span>›</span>
+      <span style="color: var(--ink); font-weight: 600;">Katta buyurtma</span>
+    </nav>
+  `;
+}
+
+function buildComment() {
+  const parts = [`Loyiha turi: ${selectedProjectType}`];
+  if (form.items_text.trim()) parts.push(`Mahsulotlar ro'yxati:\n${form.items_text.trim()}`);
+  if (form.notes.trim()) parts.push(`Izoh: ${form.notes.trim()}`);
+  return parts.join('\n\n');
+}
 
 export function renderKattaBuyurtmaPage() {
-  const projectTypes = [
-    'Yakka tartibdagi uy',
-    'Ko\'p qavatli bino',
-    'Ta\'mirlash',
-    'Savdo/ofis obyekti',
-    'Issiqxona / ferma',
-    'Boshqa'
-  ];
-
-  if (isSubmitted) {
+  if (placedOrder) {
     return `
       <div class="shell bulk-page-wrap">
-        <nav class="breadcrumbs">
-          <a href="#home">Bosh sahifa</a>
-          <span>›</span>
-          <span style="color: var(--ink); font-weight: 600;">Katta buyurtma</span>
-        </nav>
+        ${breadcrumbs()}
 
-        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-2xl); padding: 60px 20px; text-align: center; margin-top: 24px;">
-          <div style="width: 64px; height: 64px; margin: 0 auto 16px; background: #dcfce7; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-            ${icon('check', '', 32)}
-          </div>
-          <h2 style="font-size: 26px; font-weight: 800; color: var(--ink); margin-bottom: 8px;">
-            So'rovingiz muvaffaqiyatli qabul qilindi!
-          </h2>
-          <p style="font-size: 15px; color: var(--muted); max-width: 500px; margin: 0 auto 24px; line-height: 1.5;">
+        <div class="status-card" style="margin-top: 24px;" role="status">
+          <div class="status-icon status-icon-success">${icon('check', '', 30)}</div>
+          <h2 class="status-title">So'rovingiz muvaffaqiyatli qabul qilindi!</h2>
+          <p style="font-size: 14px; color: var(--muted); margin-bottom: 8px;">Buyurtma raqami</p>
+          <div class="order-number-box" id="order-number">${esc(formatOrderNumber(placedOrder.id))}</div>
+          <p class="status-text">
             Mutaxassisimiz ro'yxatni prays bo'yicha hisoblab chiqadi va qisqa vaqt ichida ko'rsatilgan telefon raqamiga narxlar smetasini yuboradi.
           </p>
 
@@ -38,7 +78,7 @@ export function renderKattaBuyurtmaPage() {
             <button type="button" class="btn-secondary" onclick="window.__resetBulkOrder()">
               Yangi ro'yxat yuborish
             </button>
-            <a href="#catalog" class="btn-primary">
+            <a href="#catalog" class="btn-primary" onclick="window.__resetBulkOrder(true)">
               Katalogga qaytish
             </a>
           </div>
@@ -47,13 +87,12 @@ export function renderKattaBuyurtmaPage() {
     `;
   }
 
+  const { items, count } = store.getCartDetails();
+  const availableItems = items.filter((i) => i.product.inStock);
+
   return `
     <div class="shell bulk-page-wrap">
-      <nav class="breadcrumbs">
-        <a href="#home">Bosh sahifa</a>
-        <span>›</span>
-        <span style="color: var(--ink); font-weight: 600;">Katta buyurtma</span>
-      </nav>
+      ${breadcrumbs()}
 
       <div style="margin-top: 16px;">
         <h1 style="font-size: 32px; font-weight: 800; color: var(--ink);">Katta qurilish buyurtmasi</h1>
@@ -62,70 +101,89 @@ export function renderKattaBuyurtmaPage() {
         </p>
       </div>
 
-      <form class="bulk-form-card" id="bulk-order-form" onsubmit="window.__submitBulkOrder(event)">
+      <form class="bulk-form-card" id="bulk-order-form" novalidate onsubmit="window.__submitBulkOrder(event)">
         <!-- Project Type -->
         <div class="form-group">
           <label class="form-label">Loyiha turi</label>
           <div class="project-type-chips">
-            ${projectTypes.map(pt => `
-              <button 
-                type="button" 
-                class="project-chip ${selectedProjectType === pt ? 'active' : ''}" 
-                onclick="window.__selectProjectType('${pt}')"
+            ${PROJECT_TYPES.map(pt => `
+              <button
+                type="button"
+                class="project-chip ${selectedProjectType === pt ? 'active' : ''}"
+                data-value="${esc(pt)}"
+                aria-pressed="${selectedProjectType === pt}"
+                onclick="window.__selectProjectType(this.dataset.value)"
               >
-                ${pt}
+                ${esc(pt)}
               </button>
             `).join('')}
           </div>
         </div>
 
+        ${availableItems.length > 0 ? `
+          <div class="form-group">
+            <label style="display: flex; gap: 10px; align-items: flex-start; background: var(--tint); border: 1px solid var(--tint-border); border-radius: var(--radius-md); padding: 12px 14px; cursor: pointer;">
+              <input type="checkbox" id="bulk-include-cart" ${includeCart ? 'checked' : ''} onchange="window.__toggleBulkIncludeCart(this.checked)" style="margin-top: 3px; width: 16px; height: 16px;" />
+              <span style="font-size: 14px; line-height: 1.45; color: var(--ink);">
+                Savatdagi <strong>${availableItems.length} ta pozitsiya</strong> (${count} ta tovar) ham buyurtmaga qo'shilsin
+              </span>
+            </label>
+          </div>
+        ` : ''}
+
         <!-- Products List Textarea -->
         <div class="form-group">
-          <label class="form-label">Kerakli mahsulotlar ro'yxati *</label>
+          <label class="form-label" for="bulk-items-text">Kerakli mahsulotlar ro'yxati${availableItems.length > 0 && includeCart ? '' : ' *'}</label>
           <p style="font-size: 13px; color: var(--muted); margin-bottom: 8px;">
             Har qatorga bitta mahsulot yozing. Kod bilan yozsangiz aniqroq bo'ladi, lekin shart emas — nomi va soni ham yetadi.
           </p>
-          <textarea 
-            class="form-textarea" 
-            id="bulk-items-text" 
-            rows="6" 
-            placeholder="Masalan:&#10;1. PP-R truba d25 PN20 — 120 metr&#10;2. AQUA LINE mufta d25 — 40 dona&#10;3. Zadvijka DN50 cho'yan — 2 dona" 
-            required
-          ></textarea>
+          <textarea
+            class="form-textarea ${errorClass(errors, 'items')}"
+            id="bulk-items-text"
+            rows="6"
+            maxlength="6000"
+            placeholder="Masalan:&#10;1. PP-R truba d25 PN20 — 120 metr&#10;2. AQUA LINE mufta d25 — 40 dona&#10;3. Zadvijka DN50 cho'yan — 2 dona"
+            ${errorAttrs(errors, 'items')}
+          >${esc(form.items_text)}</textarea>
+          ${fieldError(errors, 'items')}
         </div>
 
         <!-- Customer Contacts -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="form-grid-2" style="gap: 16px;">
           <div class="form-group">
-            <label class="form-label">Tashkilot / brigada nomi</label>
-            <input type="text" class="form-input" id="bulk-org" placeholder="Masalan: 'Obod Qurilish' MCHJ" />
+            <label class="form-label" for="bulk-org">Kompaniya / tashkilot nomi</label>
+            <input type="text" class="form-input ${errorClass(errors, 'company_name')}" id="bulk-org" autocomplete="organization" maxlength="200" placeholder="Masalan: 'Obod Qurilish' MCHJ" value="${esc(form.company_name)}" ${errorAttrs(errors, 'company_name')} />
+            ${fieldError(errors, 'company_name')}
           </div>
           <div class="form-group">
-            <label class="form-label">Mas'ul shaxs (Ism) *</label>
-            <input type="text" class="form-input" id="bulk-name" placeholder="Ism-familiyangiz" required />
+            <label class="form-label" for="bulk-name">Mas'ul shaxs (Ism) *</label>
+            <input type="text" class="form-input ${errorClass(errors, 'customer_name')}" id="bulk-name" autocomplete="name" maxlength="120" placeholder="Ism-familiyangiz" value="${esc(form.customer_name)}" ${errorAttrs(errors, 'customer_name')} />
+            ${fieldError(errors, 'customer_name')}
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="form-grid-2" style="gap: 16px;">
           <div class="form-group">
-            <label class="form-label">Telefon raqamingiz *</label>
-            <input type="tel" class="form-input" id="bulk-phone" placeholder="+998 90 123 45 67" required />
+            <label class="form-label" for="bulk-phone">Telefon raqamingiz *</label>
+            <input type="tel" class="form-input ${errorClass(errors, 'phone')}" id="bulk-phone" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="+998 90 123 45 67" value="${esc(form.phone)}" ${errorAttrs(errors, 'phone')} />
+            ${fieldError(errors, 'phone')}
           </div>
           <div class="form-group">
-            <label class="form-label">Obyekt qayerda (viloyat, tuman)</label>
-            <input type="text" class="form-input" id="bulk-location" placeholder="Joylashuvi" />
+            <label class="form-label" for="bulk-location">Obyekt manzili (viloyat, tuman)</label>
+            <input type="text" class="form-input ${errorClass(errors, 'address')}" id="bulk-location" maxlength="500" placeholder="Joylashuvi" value="${esc(form.address)}" ${errorAttrs(errors, 'address')} />
+            ${fieldError(errors, 'address')}
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Qo'shimcha izoh — muddat, yetkazish shartlari, to'lov shakli...</label>
-          <textarea class="form-textarea" id="bulk-notes" rows="3" placeholder="Ixtiyoriy izoh qoldiring..."></textarea>
+          <label class="form-label" for="bulk-notes">Qo'shimcha izoh — muddat, yetkazish shartlari, to'lov shakli...</label>
+          <textarea class="form-textarea ${errorClass(errors, 'comment')}" id="bulk-notes" rows="3" maxlength="2000" placeholder="Ixtiyoriy izoh qoldiring..." ${errorAttrs(errors, 'comment')}>${esc(form.notes)}</textarea>
+          ${fieldError(errors, 'comment')}
         </div>
 
-        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 15px;">
-          <span>Ro'yxatni yuborish</span>
-          ${icon('arrow-right', '', 18)}
-        </button>
+        ${renderFormAlert(formAlert)}
+
+        ${renderSubmitButton({ submitting: isSubmitting, label: "Ro'yxatni yuborish", busyLabel: 'Yuborilmoqda…', type: 'submit' })}
       </form>
     </div>
   `;
@@ -137,24 +195,72 @@ export function initKattaBuyurtmaEvents(rerenderCallback) {
     rerenderCallback();
   };
 
-  window.__submitBulkOrder = (e) => {
-    e.preventDefault();
-    const itemsText = document.getElementById('bulk-items-text')?.value?.trim();
-    const name = document.getElementById('bulk-name')?.value?.trim();
-    const phone = document.getElementById('bulk-phone')?.value?.trim();
+  window.__toggleBulkIncludeCart = (checked) => {
+    includeCart = checked;
+    delete errors.items;
+    rerenderCallback();
+  };
 
-    if (!itemsText || !name || !phone) {
-      alert("Iltimos, mahsulotlar ro'yxatini va telefon raqamingizni to'ldiring.");
+  window.__submitBulkOrder = async (e) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    const cartItems = includeCart
+      ? store.getCartDetails().items.filter((i) => i.product.inStock)
+      : [];
+
+    errors = validateOrder({
+      customerName: form.customer_name,
+      phone: form.phone,
+      hasItems: cartItems.length > 0 || form.items_text.trim().length > 0,
+      itemsError: "Mahsulotlar ro'yxatini yozing yoki savatga mahsulot qo'shing",
+    });
+    formAlert = '';
+
+    if (Object.keys(errors).length > 0) {
+      rerenderCallback();
+      focusFirstError(FIELD_ELEMENTS);
       return;
     }
 
-    isSubmitted = true;
-    store.showToast("Buyurtma so'rovi yuborildi");
+    isSubmitting = true;
     rerenderCallback();
+
+    const result = await submitOrder({
+      customerName: form.customer_name,
+      phone: form.phone,
+      address: form.address,
+      comment: buildComment(),
+      orderType: 'bulk',
+      companyName: form.company_name,
+      items: cartItems.map((i) => ({ productId: i.productId, quantity: i.quantity })),
+    });
+
+    isSubmitting = false;
+
+    if (result.ok) {
+      placedOrder = result.order;
+      if (cartItems.length > 0) store.clearCart();
+      form = { items_text: '', company_name: '', customer_name: '', phone: '', address: '', notes: '' };
+      errors = {};
+      store.showToast("Buyurtma so'rovi yuborildi");
+    } else if (result.field && FIELD_ELEMENTS[result.field]) {
+      errors = { [result.field]: result.message };
+    } else {
+      formAlert = result.message;
+    }
+
+    if (window.location.hash.replace(/^#\/?/, '').split('?')[0] === 'katta-buyurtma') {
+      rerenderCallback();
+      if (result.ok) window.scrollTo({ top: 0, behavior: 'instant' });
+      else focusFirstError(FIELD_ELEMENTS);
+    }
   };
 
-  window.__resetBulkOrder = () => {
-    isSubmitted = false;
-    rerenderCallback();
+  window.__resetBulkOrder = (silent = false) => {
+    placedOrder = null;
+    if (!silent) rerenderCallback();
   };
+
+  bindFormState(form, ELEMENT_FIELDS, errors);
 }
