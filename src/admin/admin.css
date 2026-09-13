@@ -1,0 +1,530 @@
+/* Admin panel — asosiy sayt o'zgaruvchilari va tugmalari ustiga quriladi */
+
+body.admin-body {
+  background: #f4f6fa;
+}
+
+/* body flex konteyner — keng jadvallar sahifani cho'zib yubormasligi uchun */
+#admin-app {
+  width: 100%;
+  min-width: 0;
+}
+
+.admin-topbar {
+  background: var(--nevo-navy);
+  color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.admin-topbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 60px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 16px;
+  color: #ffffff;
+  margin-right: auto;
+}
+
+.admin-brand img {
+  height: 30px;
+  width: auto;
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.admin-brand small {
+  font-weight: 600;
+  font-size: 12px;
+  color: #93c5fd;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.admin-nav {
+  display: flex;
+  gap: 4px;
+}
+
+.admin-nav a {
+  color: #cbd5e1;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.admin-nav a:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
+.admin-nav a.active { color: #ffffff; background: rgba(255, 255, 255, 0.14); }
+
+.admin-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.admin-user-email {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-logout-btn {
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.admin-logout-btn:hover { background: rgba(255, 255, 255, 0.1); }
+
+.admin-main {
+  padding-top: 24px;
+  padding-bottom: 60px;
+}
+
+.admin-page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.admin-page-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.admin-page-sub {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.admin-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-subtle);
+}
+
+.admin-card-pad { padding: clamp(16px, 3vw, 24px); }
+
+.admin-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.admin-toolbar .form-input,
+.admin-toolbar .admin-select {
+  width: auto;
+  min-width: 0;
+  flex: 1 1 200px;
+}
+
+.admin-select {
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #f8fafc;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+}
+
+.admin-select.has-error {
+  border-color: #dc2626;
+  background: #fffafa;
+}
+
+.admin-select:focus {
+  border-color: var(--nevo-blue);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+  background: #ffffff;
+}
+
+.admin-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.admin-pill {
+  padding: 7px 14px;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.admin-pill:hover { border-color: var(--nevo-blue); color: var(--nevo-blue); }
+.admin-pill.active { background: var(--nevo-blue); border-color: var(--nevo-blue); color: #ffffff; }
+
+/* Buyurtmalar ro'yxati */
+.admin-list { display: flex; flex-direction: column; }
+
+.admin-order-row {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1.6fr) minmax(0, 1fr) 130px 120px 130px;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.admin-order-row:last-child { border-bottom: none; }
+a.admin-order-row:hover { background: #f8fafc; }
+
+.admin-order-head {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: #f8fafc;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.admin-order-num { font-weight: 800; color: var(--nevo-blue); }
+.admin-cell-main { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-cell-sub { font-size: 12.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-amount { font-weight: 700; white-space: nowrap; }
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.status-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-new { background: #eff6ff; color: #1d4ed8; }
+.status-confirmed { background: #fef9c3; color: #a16207; }
+.status-delivered { background: #dcfce7; color: #15803d; }
+.status-cancelled { background: #f1f5f9; color: #64748b; }
+
+.type-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: var(--muted);
+}
+
+.type-badge.bulk { background: #fef3c7; color: #b45309; }
+
+/* Buyurtma tafsiloti */
+.admin-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.admin-dl { display: grid; gap: 14px; }
+.admin-dl dt { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px; }
+.admin-dl dd { font-size: 15px; color: var(--ink); word-break: break-word; }
+.admin-dl dd a { color: var(--nevo-blue); font-weight: 600; }
+.admin-pre { white-space: pre-wrap; line-height: 1.5; }
+
+.admin-section-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 14px;
+}
+
+.admin-status-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.admin-status-form .admin-select { flex: 1 1 180px; }
+
+/* position: relative — ichidagi absolute (visually-hidden) elementlar ham kesilsin */
+.admin-table-wrap { overflow-x: auto; position: relative; }
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.admin-table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.admin-table tr:last-child td { border-bottom: none; }
+.admin-table .num { text-align: right; white-space: nowrap; }
+.admin-table tfoot td { font-weight: 800; background: #f8fafc; }
+
+.admin-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.admin-product-cell { display: flex; align-items: center; gap: 10px; min-width: 220px; }
+.admin-product-cell > div { min-width: 0; }
+
+.admin-actions { display: flex; gap: 6px; justify-content: flex-end; }
+
+.admin-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.admin-icon-btn:hover { border-color: var(--nevo-blue); color: var(--nevo-blue); }
+.admin-icon-btn.danger:hover { border-color: #dc2626; color: #dc2626; }
+
+.flag { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
+.flag-yes { background: #dcfce7; color: #15803d; }
+.flag-no { background: #fef2f2; color: #b91c1c; }
+.flag-star { background: #fef3c7; color: #b45309; }
+
+.btn-danger {
+  background: #dc2626;
+  color: #ffffff;
+  padding: 11px 18px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-danger:hover { background: #b91c1c; }
+.btn-danger[disabled] { opacity: 0.6; pointer-events: none; }
+
+/* Mahsulot formasi */
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 18px;
+}
+
+.admin-form-grid .span-2 { grid-column: 1 / -1; }
+
+.form-hint { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+
+.admin-checks { display: flex; gap: 18px; flex-wrap: wrap; }
+.admin-check { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.admin-check input { width: 17px; height: 17px; }
+
+.admin-image-preview {
+  width: 120px;
+  height: 120px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.admin-image-preview img { width: 100%; height: 100%; object-fit: contain; }
+
+.admin-form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.admin-form-actions .btn-primary { width: auto !important; padding: 12px 22px !important; }
+
+/* Login */
+.admin-login-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(160deg, #0f1e3e 0%, #1d4ed8 140%);
+}
+
+.admin-login-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border-radius: var(--radius-2xl);
+  padding: clamp(22px, 5vw, 34px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+}
+
+.admin-login-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.admin-login-logo img { height: 40px; width: auto; }
+
+/* Modal */
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 200;
+}
+
+.admin-modal {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-lift);
+}
+
+.admin-modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+.admin-modal p { font-size: 14.5px; color: var(--muted); line-height: 1.5; margin-bottom: 18px; word-break: break-word; }
+.admin-modal-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+
+.admin-muted-center { text-align: center; color: var(--muted); padding: 40px 16px; font-size: 15px; }
+
+.admin-toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  z-index: 300;
+  pointer-events: none;
+}
+
+.admin-toast {
+  background: var(--nevo-navy);
+  color: #ffffff;
+  padding: 11px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow-lift);
+  max-width: 100%;
+}
+
+.admin-toast.error { background: #b91c1c; }
+
+.admin-show-sm { display: none; }
+
+@media (max-width: 900px) {
+  .admin-order-head { display: none; }
+
+  .admin-order-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "num status"
+      "customer amount"
+      "phone date";
+    gap: 6px 12px;
+    padding: 14px 16px;
+  }
+
+  .admin-order-row > :nth-child(1) { grid-area: num; }
+  .admin-order-row > :nth-child(2) { grid-area: customer; }
+  .admin-order-row > :nth-child(3) { grid-area: phone; }
+  .admin-order-row > :nth-child(4) { grid-area: amount; text-align: right; }
+  .admin-order-row > :nth-child(5) { grid-area: status; justify-self: end; }
+  .admin-order-row > :nth-child(6) { grid-area: date; text-align: right; }
+
+  .admin-detail-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .admin-form-grid { grid-template-columns: 1fr; }
+  .admin-user-email { display: none; }
+  .admin-topbar-inner { gap: 8px; }
+  .admin-nav { order: 3; width: 100%; }
+  .admin-nav a { flex: 1; text-align: center; }
+  .admin-page-title { font-size: 22px; }
+  .admin-hide-sm { display: none; }
+  .admin-show-sm { display: block; margin-top: 4px; }
+  .admin-table th, .admin-table td { padding: 10px 8px; }
+  .admin-product-cell { min-width: 0; gap: 8px; }
+  .admin-product-cell .admin-cell-sub { white-space: normal; }
+  .admin-thumb { width: 36px; height: 36px; }
+  .admin-actions { flex-direction: column; align-items: stretch; }
+  .admin-actions .admin-icon-btn { padding: 6px 8px; justify-content: center; }
+  .admin-table .num { white-space: normal; }
+  .shell.admin-main { padding-left: 14px; padding-right: 14px; }
+}
