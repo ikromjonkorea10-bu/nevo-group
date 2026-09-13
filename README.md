@@ -27,8 +27,9 @@ src/
   admin/                   admin panel: login, buyurtmalar, mahsulotlar
 supabase/migrations/       baza sxemasi, RLS, place_order() funksiyasi
 scripts/
-  seed.js                  eski katalogni bazaga ko'chirish (bir marta)
-  seed-data/               539 mahsulot va 5 kategoriya (JSON)
+  import-catalog.js        katalogni CSV'dan bazaga import qilish (yagona manba)
+  lib/catalog-csv.mjs      CSV'ni o'qish va tekshirish
+  seed-data/               nevo-katalog.csv (485 mahsulot), categories.json
   test-db.mjs              sxema / RLS / RPC testlari
   local-supabase.mjs       lokal Supabase emulyatori (akkauntsiz sinash uchun)
 ```
@@ -141,7 +142,7 @@ cp .env.example .env
 VITE_SUPABASE_URL=https://<project-ref>.supabase.co
 VITE_SUPABASE_ANON_KEY=<anon public kalit>
 
-# faqat seed uchun (brauzerga tushmaydi)
+# faqat katalog importi uchun (brauzerga tushmaydi)
 SEED_ADMIN_EMAIL=admin@example.com
 SEED_ADMIN_PASSWORD=<admin paroli>
 ```
@@ -149,28 +150,17 @@ SEED_ADMIN_PASSWORD=<admin paroli>
 `.env` fayli `.gitignore`'da, git'ga tushmaydi. `VITE_` bilan boshlanadigan
 o'zgaruvchilar brauzerga ochiq bo'ladi, shuning uchun u yerga faqat anon key yoziladi.
 
-## 6. Katalogni bazaga ko'chirish (seed)
+## 6. Katalogni import qilish
 
-Oldin 4-bosqichdagi admin yaratilgan bo'lishi kerak.
+Oldin 4-bosqichdagi admin yaratilgan bo'lishi kerak. Katalogning yagona
+manbasi — `scripts/seed-data/nevo-katalog.csv` (NEVO GROUP prays-listlaridan
+485 ta mahsulot, narxlar so'mda).
 
-```bash
-npm run seed
-```
-
-Skript admin sifatida kiradi va 5 kategoriya hamda 539 mahsulotni yozadi.
-Bazada mahsulot bo'lsa, qayta ishga tushirilganda hech narsa qilmaydi.
-Majburan qayta yozish uchun (mahsulotlar slug bo'yicha yangilanadi):
-
-```bash
-npm run seed -- --force
-```
-
-### Haqiqiy prays-list katalogini import qilish
-
-`scripts/seed-data/nevo-katalog.csv` — NEVO GROUP prays-listlaridan 485 ta
-mahsulot (narxlar so'mda). Import CSV'da yo'q mahsulotlarni (namunalarni)
+Skript admin sifatida kiradi, kategoriyalarni `category_uz` bo'yicha bog'laydi
+(bazada bo'lmasa `categories.json`dan qo'shadi), CSV'da yo'q mahsulotlarni
 **o'chiradi** va qolganlarini slug bo'yicha upsert qiladi — qayta ishga
 tushirish xavfsiz, dublikat bo'lmaydi. Buyurtma tarixi saqlanadi.
+Mahsuloti yo'q kategoriyalar saytda ko'rinmaydi.
 
 ```bash
 node scripts/import-catalog.js --dry-run   # faqat CSV'ni tekshiradi

@@ -2,7 +2,7 @@
 // to'liq ishga tushirish va sinash uchun.
 //
 //   npm run supabase:local            (bo'sh baza)
-//   npm run supabase:local -- --seed  (katalog ma'lumotlari bilan)
+//   npm run supabase:local -- --seed  (katalog: seed-data/nevo-katalog.csv)
 //
 // Ichida PGlite (haqiqiy Postgres, WASM) ishlaydi va
 // supabase/migrations/ dagi migratsiyalar qo'llanadi, shuning uchun RLS,
@@ -20,6 +20,7 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { createSupabaseDb, asRole, createAuthUser } from './lib/pglite-supabase.mjs';
+import { readCatalog } from './lib/catalog-csv.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -52,24 +53,34 @@ users.set(ADMIN_EMAIL, { id: adminId, email: ADMIN_EMAIL, password: ADMIN_PASSWO
 
 if (SEED) {
   const categories = JSON.parse(await readFile(path.join(HERE, 'seed-data', 'categories.json'), 'utf8'));
-  const products = JSON.parse(await readFile(path.join(HERE, 'seed-data', 'products.json'), 'utf8'));
+  const catalog = await readCatalog();
   await db.query(
     `insert into public.categories (slug, name_uz, short_desc_uz, image_url, sort_order)
      select slug, name_uz, short_desc_uz, image_url, sort_order
      from json_populate_recordset(null::public.categories, $1::json)`,
     [JSON.stringify(categories)]
   );
-  await db.query(
-    `insert into public.products (category_id, slug, name_uz, description_uz, price, old_price, image_url,
-                                  in_stock, featured, sort_order, sku, subcategory_uz, brand, unit, specs, budget)
-     select c.id, p.slug, p.name_uz, p.description_uz, p.price, p.old_price, p.image_url,
-            p.in_stock, p.featured, p.sort_order, p.sku, p.subcategory_uz, p.brand, p.unit, p.specs, p.budget
-     from json_to_recordset($1::json) as p(category_slug text, slug text, name_uz text, description_uz text,
-            price bigint, old_price bigint, image_url text, in_stock boolean, featured boolean, sort_order int,
-            sku text, subcategory_uz text, brand text, unit text, specs jsonb, budget boolean)
-     join public.categories c on c.slug = p.category_slug`,
-    [JSON.stringify(products)]
+  // import-catalog.js bilan bir xil qatorlar; kategoriya name_uz bo'yicha bog'lanadi
+  const { rows: [{ inserted }] } = await db.query(
+    `with ins as (
+       insert into public.products (category_id, slug, sku, name_uz, group_name, size, size_label, pack_qty, unit,
+                                    price, manba_narx, manba_valyuta, brand, subcategory_uz, supplier, price_date,
+                                    in_stock, featured, sort_order)
+       select c.id, p.slug, p.sku, p.name_uz, p.group_name, p.size, p.size_label, p.pack_qty, p.unit,
+              p.price, p.manba_narx, p.manba_valyuta, p.brand, p.subcategory_uz, p.supplier, p.price_date,
+              p.in_stock, p.featured, p.sort_order
+       from json_to_recordset($1::json) as p(category_name text, slug text, sku text, name_uz text, group_name text,
+              size text, size_label text, pack_qty text, unit text, price bigint, manba_narx numeric,
+              manba_valyuta text, brand text, subcategory_uz text, supplier text, price_date date,
+              in_stock boolean, featured boolean, sort_order int)
+       join public.categories c on c.name_uz = p.category_name
+       returning 1
+     ) select count(*)::int as inserted from ins`,
+    [JSON.stringify(catalog.map(({ categoryName, row }) => ({ category_name: categoryName, ...row })))]
   );
+  if (inserted !== catalog.length) {
+    throw new Error(`Emulyator seed: ${catalog.length} ta mahsulotdan ${inserted} tasi yozildi (kategoriya topilmadi?)`);
+  }
 }
 
 // ---------------------------------------------------------------------

@@ -96,7 +96,8 @@ function buildCatalog(categoryRows, productRows) {
       .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
   }
 
-  return { categories, products };
+  // Mahsuloti yo'q kategoriyalar saytda (menyu, bosh sahifa, katalog) ko'rinmaydi
+  return { categories: categories.filter((c) => c.count > 0), products };
 }
 
 function readCache() {
