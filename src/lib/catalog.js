@@ -5,7 +5,7 @@
 import { getSupabase, isNetworkError } from './supabase.js';
 import { formatPrice } from './format.js';
 
-const CACHE_KEY = 'nevo_catalog_v2';
+const CACHE_KEY = 'nevo_catalog_v3';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const PAGE_SIZE = 1000;
 const FALLBACK_IMAGE = '/brand/nevo-logo-sm.png';

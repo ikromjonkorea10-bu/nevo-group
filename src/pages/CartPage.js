@@ -206,6 +206,10 @@ export function renderCartPage() {
               <img
                 src="${esc(item.product.image)}"
                 alt="${esc(item.product.name)}"
+                width="64"
+                height="64"
+                loading="lazy"
+                decoding="async"
                 onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';"
               />
               <div>

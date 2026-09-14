@@ -13,7 +13,10 @@ export function renderProductCard(product) {
         <img
           src="${esc(product.image)}"
           alt="${name}"
+          width="600"
+          height="600"
           loading="lazy"
+          decoding="async"
           onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';"
         />
       </div>

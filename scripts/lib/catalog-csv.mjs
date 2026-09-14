@@ -1,11 +1,13 @@
 // Katalog CSV'ini (scripts/seed-data/nevo-katalog.csv) o'qish va tekshirish.
 // import-catalog.js va lokal emulyator (local-supabase.mjs --seed) ishlatadi.
 
-import { readFile } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-export const DEFAULT_CSV = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'seed-data', 'nevo-katalog.csv');
+const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+export const DEFAULT_CSV = path.join(ROOT, 'scripts', 'seed-data', 'nevo-katalog.csv');
+export const DEFAULT_IMAGES_CSV = path.join(ROOT, 'scripts', 'seed-data', 'rasm-biriktirish.csv');
 
 const REQUIRED_COLUMNS = [
   'sku', 'slug', 'name', 'group_name', 'size', 'size_label', 'pack_qty', 'unit', 'price',
@@ -138,4 +140,48 @@ export async function readCatalog(csvPath = DEFAULT_CSV) {
     throw new Error(`CSV'da ${errors.length} ta xato:\n${list}`);
   }
   return items;
+}
+
+/**
+ * Rasm biriktirish jadvalini (slug,image_url,...) o'qiydi va tekshiradi.
+ * Mahalliy yo'llar (/images/...) public/ ichida mavjud bo'lishi shart.
+ * @returns {Promise<Map<string, string>>} slug → image_url
+ */
+export async function readImageMap(csvPath = DEFAULT_IMAGES_CSV) {
+  const text = (await readFile(csvPath, 'utf8')).replace(/^﻿/, '');
+  const [header, ...lines] = parseCsv(text);
+  const columns = header.map((h) => h.trim());
+  const slugCol = columns.indexOf('slug');
+  const urlCol = columns.indexOf('image_url');
+  if (slugCol < 0 || urlCol < 0) throw new Error('Rasm CSV\'ida slug va image_url ustunlari bo\'lishi kerak');
+
+  const errors = [];
+  const map = new Map();
+  const checkedFiles = new Map();
+  for (const [i, cells] of lines.entries()) {
+    const line = i + 2;
+    const slug = (cells[slugCol] || '').trim();
+    const url = (cells[urlCol] || '').trim();
+    if (!slug || !url) {
+      errors.push(`${line}-qator: slug yoki image_url bo'sh`);
+      continue;
+    }
+    if (map.has(slug)) errors.push(`${line}-qator: slug takrorlangan: "${slug}"`);
+    if (!/^(https?:\/\/|\/[^/])/.test(url)) {
+      errors.push(`${line}-qator (${slug}): image_url "/..." yoki "https://..." bo'lishi kerak: "${url}"`);
+    } else if (url.startsWith('/')) {
+      if (!checkedFiles.has(url)) {
+        const file = path.join(ROOT, 'public', ...url.slice(1).split('/'));
+        checkedFiles.set(url, await stat(file).then((s) => s.isFile(), () => false));
+      }
+      if (!checkedFiles.get(url)) errors.push(`${line}-qator (${slug}): fayl topilmadi: public${url}`);
+    }
+    map.set(slug, url);
+  }
+
+  if (errors.length) {
+    const list = errors.slice(0, 30).map((e) => `  • ${e}`).join('\n');
+    throw new Error(`Rasm CSV'ida ${errors.length} ta xato:\n${list}`);
+  }
+  return map;
 }

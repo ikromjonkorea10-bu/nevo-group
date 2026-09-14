@@ -56,6 +56,10 @@ export function renderProductDetailPage(slug) {
           <img
             src="${esc(product.image)}"
             alt="${esc(product.name)}"
+            width="600"
+            height="600"
+            fetchpriority="high"
+            decoding="async"
             onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';"
           />
         </div>

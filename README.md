@@ -29,7 +29,9 @@ supabase/migrations/       baza sxemasi, RLS, place_order() funksiyasi
 scripts/
   import-catalog.js        katalogni CSV'dan bazaga import qilish (yagona manba)
   lib/catalog-csv.mjs      CSV'ni o'qish va tekshirish
-  seed-data/               nevo-katalog.csv (485 mahsulot), categories.json
+  optimize-images.mjs      mahsulot rasmlarini WebP'ga o'girish
+  seed-data/               nevo-katalog.csv (485 mahsulot), rasm-biriktirish.csv, categories.json
+public/images/products/    mahsulot rasmlari (WebP, 600×600)
   test-db.mjs              sxema / RLS / RPC testlari
   local-supabase.mjs       lokal Supabase emulyatori (akkauntsiz sinash uchun)
 ```
@@ -166,6 +168,22 @@ Mahsuloti yo'q kategoriyalar saytda ko'rinmaydi.
 node scripts/import-catalog.js --dry-run   # faqat CSV'ni tekshiradi
 node scripts/import-catalog.js             # .env dagi bazaga yozadi
 ```
+
+### Mahsulot rasmlari
+
+Rasmlar `public/images/products/` da, biriktirish jadvali —
+`scripts/seed-data/rasm-biriktirish.csv` (`slug,image_url`). To'liq import
+`image_url` ni ham shu jadvaldan yozadi. Faqat rasmlarni yangilash uchun
+(katalogni qayta import qilmasdan, o'zgargan qatorlarni):
+
+```bash
+node scripts/optimize-images.mjs            # yangi PNG/JPG → WebP (sifat 85), aslini o'chiradi
+node scripts/import-catalog.js --images     # image_url ni bazaga yozadi
+```
+
+Jadvaldagi har bir `/images/...` fayli `public/` da borligi tekshiriladi —
+yo'q fayl bo'lsa, bazaga hech narsa yozilmaydi. Rasmlar Vercel'da deploy
+bilan chiqadi, shuning uchun production'da `--images` ni deploy tugagach ishga tushiring.
 
 > `--dry-run` ni `npm run` orqali bermang: npm bu bayroqni o'zi yutib oladi.
 > Skript `npm_config_dry_run` ni ham tekshiradi, lekin `node` bilan ishlatish ishonchliroq.
