@@ -20,7 +20,7 @@ function renderPage({ origin, slug, product }) {
   const title = product ? `${product.name_uz} — ${SITE}` : `Mahsulot topilmadi — ${SITE}`;
   const description = product
     ? `${formatPrice(product.price)} / ${product.unit}${product.brand ? ` · ${product.brand}` : ''}. ` +
-      "Santexnika va qurilish mahsulotlari — buyurtma bering, operator narx va mavjudligini tasdiqlaydi."
+      'Buyurtma bering — operator narx va mavjudligini tasdiqlaydi.'
     : "Santexnika va qurilish mahsulotlari: truba va fitinglar, zapor armatura, yong'in va elektr jihozlari.";
   const image = `${origin}${ogImageFor(product?.image_url)}`;
   const e = escapeHtml;
