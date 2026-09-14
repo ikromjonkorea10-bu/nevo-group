@@ -18,6 +18,56 @@ function renderInlineLoadError() {
   `;
 }
 
+// Hero kartalari bazadagi mahsulotlardan qoida bo'yicha tanlanadi — ID yozilmaydi.
+// Mahsulot o'chsa, tugasa yoki rasmi bo'lmasa, qoidaga mos keyingisi olinadi.
+const HERO_PICKS = [
+  (p) => /труба/i.test(p.groupName || p.name),
+  (p) => /фитинг/i.test(p.subcategory),
+  (p) => /задвижк/i.test(p.groupName || p.name),
+  (p) => p.categorySlug === 'elektr-jihozlari' || /подстанц/i.test(p.subcategory),
+];
+const HERO_COUNT = HERO_PICKS.length;
+
+export function pickHeroProducts(products) {
+  const candidates = products.filter((p) => p.inStock && p.hasImage);
+  const picked = [];
+  const isFree = (p) => !picked.some((x) => x.id === p.id || x.image === p.image);
+
+  for (const rule of HERO_PICKS) {
+    const product = candidates.find((p) => rule(p) && isFree(p));
+    if (product) picked.push(product);
+  }
+  // Qoidaga mos topilmaganlar o'rniga: avval hali ishlatilmagan kategoriyadan, keyin istalgani
+  for (const preferNewCategory of [true, false]) {
+    for (const p of candidates) {
+      if (picked.length >= HERO_COUNT) break;
+      if (!isFree(p)) continue;
+      if (preferNewCategory && picked.some((x) => x.categoryId === p.categoryId)) continue;
+      picked.push(p);
+    }
+  }
+  return picked;
+}
+
+function renderHeroCards(catalog) {
+  if (catalog.status === 'loading' || (catalog.status === 'idle' && isSupabaseConfigured)) {
+    return Array.from({ length: HERO_COUNT }, () => '<div class="hero-img-card skeleton" aria-hidden="true"></div>').join('');
+  }
+  return pickHeroProducts(catalog.products).map((p) => `
+    <a href="#product/${esc(p.slug)}" class="hero-img-card" title="${esc(p.name)}">
+      <img
+        src="${esc(p.image)}"
+        alt="${esc(p.name)}"
+        width="600"
+        height="600"
+        decoding="async"
+        onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';"
+      >
+      <span class="card-glass-sheen"></span>
+    </a>
+  `).join('');
+}
+
 function renderProductsBlock(products, catalog) {
   if (!isSupabaseConfigured || catalog.status === 'error') return renderInlineLoadError();
   if (catalog.status !== 'ready') return renderProductsGridSkeleton(4);
@@ -128,22 +178,7 @@ export function renderHomePage() {
               </div>
 
               <div class="hero-image-matrix">
-                <a href="#product/ng-1000" class="hero-img-card" title="PP-R quvurlar va fitinglar">
-                  <img src="/mahsulot/ppr-truba-pn16.webp" alt="PPR quvur" onerror="this.src='/brand/nevo-logo-sm.png';">
-                  <span class="card-glass-sheen"></span>
-                </a>
-                <a href="#product/ng-1382" class="hero-img-card" title="Cho'yan zadvijka">
-                  <img src="/mahsulot/zadvijka-chuyan.webp" alt="Zadvijka" onerror="this.src='/brand/nevo-logo-sm.png';">
-                  <span class="card-glass-sheen"></span>
-                </a>
-                <a href="#product/ng-1331" class="hero-img-card" title="Sharli kran latun">
-                  <img src="/mahsulot/komp-sharkran.webp" alt="Sharli kran" onerror="this.src='/brand/nevo-logo-sm.png';">
-                  <span class="card-glass-sheen"></span>
-                </a>
-                <a href="#product/ng-1512" class="hero-img-card" title="Suv isitgich boyler">
-                  <img src="/mahsulot/boyler-oq.webp" alt="Boyler" onerror="this.src='/brand/nevo-logo-sm.png';">
-                  <span class="card-glass-sheen"></span>
-                </a>
+                ${renderHeroCards(catalog)}
               </div>
 
               <div class="floating-badge badge-float-bottom">
@@ -185,7 +220,9 @@ export function renderHomePage() {
               </div>
               <div class="stat-card">
                 <div class="stat-icon-wrap">${icon('phone', '', 22)}</div>
-                <div class="stat-number" data-count="539" data-suffix="+">539+</div>
+                ${catalog.status === 'ready' && catalog.products.length
+                  ? `<div class="stat-number" data-count="${catalog.products.length}" data-suffix="">${catalog.products.length}</div>`
+                  : '<div class="stat-number">…</div>'}
                 <div class="stat-label">Katalogdagi tovarlar</div>
               </div>
             </div>

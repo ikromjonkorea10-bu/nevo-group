@@ -62,6 +62,7 @@ export function mapProduct(row, categoriesById) {
     supplier: row.supplier || '',
     priceDate: row.price_date || '',
     image: row.image_url || FALLBACK_IMAGE,
+    hasImage: Boolean(row.image_url),
     specs: row.specs && typeof row.specs === 'object' ? row.specs : {},
     featured: Boolean(row.featured),
     budget: Boolean(row.budget),

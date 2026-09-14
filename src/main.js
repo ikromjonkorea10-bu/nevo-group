@@ -104,9 +104,9 @@ function router() {
   } else if (route === 'home' || route === '') {
     pageHtml = renderHomePage();
   } else if (route === 'catalog') {
-    pageHtml = renderCatalogPage(queryParams);
+    pageHtml = renderCatalogPage(queryParams, window.location.hash);
   } else if (route === 'bolim') {
-    pageHtml = renderCatalogPage({ category: param, ...queryParams });
+    pageHtml = renderCatalogPage({ category: param, ...queryParams }, window.location.hash);
   } else if (route === 'product') {
     pageHtml = renderProductDetailPage(param);
   } else if (route === 'tanlash') {

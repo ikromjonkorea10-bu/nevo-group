@@ -12,7 +12,11 @@ export function renderProductDetailPage(slug) {
   currentQty = 1;
 
   if (!product) {
-    return renderNotFound('Mahsulot topilmadi', "Bu mahsulot katalogdan olib tashlangan yoki havola noto'g'ri.");
+    return renderNotFound(
+      'Mahsulot topilmadi',
+      "Bu mahsulot katalogdan olib tashlangan yoki havola noto'g'ri. Kerakli tovarni qidirib ko'ring.",
+      { categories: getCatalog().categories }
+    );
   }
 
   // Find related products in same category

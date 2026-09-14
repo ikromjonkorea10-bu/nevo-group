@@ -80,17 +80,45 @@ export function renderConfigError() {
   `;
 }
 
-export function renderNotFound(title, text) {
+/**
+ * "Topilmadi" ekrani: qidiruv, katalogga qaytish va bo'limlar — boshi berk ko'cha emas.
+ * @param {string} title
+ * @param {string} text
+ * @param {{ categories?: Array<{ slug: string, name: string, count: number }> }} [options]
+ */
+export function renderNotFound(title, text, { categories = [] } = {}) {
   return `
     <div class="shell" style="padding-top: 40px; padding-bottom: 60px;">
-      <div class="status-card">
+      <div class="status-card not-found-card">
         <div class="status-icon">${icon('boxes', '', 26)}</div>
-        <h2 class="status-title">${esc(title)}</h2>
+        <h1 class="status-title">${esc(title)}</h1>
         <p class="status-text">${esc(text)}</p>
-        <a href="#catalog" class="btn-primary">
-          <span>Katalogga o'tish</span>
-          ${icon('arrow-right', '', 18)}
-        </a>
+
+        <form class="not-found-search" role="search" onsubmit="event.preventDefault(); const q = this.elements.q.value.trim(); window.location.hash = q ? '#catalog?search=' + encodeURIComponent(q) : '#catalog';">
+          <label for="not-found-search-input" class="visually-hidden">Mahsulot qidirish</label>
+          ${icon('search', '', 18)}
+          <input type="search" id="not-found-search-input" name="q" placeholder="Mahsulot nomi yoki o'lchami" autocomplete="off" enterkeyhint="search" />
+          <button type="submit" class="btn-primary">Qidirish</button>
+        </form>
+
+        <div class="not-found-actions">
+          <a href="#catalog" class="btn-primary">
+            ${icon('chevron-left', '', 18)}
+            <span>Katalogga qaytish</span>
+          </a>
+          <a href="#home" class="btn-secondary">Bosh sahifa</a>
+        </div>
+
+        ${categories.length ? `
+          <div class="not-found-cats">
+            <div class="not-found-cats-label">Yoki bo'limni tanlang</div>
+            <div class="not-found-cats-list">
+              ${categories.map((c) => `
+                <a href="#bolim/${esc(c.slug)}" class="cat-pill">${esc(c.name)} (${c.count})</a>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
       </div>
     </div>
   `;

@@ -5,26 +5,46 @@ import { renderProductCard } from '../components/ProductCard.js';
 
 const PAGE_SIZE = 48;
 
-let state = {
+const DEFAULT_FILTERS = {
   selectedCategory: 'all',
   selectedSubcategory: 'all',
   selectedBrand: 'all',
   searchQuery: '',
   sortBy: 'default',
-  viewMode: 'grid',
   isFilterOpen: false,
   visibleCount: PAGE_SIZE
 };
 
-export function renderCatalogPage(params = {}) {
+let state = {
+  ...DEFAULT_FILTERS,
+  viewMode: 'grid'
+};
+
+// Havola parametrlari qaysi manzil uchun qo'llangani. Bir manzilda qayta chizishda
+// (qidiruv, filtr) parametrlar qayta qo'llanmaydi — aks holda foydalanuvchi o'zgarishi bekor bo'ladi.
+let appliedRouteKey = null;
+
+/**
+ * @param {Record<string, string>} params havoladagi filtrlar (category, sub, brand, search, sort)
+ * @param {string} [routeKey] joriy manzil (hash) — yangi manzilga o'tilganda parametrlar qo'llanadi
+ */
+export function renderCatalogPage(params = {}, routeKey = '') {
   const { categories, products } = getCatalog();
 
-  // Update state from params if passed
-  if (params.category) state.selectedCategory = params.category;
-  if (params.sub) state.selectedSubcategory = params.sub;
-  if (params.brand) state.selectedBrand = params.brand;
-  if (params.search) state.searchQuery = params.search;
-  if (params.sort) state.sortBy = params.sort;
+  if (routeKey !== appliedRouteKey) {
+    appliedRouteKey = routeKey;
+    // Parametrli havola (#bolim/..., #catalog?sort=...) filtrlarni noldan boshlaydi —
+    // oldingi bo'lim/ichki bo'lim qolib ketib, noto'g'ri yoki bo'sh natija chiqmasin.
+    // Oddiy #catalog ("Katalogga qaytish") esa foydalanuvchi filtrlarini saqlaydi.
+    if (Object.keys(params).length) {
+      state = { ...state, ...DEFAULT_FILTERS };
+      if (params.category) state.selectedCategory = params.category;
+      if (params.sub) state.selectedSubcategory = params.sub;
+      if (params.brand) state.selectedBrand = params.brand;
+      if (params.search) state.searchQuery = params.search;
+      if (params.sort) state.sortBy = params.sort;
+    }
+  }
 
   // Yashirilgan (bo'sh) yoki mavjud bo'lmagan kategoriya — eski havola bo'lishi mumkin
   if (state.selectedCategory !== 'all' && !categories.some(c => c.slug === state.selectedCategory)) {
