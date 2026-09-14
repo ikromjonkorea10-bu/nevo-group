@@ -55,14 +55,14 @@ export function renderHeader() {
           <span>O'zbekiston bo'ylab yetkazib berish</span>
         </span>
         <div class="top-links">
-          <a href="#aloqa" class="top-link">Biz bilan bog'lanish</a>
-          <a href="https://instagram.com/nevo_group_uzbekistan" target="_blank" rel="noopener" class="top-link">
+          <a href="#aloqa" class="top-link top-link-contact">Biz bilan bog'lanish</a>
+          <a href="https://instagram.com/nevo_group_uzbekistan" target="_blank" rel="noopener" class="top-link" aria-label="Instagram: @nevo_group_uzbekistan">
             ${icon('instagram', '', 14)}
-            <span>@nevo_group_uzbekistan</span>
+            <span class="top-link-text">@nevo_group_uzbekistan</span>
           </a>
-          <a href="tel:+998952601100" class="top-link">
+          <a href="tel:+998952601100" class="top-link" aria-label="Qo'ng'iroq qilish: +998 95 260 11 00">
             ${icon('phone', '', 14)}
-            <span>+998 95 260 11 00</span>
+            <span class="top-link-text">+998 95 260 11 00</span>
           </a>
         </div>
       </div>

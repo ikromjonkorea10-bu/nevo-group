@@ -3,6 +3,10 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/p/:slug", "destination": "/api/share?slug=:slug" },
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" }
+  ],
   "redirects": [
     { "source": "/admin", "destination": "/admin/", "permanent": false }
   ],

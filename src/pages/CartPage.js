@@ -264,8 +264,9 @@ export function renderCartPage() {
           <span class="cart-summary-label">${count} ta tovar</span>
           <span class="cart-summary-val">${esc(totalFormatted)}</span>
         </div>
-        <p style="font-size: 13.5px; color: var(--muted); line-height: 1.45; margin-bottom: 20px;">
-          Bu — saytdagi narxlar bo'yicha hisob. Yakuniy summani va yetkazib berish narxini operatorimiz tasdiqlaydi.
+        <p class="price-note" style="margin-bottom: 20px;">
+          ${icon('info', '', 14)}
+          <span>Narxlar o'zgarishi mumkin. Buyurtmadan keyin operator tasdiqlaydi.</span>
         </p>
 
         ${hasUnavailable ? renderFormAlert("Savatda hozir mavjud bo'lmagan mahsulot bor. Buyurtma berish uchun uni olib tashlang.") : ''}

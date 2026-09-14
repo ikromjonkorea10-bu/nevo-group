@@ -19,6 +19,10 @@ import { renderTanlashPage, initTanlashEvents } from './pages/TanlashPage.js';
 import { renderKattaBuyurtmaPage, initKattaBuyurtmaEvents } from './pages/KattaBuyurtmaPage.js';
 import { renderCartPage, initCartEvents } from './pages/CartPage.js';
 import { renderContactPage, initContactEvents } from './pages/ContactPage.js';
+import { initAnalytics, trackPageview } from './lib/analytics.js';
+import { updatePageMeta } from './lib/pageMeta.js';
+
+initAnalytics();
 
 // Global add to cart helper with tactile micro-animation
 window.__addToCart = (productId, event) => {
@@ -167,8 +171,11 @@ function router() {
     }
   });
 
+  updatePageMeta(route, param);
+
   if (isNewRoute) {
     window.scrollTo({ top: 0, behavior: 'instant' });
+    trackPageview(route, param);
   }
 }
 

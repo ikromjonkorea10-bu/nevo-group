@@ -23,17 +23,25 @@ src/
   lib/supabase.js          Supabase client (faqat anon key)
   lib/catalog.js           katalogni yuklash va keshlash
   lib/orders.js            buyurtma yuborish (place_order RPC)
+  lib/pageMeta.js          sahifa sarlavhasi va description
+  lib/analytics.js         Vercel Web Analytics (hash-sahifalar uchun)
   pages/, components/      sahifalar va komponentlar
   admin/                   admin panel: login, buyurtmalar, mahsulotlar
 supabase/migrations/       baza sxemasi, RLS, place_order() funksiyasi
+api/
+  share.js                 /p/<slug> — mahsulot havolasining ulashish kartasi (og:*)
+  sitemap.js               /sitemap.xml — bazadan dinamik
 scripts/
   import-catalog.js        katalogni CSV'dan bazaga import qilish (yagona manba)
   lib/catalog-csv.mjs      CSV'ni o'qish va tekshirish
   optimize-images.mjs      mahsulot rasmlarini WebP'ga o'girish
+  make-social-images.mjs   og-image.jpg, mahsulot ulashish kartalari, favicon'lar
+  clear-test-orders.js     test buyurtmalarni o'chirish (bir martalik)
   seed-data/               nevo-katalog.csv (485 mahsulot), rasm-biriktirish.csv, categories.json
   test-db.mjs              sxema / RLS / RPC testlari
   local-supabase.mjs       lokal Supabase emulyatori (akkauntsiz sinash uchun)
 public/images/products/    mahsulot rasmlari (WebP, 600×600)
+public/images/og/          mahsulot ulashish kartalari (JPEG, 1200×630)
 ```
 
 ## Lokalda ishga tushirish
@@ -180,6 +188,7 @@ Rasmlar `public/images/products/` da, biriktirish jadvali —
 
 ```bash
 node scripts/optimize-images.mjs            # yangi PNG/JPG → WebP (sifat 85), aslini o'chiradi
+node scripts/make-social-images.mjs         # yangi rasmlar uchun ulashish kartalari (images/og/)
 node scripts/import-catalog.js --images     # image_url ni bazaga yozadi
 ```
 
@@ -208,6 +217,20 @@ emulyator qiymatlariga o'rnating (muhitdagi qiymat `.env` dagidan ustun).
    `SEED_ADMIN_*` va `service_role` kalitlarini Vercel'ga **kiritmang**.
 4. **Deploy**. O'zgaruvchilarni keyinroq o'zgartirsangiz, **Redeploy** qiling — Vite ularni build vaqtida joylaydi.
 5. Admin panel manzili: `https://<domen>/admin/`
+6. **Analytics → Web Analytics → Enable** — tashrif statistikasi (cookie'siz). Yoqilmaguncha
+   brauzer konsolida "Failed to load script" xabari chiqadi, sayt ishiga ta'sir qilmaydi.
+
+### Ulashish, SEO va domen
+
+- Sayt `#catalog`, `#product/<slug>` ko'rinishidagi hash-manzillar bilan ishlaydi.
+  Telegram, Facebook va qidiruv botlari `#`dan keyingi qismni ko'rmaydi va JavaScript'ni
+  bajarmaydi, shuning uchun bunday havola doim bosh sahifa kartasi bilan chiqadi.
+- Mahsulot sahifasidagi **Ulashish** tugmasi `/p/<slug>` havolasini beradi. Bu manzilda
+  `api/share.js` mahsulot nomi, narxi va rasmi bilan og:* teglarni qaytaradi, odamni esa
+  darhol `/#product/<slug>` sahifasiga yo'naltiradi. `sitemap.xml` ham shu manzillardan tuziladi.
+- Funksiyalar Vercel'dagi `VITE_SUPABASE_URL` va `VITE_SUPABASE_ANON_KEY` o'zgaruvchilaridan foydalanadi.
+- **Domen o'zgarsa:** `index.html` (canonical, og:url, og:image) va `public/robots.txt`dagi
+  `https://nevo-group.vercel.app` ni yangilang. Funksiyalar domenni so'rovdan o'zi oladi.
 
 ## Xavfsizlik qanday tuzilgan
 
@@ -245,3 +268,14 @@ npm run build     # production build
 
 Mijozga `NG-000042` ko'rinishida ko'rsatiladi (`orders.id` asosida). Admin
 panelda ham buyurtmalar shu raqam bilan ko'rinadi, tafsilot manzili — `/admin/#orders/42`.
+
+### Test buyurtmalarni o'chirish
+
+```bash
+node scripts/clear-test-orders.js --ids 1,2,3        # nima o'chishini ko'rsatadi
+node scripts/clear-test-orders.js --ids 1,2,3 --yes  # o'chiradi
+```
+
+Supabase CLI orqali bog'langan loyihaga ulanadi (`npx supabase link`). Faqat ko'rsatilgan
+buyurtmalar o'chiriladi (qatorlari bilan). Jadval butunlay bo'shasa, raqam `NG-000001` dan
+qayta boshlanadi; boshqa buyurtmalar qolsa, raqamlash davom etadi. O'chirilganini qaytarib bo'lmaydi.

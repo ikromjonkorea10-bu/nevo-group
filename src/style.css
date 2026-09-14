@@ -116,6 +116,44 @@ input, textarea, select {
   color: #ffffff;
 }
 
+.top-link-text {
+  white-space: nowrap;
+}
+
+/* Mobil: yuqori qator bitta qatorda — Instagram va telefon ikonkaga aylanadi,
+   "Biz bilan bog'lanish" pastki menyudagi "Aloqa"da bor */
+@media (max-width: 640px) {
+  .top-bar .shell {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .top-badge {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .top-links {
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .top-link-contact,
+  .top-link-text {
+    display: none;
+  }
+  .top-link {
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: -6px 0;
+    border-radius: 9999px;
+  }
+  .top-link svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
 /* Header */
 .main-header {
   background: var(--surface);
@@ -1466,11 +1504,21 @@ input, textarea, select {
   color: var(--muted);
 }
 
-.detail-price-disclaimer {
-  font-size: 13px;
+/* Narx eslatmasi — kichik va xoli */
+.price-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12.5px;
   color: var(--muted);
   line-height: 1.45;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+}
+
+.price-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: 0.8;
 }
 
 .detail-actions-col {
@@ -1522,7 +1570,32 @@ input, textarea, select {
   text-align: center;
   font-size: 13px;
   color: var(--muted);
-  margin-top: 8px;
+}
+
+.detail-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.detail-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  background: var(--surface);
+  color: var(--nevo-blue);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.detail-share-btn:hover {
+  border-color: var(--nevo-blue);
+  background: var(--tint);
 }
 
 .detail-specs-block {

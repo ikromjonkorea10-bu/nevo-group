@@ -86,8 +86,9 @@ export function renderProductDetailPage(slug) {
               ${product.oldPrice && product.oldPrice > product.price ? `<span class="product-old-price">${esc(product.oldPriceFormatted)}</span>` : ''}
             </div>
 
-            <p class="detail-price-disclaimer">
-              NEVO GROUP praysidagi narx. Miqdorga qarab chegirma bo'lishi mumkin — buyurtmadan oldin operator aniq narxni tasdiqlaydi.
+            <p class="price-note">
+              ${icon('info', '', 14)}
+              <span>Narxlar o'zgarishi mumkin. Buyurtmadan keyin operator tasdiqlaydi.</span>
             </p>
 
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
@@ -135,11 +136,17 @@ export function renderProductDetailPage(slug) {
               </a>
             </div>
 
-            ${product.sku ? `
-              <div class="detail-sku-note">
-                Mahsulot kodi: <strong>${esc(product.sku)}</strong>
-              </div>
-            ` : ''}
+            <div class="detail-meta-row">
+              ${product.sku ? `
+                <div class="detail-sku-note">
+                  Mahsulot kodi: <strong>${esc(product.sku)}</strong>
+                </div>
+              ` : '<span></span>'}
+              <button type="button" class="detail-share-btn" data-slug="${esc(product.slug)}" data-name="${esc(product.name)}" onclick="window.__shareProduct(this.dataset.slug, this.dataset.name)">
+                ${icon('share', '', 15)}
+                <span>Ulashish</span>
+              </button>
+            </div>
           </div>
 
           ${characteristics.length ? `
@@ -215,5 +222,24 @@ export function initProductDetailEvents() {
 
   window.__addDetailProductToCart = (pid) => {
     store.addToCart(pid, currentQty);
+  };
+
+  // /p/<slug> — Telegram va boshqa ilovalarda mahsulot nomi va surati bilan chiqadigan havola
+  window.__shareProduct = async (slug, name) => {
+    const url = `${window.location.origin}/p/${slug}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: name, url });
+        return;
+      } catch (err) {
+        if (err?.name === 'AbortError') return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      store.showToast('Havola nusxalandi');
+    } catch {
+      window.prompt('Havolani nusxalang:', url);
+    }
   };
 }
