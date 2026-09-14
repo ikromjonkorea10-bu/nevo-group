@@ -28,8 +28,16 @@ const HERO_PICKS = [
 ];
 const HERO_COUNT = HERO_PICKS.length;
 
-export function pickHeroProducts(products) {
-  const candidates = products.filter((p) => p.inStock && p.hasImage);
+const FEATURED_COUNT = 8;
+
+/**
+ * @param {Array} products
+ * @param {Array} [avoid] bosh sahifada boshqa joyda chiqadigan mahsulotlar — ular va suratlari takrorlanmaydi
+ */
+export function pickHeroProducts(products, avoid = []) {
+  const candidates = products.filter(
+    (p) => p.inStock && p.hasImage && !avoid.some((x) => x.id === p.id || x.image === p.image)
+  );
   const picked = [];
   const isFree = (p) => !picked.some((x) => x.id === p.id || x.image === p.image);
 
@@ -49,11 +57,65 @@ export function pickHeroProducts(products) {
   return picked;
 }
 
-function renderHeroCards(catalog) {
+/**
+ * "Tanlangan mahsulotlar" avtomatik tanlovi: sotuvda, surati bor.
+ * Har qadamda: avval hali chiqmagan kategoriya, keyin hali chiqmagan brend, keyin
+ * kam ishlatilgan kategoriya. `avoid` (hero) va o'zaro — bir xil mahsulot, surat yoki
+ * mahsulot guruhi (faqat o'lchami farq qiladigan) takrorlanmaydi.
+ * @param {Array} products
+ * @param {Array} [avoid] ko'rinishi takrorlanmasligi kerak bo'lgan mahsulotlar (hero)
+ */
+export function pickFeaturedProducts(products, avoid = [], count = FEATURED_COUNT) {
+  const candidates = products.filter((p) => p.inStock && p.hasImage);
+  const picked = [];
+  const catUsed = new Map();
+  const brandUsed = new Map();
+  const groupKey = (p) => `${p.brand}|${p.groupName || p.name}`;
+  const looksRepeated = (p) =>
+    [...avoid, ...picked].some((x) => x.id === p.id || x.image === p.image || groupKey(x) === groupKey(p));
+
+  while (picked.length < count) {
+    let best = null;
+    let bestScore = Infinity;
+    for (const p of candidates) {
+      if (looksRepeated(p)) continue;
+      const catCount = catUsed.get(p.categoryId) || 0;
+      const score = (catCount ? 100 : 0) + (brandUsed.get(p.brand) || 0) * 10 + catCount;
+      if (score < bestScore) {
+        best = p;
+        bestScore = score;
+        if (score === 0) break;
+      }
+    }
+    if (!best) break;
+    picked.push(best);
+    catUsed.set(best.categoryId, (catUsed.get(best.categoryId) || 0) + 1);
+    brandUsed.set(best.brand, (brandUsed.get(best.brand) || 0) + 1);
+  }
+  return picked;
+}
+
+/**
+ * Bosh sahifadagi hero va "Tanlangan mahsulotlar" — bir-birini takrorlamaydi.
+ * Bazada featured=true (sotuvda) mahsulot bo'lsa, avtomatik tanlov o'rniga o'shalar chiqadi
+ * va hero ulardan boshqa mahsulotlarni oladi.
+ */
+export function pickHomeProducts(products) {
+  const manual = products.filter((p) => p.featured && p.inStock).slice(0, FEATURED_COUNT);
+  if (manual.length) {
+    const hero = pickHeroProducts(products, manual);
+    return { hero, featured: manual, featuredSource: 'manual' };
+  }
+  const hero = pickHeroProducts(products);
+  const featured = pickFeaturedProducts(products, hero);
+  return { hero, featured, featuredSource: 'auto' };
+}
+
+function renderHeroCards(catalog, heroProducts) {
   if (catalog.status === 'loading' || (catalog.status === 'idle' && isSupabaseConfigured)) {
     return Array.from({ length: HERO_COUNT }, () => '<div class="hero-img-card skeleton" aria-hidden="true"></div>').join('');
   }
-  return pickHeroProducts(catalog.products).map((p) => `
+  return heroProducts.map((p) => `
     <a href="#product/${esc(p.slug)}" class="hero-img-card" title="${esc(p.name)}">
       <img
         src="${esc(p.image)}"
@@ -106,7 +168,7 @@ function renderCategoriesBlock(catalog) {
 export function renderHomePage() {
   const catalog = getCatalog();
   const inStock = catalog.products.filter(p => p.inStock);
-  const featuredProducts = inStock.filter(p => p.featured).slice(0, 8);
+  const { hero: heroProducts, featured: featuredProducts } = pickHomeProducts(catalog.products);
   const budgetProducts = inStock.filter(p => p.budget || (p.price < 5000 && p.categorySlug === 'truba-va-fitinglar')).slice(0, 8);
 
   return `
@@ -178,7 +240,7 @@ export function renderHomePage() {
               </div>
 
               <div class="hero-image-matrix">
-                ${renderHeroCards(catalog)}
+                ${renderHeroCards(catalog, heroProducts)}
               </div>
 
               <div class="floating-badge badge-float-bottom">

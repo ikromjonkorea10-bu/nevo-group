@@ -14,6 +14,7 @@
 //      nomi va narxi nusxasi qoladi.
 //   4. Qatorlarni slug bo'yicha upsert qiladi — qayta ishga tushirsa dublikat yo'q.
 //      image_url rasm-biriktirish.csv dan olinadi (jadvalda yo'q mahsulotda — NULL).
+//      featured faqat yangi mahsulotga yoziladi — mavjudlarida admin panelda belgilangani saqlanadi.
 //
 // --images rejimi katalogni qayta import qilmaydi: bazadagi mavjud mahsulotlarning
 // faqat image_url ustunini rasm-biriktirish.csv bo'yicha yangilaydi (o'zgarganlarini).
@@ -209,13 +210,22 @@ async function main() {
   console.log(`✓ ${staleIds.length} ta eski mahsulot o'chirildi (bazada ${before.length} ta edi)`);
 
   const existingSlugs = new Set(before.map((p) => p.slug));
+  // "Tanlangan" (featured) admin paneldan boshqariladi: CSV'dagi qiymat faqat yangi
+  // mahsulotga yoziladi, mavjudlarida ustun umuman yuborilmaydi (qo'lda belgilangani saqlanadi).
+  // Guruhlar alohida yoziladi — bitta so'rovda aralashsa, yo'q ustun NULL bo'lib ketardi.
+  const groups = [
+    rows.filter((r) => !existingSlugs.has(r.slug)),
+    rows.filter((r) => existingSlugs.has(r.slug)).map(({ featured, ...rest }) => rest),
+  ];
   let written = 0;
-  for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-    const batch = rows.slice(i, i + BATCH_SIZE);
-    const { error } = await supabase.from('products').upsert(batch, { onConflict: 'slug' });
-    if (error) fail(`mahsulotlarni yozish (${i + 1}–${i + batch.length})`, error);
-    written += batch.length;
-    process.stdout.write(`\r✓ ${written}/${rows.length} ta mahsulot yozildi`);
+  for (const group of groups) {
+    for (let i = 0; i < group.length; i += BATCH_SIZE) {
+      const batch = group.slice(i, i + BATCH_SIZE);
+      const { error } = await supabase.from('products').upsert(batch, { onConflict: 'slug' });
+      if (error) fail(`mahsulotlarni yozish (${written + 1}–${written + batch.length})`, error);
+      written += batch.length;
+      process.stdout.write(`\r✓ ${written}/${rows.length} ta mahsulot yozildi`);
+    }
   }
   process.stdout.write('\n');
 

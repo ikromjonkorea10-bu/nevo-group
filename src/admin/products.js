@@ -422,6 +422,7 @@ export async function renderProductFormPage(container, ctx, param) {
               <label class="admin-check"><input type="checkbox" name="featured" ${values.featured ? 'checked' : ''} /> Tanlangan (bosh sahifada)</label>
               <label class="admin-check"><input type="checkbox" name="budget" ${values.budget ? 'checked' : ''} /> Arzon narxlar blokida</label>
             </div>
+            <div class="form-hint">"Tanlangan" belgilangan mahsulotlar (sotuvdagi, 8 tagacha) bosh sahifada chiqadi. Birortasi belgilanmasa, u yerga mahsulotlar avtomatik tanlanadi.</div>
           </div>
         </div>
 

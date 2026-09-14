@@ -31,9 +31,9 @@ scripts/
   lib/catalog-csv.mjs      CSV'ni o'qish va tekshirish
   optimize-images.mjs      mahsulot rasmlarini WebP'ga o'girish
   seed-data/               nevo-katalog.csv (485 mahsulot), rasm-biriktirish.csv, categories.json
-public/images/products/    mahsulot rasmlari (WebP, 600×600)
   test-db.mjs              sxema / RLS / RPC testlari
   local-supabase.mjs       lokal Supabase emulyatori (akkauntsiz sinash uchun)
+public/images/products/    mahsulot rasmlari (WebP, 600×600)
 ```
 
 ## Lokalda ishga tushirish
@@ -162,6 +162,8 @@ Skript admin sifatida kiradi, kategoriyalarni `category_uz` bo'yicha bog'laydi
 (bazada bo'lmasa `categories.json`dan qo'shadi), CSV'da yo'q mahsulotlarni
 **o'chiradi** va qolganlarini slug bo'yicha upsert qiladi — qayta ishga
 tushirish xavfsiz, dublikat bo'lmaydi. Buyurtma tarixi saqlanadi.
+Mavjud mahsulotlarning "Tanlangan" (`featured`) belgisiga import tegmaydi — u admin
+paneldan boshqariladi. Hech biri belgilanmasa, bosh sahifada avtomatik tanlanadi.
 Mahsuloti yo'q kategoriyalar saytda ko'rinmaydi.
 
 ```bash
