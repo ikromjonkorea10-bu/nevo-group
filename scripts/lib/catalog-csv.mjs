@@ -108,7 +108,7 @@ function toProductRow(rec, line, errors) {
  * @returns {Promise<Array<{ categoryName: string, row: object }>>}
  */
 export async function readCatalog(csvPath = DEFAULT_CSV) {
-  const text = (await readFile(csvPath, 'utf8')).replace(/^﻿/, '');
+  const text = (await readFile(csvPath, 'utf8')).replace(/^\uFEFF/, '');
   const [header, ...lines] = parseCsv(text);
   const columns = header.map((h) => h.trim());
   const missing = REQUIRED_COLUMNS.filter((c) => !columns.includes(c));
@@ -148,7 +148,7 @@ export async function readCatalog(csvPath = DEFAULT_CSV) {
  * @returns {Promise<Map<string, string>>} slug → image_url
  */
 export async function readImageMap(csvPath = DEFAULT_IMAGES_CSV) {
-  const text = (await readFile(csvPath, 'utf8')).replace(/^﻿/, '');
+  const text = (await readFile(csvPath, 'utf8')).replace(/^\uFEFF/, '');
   const [header, ...lines] = parseCsv(text);
   const columns = header.map((h) => h.trim());
   const slugCol = columns.indexOf('slug');
