@@ -1407,7 +1407,8 @@ input, textarea, select {
 
 /* Product Detail Page */
 .product-detail-wrap {
-  padding: 32px 0 60px;
+  padding-top: 32px;
+  padding-bottom: 60px;
 }
 
 .breadcrumbs {
@@ -1668,7 +1669,8 @@ input, textarea, select {
 
 /* Contact Page (/aloqa) */
 .contact-page-wrap {
-  padding: 36px 0 60px;
+  padding-top: 36px;
+  padding-bottom: 60px;
   max-width: 820px;
   margin: 0 auto;
 }
@@ -1855,7 +1857,8 @@ input, textarea, select {
 
 /* Cart Page (/savat) */
 .cart-page-wrap {
-  padding: 36px 0 60px;
+  padding-top: 36px;
+  padding-bottom: 60px;
   max-width: 960px;
   margin: 0 auto;
 }
@@ -2003,7 +2006,8 @@ input, textarea, select {
 
 /* Product Finder Quiz (/tanlash) */
 .quiz-page-wrap {
-  padding: 36px 0 60px;
+  padding-top: 36px;
+  padding-bottom: 60px;
   max-width: 780px;
   margin: 0 auto;
 }
@@ -2075,7 +2079,8 @@ input, textarea, select {
 
 /* Bulk Order Page (/katta-buyurtma) */
 .bulk-page-wrap {
-  padding: 36px 0 60px;
+  padding-top: 36px;
+  padding-bottom: 60px;
   max-width: 820px;
   margin: 0 auto;
 }
