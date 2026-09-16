@@ -5,6 +5,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     { "source": "/p/:slug", "destination": "/api/share?slug=:slug" },
+    { "source": "/k/:slug", "destination": "/api/category?slug=:slug" },
     { "source": "/sitemap.xml", "destination": "/api/sitemap" }
   ],
   "redirects": [

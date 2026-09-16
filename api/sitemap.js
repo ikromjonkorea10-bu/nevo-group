@@ -1,7 +1,7 @@
 // /sitemap.xml — bazadan dinamik (vercel.json rewrite orqali).
 // Sayt hash-routing ishlatadi (#product/...), qidiruv tizimlari esa #'dan keyingi
-// qismni alohida sahifa deb hisoblamaydi. Shuning uchun mahsulotlar /p/<slug>
-// manzillari bilan beriladi (api/share.js — nomi, tavsifi, rasmi bor sahifa).
+// qismni alohida sahifa deb hisoblamaydi. Shuning uchun kategoriyalar /k/<slug>
+// (api/category.js), mahsulotlar /p/<slug> (api/share.js) manzillari bilan beriladi.
 
 import { restGet, siteOrigin, escapeHtml } from './_lib.js';
 
@@ -12,6 +12,11 @@ export default async function handler(req, res) {
   const urls = [{ loc: `${origin}/`, changefreq: 'weekly', priority: '1.0' }];
 
   try {
+    const categories = await restGet('categories?select=slug&order=sort_order.asc,id.asc');
+    for (const c of categories) {
+      urls.push({ loc: `${origin}/k/${c.slug}`, changefreq: 'weekly', priority: '0.8' });
+    }
+
     for (let offset = 0; ; offset += PAGE) {
       const rows = await restGet(
         `products?select=slug,updated_at&in_stock=is.true&order=id.asc&limit=${PAGE}&offset=${offset}`
