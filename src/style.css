@@ -1280,13 +1280,16 @@ input, textarea, select {
   justify-content: center;
   padding: 20px;
   opacity: 0;
+  visibility: hidden; /* yopiq oynadagi tugmalar Tab bilan fokus olmasin */
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, visibility 0s linear 0.2s;
 }
 
 .filter-modal-backdrop.open {
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
+  transition: opacity 0.2s ease, visibility 0s;
 }
 
 .filter-modal-card {
@@ -3503,4 +3506,39 @@ input, textarea, select {
   padding: 10px 22px;
   border-radius: var(--radius-md);
   margin-bottom: 14px;
+}
+
+/* Bosish maydonlari: matnli havolalar ham kamida 24px balandlikda (WCAG 2.2, 2.5.8) */
+.nav-category-link,
+.section-link,
+.promo-action,
+.back-link,
+.video-text-link,
+.footer-brand a {
+  min-height: 24px;
+}
+
+.cart-item-name {
+  display: inline-block;
+  min-height: 24px;
+}
+
+/* Yuqori panel balandligi o'zgarmaydi: havola 16→24px, panel paddingi 8→4px */
+.top-bar {
+  padding: 4px 0;
+}
+
+.top-link {
+  min-height: 24px;
+}
+
+.breadcrumbs a,
+.footer-links-list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+}
+
+.cart-item-delete-btn {
+  min-height: 32px;
 }

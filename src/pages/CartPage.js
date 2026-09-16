@@ -282,7 +282,7 @@ export function renderCartPage() {
         </button>
 
         <div style="text-align: center; margin-top: 14px;">
-          <a href="#catalog" style="font-size: 14.5px; font-weight: 600; color: var(--nevo-blue);">
+          <a href="#catalog" style="display: inline-flex; align-items: center; min-height: 32px; font-size: 14.5px; font-weight: 600; color: var(--nevo-blue);">
             Yana mahsulot qo'shish
           </a>
         </div>
