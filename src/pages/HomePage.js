@@ -21,10 +21,10 @@ function renderInlineLoadError() {
 // Hero kartalari bazadagi mahsulotlardan qoida bo'yicha tanlanadi — ID yozilmaydi.
 // Mahsulot o'chsa, tugasa yoki rasmi bo'lmasa, qoidaga mos keyingisi olinadi.
 const HERO_PICKS = [
-  (p) => /труба/i.test(p.groupName || p.name),
-  (p) => /фитинг/i.test(p.subcategory),
-  (p) => /задвижк/i.test(p.groupName || p.name),
-  (p) => p.categorySlug === 'elektr-jihozlari' || /подстанц/i.test(p.subcategory),
+  (p) => /труба|quvur/i.test(p.groupName || p.name),
+  (p) => /фитинг|fiting/i.test(p.subcategory),
+  (p) => /задвижк|zadvijka/i.test(p.groupName || p.name),
+  (p) => p.categorySlug === 'elektr-jihozlari' || /подстанц|podstansiya/i.test(p.subcategory),
 ];
 const HERO_COUNT = HERO_PICKS.length;
 
@@ -352,7 +352,7 @@ export function renderHomePage() {
 
               <div class="worker-card">
                 <div class="worker-img-wrap">
-                  <img src="/workers/worker-delivery.jpg" alt="Yetkazib berish">
+                  <img src="/workers/worker-delivery.jpg" alt="Nevo brendli yetkazib berish mashinasi">
                   <span class="worker-role-badge">🚚 Respublika Bo'ylab</span>
                 </div>
                 <div class="worker-card-body">
