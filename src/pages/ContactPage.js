@@ -1,6 +1,27 @@
 import { icon } from '../icons.js';
 import { store } from '../store.js';
 
+// Kafolat va qaytarish bo'limi.
+// [MIJOZ: bu yerga haqiqiy siyosatni yozing] — hozirgi matnlar hech narsa va'da qilmaydi,
+// faqat operatordan so'rashga yo'naltiradi. Aniq muddat va shartlar tasdiqlangach almashtiring.
+const WARRANTY_ITEMS = [
+  {
+    icon: 'shield-check',
+    title: 'Kafolat',
+    text: "Mahsulot kafolati shartlarini buyurtma berishda operatorimizdan aniqlang.",
+  },
+  {
+    icon: 'cube',
+    title: 'Qaytarish va almashtirish',
+    text: "Qaytarish yoki almashtirish shartlarini buyurtmadan oldin operator bilan kelishib oling.",
+  },
+  {
+    icon: 'message-circle',
+    title: "Muammo bo'lsa",
+    text: "Mahsulotda nuqson topilsa, yuqoridagi telefon yoki Instagram orqali murojaat qiling.",
+  },
+];
+
 export function renderContactPage() {
   return `
     <div class="shell contact-page-wrap">
@@ -95,6 +116,27 @@ export function renderContactPage() {
         <p style="font-size: 13.5px; color: var(--muted); margin-top: 14px; line-height: 1.5;">
           Aniq do'kon manzili va ish vaqti kompaniya tomonidan tasdiqlangach shu yerga qo'shiladi.
         </p>
+      </section>
+
+      <!-- Kafolat va qaytarish -->
+      <section id="kafolat" style="margin-top: 40px;">
+        <h3 style="font-size: 20px; font-weight: 800; color: var(--ink); margin-bottom: 6px;">
+          Kafolat va qaytarish
+        </h3>
+
+        <div class="info-cards-grid">
+          ${WARRANTY_ITEMS.map((w) => `
+            <div class="info-box-card">
+              <div class="info-box-icon">
+                ${icon(w.icon, '', 20)}
+              </div>
+              <div>
+                <div class="info-box-title">${w.title}</div>
+                <div class="info-box-value" style="font-weight: 500; font-size: 14px; line-height: 1.5;">${w.text}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
       </section>
 
       <!-- Qanday ishlaydi -->

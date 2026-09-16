@@ -5,6 +5,7 @@ import { isSupabaseConfigured } from '../lib/supabase.js';
 import { esc } from '../lib/format.js';
 import { renderProductCard } from '../components/ProductCard.js';
 import { renderProductsGridSkeleton } from '../components/StatusViews.js';
+import { renderTestimonials } from '../components/Testimonials.js';
 
 function renderInlineLoadError() {
   return `
@@ -556,6 +557,9 @@ export function renderHomePage() {
               `).join('')}
             </div>
           </section>
+
+          <!-- Mijozlar fikri: TESTIMONIALS bo'sh bo'lsa chiqmaydi -->
+          ${renderTestimonials()}
 
           <!-- Light CTA Banner -->
           <div class="cta-banner-light">

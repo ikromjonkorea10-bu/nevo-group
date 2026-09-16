@@ -3547,3 +3547,47 @@ input, textarea, select {
 .cart-item-delete-btn {
   min-height: 32px;
 }
+
+/* Mijozlar fikri (src/components/Testimonials.js) */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 16px;
+}
+
+.testimonial-card {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.testimonial-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.testimonial-author {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin-top: auto;
+}
+
+.testimonial-name {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.testimonial-meta {
+  font-size: 13px;
+  color: var(--muted);
+}
