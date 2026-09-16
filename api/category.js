@@ -5,7 +5,7 @@
 // mahsulotlar ro'yxati bilan HTML qaytaradi, odam esa darhol ilovaga yo'naltiriladi.
 // api/share.js (mahsulotlar uchun /p/<slug>) bilan bir xil naqsh.
 
-import { SLUG_RE, restGet, siteOrigin, escapeHtml } from './_lib.js';
+import { SLUG_RE, restGet, siteOrigin, escapeHtml, jsonLdScript } from './_lib.js';
 
 const SITE = 'NEVO GROUP';
 const PRODUCT_LIMIT = 200;
@@ -48,6 +48,18 @@ ${category ? `<link rel="canonical" href="${e(url)}" />` : '<meta name="robots" 
 <meta name="twitter:description" content="${e(description)}" />
 <meta name="twitter:image" content="${e(image)}" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
+${
+  category
+    ? jsonLdScript({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Bosh sahifa', item: `${origin}/` },
+          { '@type': 'ListItem', position: 2, name: category.name_uz, item: url },
+        ],
+      })
+    : ''
+}
 <script>location.replace(${JSON.stringify(target)});</script>
 </head>
 <body style="font-family: system-ui, sans-serif; padding: 40px 20px; max-width: 720px; margin: 0 auto;">

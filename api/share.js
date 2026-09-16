@@ -5,7 +5,7 @@
 // Bu funksiya mahsulot nomi, narxi va surati bilan og:* teglarni qaytaradi,
 // odam esa darhol saytdagi mahsulot sahifasiga yo'naltiriladi.
 
-import { SLUG_RE, restGet, siteOrigin, escapeHtml, formatPrice } from './_lib.js';
+import { SLUG_RE, restGet, siteOrigin, escapeHtml, formatPrice, jsonLdScript } from './_lib.js';
 
 const SITE = 'NEVO GROUP';
 
@@ -13,6 +13,29 @@ function ogImageFor(imageUrl) {
   // /images/products/<nom>.webp → /images/og/<nom>.jpg (scripts/make-social-images.mjs yasaydi)
   const m = /^\/images\/products\/([a-z0-9-]+)\.webp$/.exec(imageUrl || '');
   return m ? `/images/og/${m[1]}.jpg` : '/og-image.jpg';
+}
+
+function productJsonLd({ origin, slug, product }) {
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name_uz,
+    url: `${origin}/p/${slug}`,
+    image: product.image_url ? new URL(product.image_url, origin).href : `${origin}/og-image.jpg`,
+  };
+  if (product.sku) data.sku = product.sku;
+  if (product.brand) data.brand = { '@type': 'Brand', name: product.brand };
+  // Narxi yo'q (0) mahsulotga offers qo'yilmaydi — Google noto'g'ri narx ko'rsatmasin
+  if (Number(product.price) > 0) {
+    data.offers = {
+      '@type': 'Offer',
+      url: data.url,
+      price: String(Math.round(Number(product.price))),
+      priceCurrency: 'UZS',
+      availability: product.in_stock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+    };
+  }
+  return jsonLdScript(data);
 }
 
 function renderPage({ origin, slug, product }) {
@@ -49,6 +72,7 @@ function renderPage({ origin, slug, product }) {
 <meta name="twitter:description" content="${e(description)}" />
 <meta name="twitter:image" content="${e(image)}" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
+${product ? productJsonLd({ origin, slug, product }) : ''}
 <script>location.replace(${JSON.stringify(target)});</script>
 </head>
 <body style="font-family: system-ui, sans-serif; padding: 40px 20px; text-align: center;">
@@ -69,7 +93,7 @@ export default async function handler(req, res) {
   let product = null;
   try {
     const rows = await restGet(
-      `products?select=name_uz,price,unit,brand,image_url&slug=eq.${encodeURIComponent(slug)}&limit=1`
+      `products?select=name_uz,price,unit,brand,sku,image_url,in_stock&slug=eq.${encodeURIComponent(slug)}&limit=1`
     );
     product = rows[0] || null;
   } catch (err) {

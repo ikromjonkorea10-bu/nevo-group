@@ -9,7 +9,7 @@
     <link rel="canonical" href="https://nevo-group.vercel.app/" />
 
     <!-- Open Graph / Telegram / Facebook.
-         Domen o'zgarsa: shu yerdagi https://nevo-group.vercel.app va public/robots.txt ni yangilang.
+         Domen o'zgarsa: shu yerdagi https://nevo-group.vercel.app (og:*, canonical, JSON-LD) va public/robots.txt ni yangilang.
          Mahsulot havolalari uchun kartalar serverda: /p/<slug> (api/share.js). -->
     <meta property="og:site_name" content="NEVO GROUP" />
     <meta property="og:locale" content="uz_UZ" />
@@ -28,6 +28,17 @@
     <meta name="twitter:title" content="NEVO GROUP — Santexnika va qurilish mahsulotlari" />
     <meta name="twitter:description" content="Truba va fitinglar, zapor armatura, yong'in va elektr jihozlari. Narxlar so'mda." />
     <meta name="twitter:image" content="https://nevo-group.vercel.app/og-image.jpg" />
+
+    <!-- schema.org: tashkilot (Google bilim paneli / logotip uchun) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "NEVO GROUP",
+        "url": "https://nevo-group.vercel.app/",
+        "logo": "https://nevo-group.vercel.app/brand/nevo-logo.png"
+      }
+    </script>
 
     <!-- Favicon (scripts/make-social-images.mjs) -->
     <link rel="icon" href="/favicon.ico" sizes="any" />

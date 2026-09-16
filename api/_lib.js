@@ -38,3 +38,7 @@ export const escapeHtml = (value) =>
     .replaceAll("'", '&#39;');
 
 export const formatPrice = (n) => `${Math.round(Number(n) || 0).toLocaleString('ru-RU').replace(/\s/g, ' ')} so'm`;
+
+/** schema.org JSON-LD bloki. "<" ekranlanadi — matn ichidagi "</script>" blokni buzolmaydi */
+export const jsonLdScript = (data) =>
+  `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\u003c')}</script>`;
