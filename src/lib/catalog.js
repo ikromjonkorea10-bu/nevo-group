@@ -168,18 +168,24 @@ async function fetchCatalog() {
   }
 }
 
-/** Katalogni yuklaydi (keshdan yoki Supabase'dan). Parallel chaqiruvlar bitta so'rovga birlashadi. */
-export function loadCatalog() {
+/**
+ * Katalogni yuklaydi (keshdan yoki Supabase'dan). Parallel chaqiruvlar bitta so'rovga birlashadi.
+ * silent: sinxron holat o'zgarishlari (kesh / "loading") tinglovchilarga e'lon qilinmaydi —
+ * sahifaning birinchi renderini chaqiruvchining o'zi bajaradi. So'rov tugagani har doim e'lon qilinadi.
+ */
+export function loadCatalog({ silent = false } = {}) {
   if (state.status === 'ready') return Promise.resolve(state);
   if (inflight) return inflight;
 
+  const update = silent ? (next) => { state = { ...state, ...next }; } : setState;
+
   const cached = readCache();
   if (cached) {
-    setState({ status: 'ready', error: null, ...buildCatalog(cached.categories, cached.products) });
+    update({ status: 'ready', error: null, ...buildCatalog(cached.categories, cached.products) });
     return Promise.resolve(state);
   }
 
-  setState({ status: 'loading', error: null });
+  update({ status: 'loading', error: null });
   inflight = fetchCatalog()
     .then(({ categoryRows, productRows }) => {
       writeCache(categoryRows, productRows);

@@ -75,7 +75,58 @@ function parseRoute() {
   return { route, param, queryParams, raw: path };
 }
 
-const KNOWN_ROUTES = new Set(['home', 'catalog', 'bolim', 'product', 'tanlash', 'katta-buyurtma', 'savat', 'aloqa']);
+function sameAttributes(a, b) {
+  if (a.attributes.length !== b.attributes.length) return false;
+  for (const { name, value } of a.attributes) {
+    if (b.getAttribute(name) !== value) return false;
+  }
+  return true;
+}
+
+// Eski DOM'ni yangisiga moslaydi: o'zgarmagan elementlar joyida qoladi, farq qilganlari almashtiriladi.
+function morphChildren(oldParent, newParent) {
+  const oldKids = [...oldParent.childNodes];
+  const newKids = [...newParent.childNodes];
+  if (oldKids.length !== newKids.length) {
+    oldParent.replaceChildren(...newKids);
+    return;
+  }
+  oldKids.forEach((oldNode, i) => {
+    const newNode = newKids[i];
+    if (oldNode.nodeName !== newNode.nodeName) {
+      oldNode.replaceWith(newNode);
+    } else if (oldNode.nodeType === Node.TEXT_NODE) {
+      if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
+    } else if (oldNode.nodeType === Node.ELEMENT_NODE && !oldNode.isEqualNode(newNode)) {
+      if (sameAttributes(oldNode, newNode)) morphChildren(oldNode, newNode);
+      else oldNode.replaceWith(newNode);
+    }
+  });
+}
+
+// Bosh sahifa katalog kelganda qayta chizilganda o'zgarmagan qismlar (hero sarlavhasi —
+// LCP elementi) qayta yaratilmaydi, aks holda LCP katalog javobigacha surilib ketadi.
+function renderApp(app, html, morphPage) {
+  const oldPage = morphPage && document.getElementById('page-container');
+  if (!oldPage) {
+    app.innerHTML = html;
+    return;
+  }
+  const tpl = document.createElement('template');
+  tpl.innerHTML = html;
+  const oldKids = [...app.children];
+  const newKids = [...tpl.content.children];
+  if (oldKids.length !== newKids.length || oldKids.some((el, i) => el.id !== newKids[i].id)) {
+    app.innerHTML = html;
+    return;
+  }
+  oldKids.forEach((el, i) => {
+    if (el === oldPage) morphChildren(el, newKids[i]);
+    else el.replaceWith(newKids[i]);
+  });
+}
+
+const KNOWN_ROUTES =new Set(['home', 'catalog', 'bolim', 'product', 'tanlash', 'katta-buyurtma', 'savat', 'aloqa']);
 // Katalog tayyor bo'lishini kutmaydigan sahifalar (yuklanish holatini o'zi ko'rsatadi)
 const STATIC_ROUTES = new Set(['home', 'aloqa']);
 
@@ -127,7 +178,7 @@ function router() {
 
   const showFloatingBtn = route !== 'aloqa' && route !== 'savat';
 
-  app.innerHTML = `
+  renderApp(app, `
     ${renderHeader()}
     <div id="page-container">${pageHtml}</div>
     ${renderFooter()}
@@ -138,7 +189,7 @@ function router() {
         <span>Mutaxassisdan so'rash</span>
       </a>
     ` : ''}
-  `;
+  `, !isNewRoute && route === 'home');
 
   // Initialize Page-Specific Events
   initHeaderEvents();
@@ -194,5 +245,7 @@ store.subscribe(({ count }) => updateCartBadges(count));
 
 // Router Event Listeners
 window.addEventListener('hashchange', router);
-if (isSupabaseConfigured) loadCatalog();
-router();
+// Katalog so'rovi birinchi bo'lib jo'natiladi; sahifa keyingi vazifada bir marta chiziladi,
+// shunda og'ir birinchi render so'rovning tarmoqqa chiqishini kechiktirmaydi.
+if (isSupabaseConfigured) loadCatalog({ silent: true });
+setTimeout(router, 0);
