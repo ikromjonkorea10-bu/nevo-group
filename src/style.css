@@ -547,7 +547,7 @@ input, textarea, select {
   flex-wrap: wrap;
 }
 
-.teaser-content h3 {
+.teaser-content h2 {
   font-size: 20px;
   font-weight: 700;
   color: var(--ink);
@@ -1034,7 +1034,8 @@ input, textarea, select {
 
 .cta-banner-light p {
   font-size: 15px;
-  color: var(--muted);
+  /* --muted bu fonda 4.5:1 kontrastga yetmaydi */
+  color: #475569;
 }
 
 .cta-banner-dark {
@@ -3122,13 +3123,14 @@ input, textarea, select {
 }
 
 .consultant-tg-btn {
-  background: #0088cc !important;
+  /* Telegram ko'ki (#0088cc) oq matn bilan 4.5:1 ga yetmaydi — to'qroq tus */
+  background: #0077b3 !important;
   color: #ffffff !important;
-  border-color: #0088cc !important;
+  border-color: #0077b3 !important;
 }
 
 .consultant-tg-btn:hover {
-  background: #0077b5 !important;
+  background: #00669a !important;
   transform: translateY(-2px);
 }
 

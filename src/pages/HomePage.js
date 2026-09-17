@@ -254,7 +254,7 @@ export function renderHomePage() {
           <!-- Teaser Card -->
           <div class="teaser-banner">
             <div class="teaser-content">
-              <h3>Qurilish uchun mahsulot qidiryapsizmi?</h3>
+              <h2>Qurilish uchun mahsulot qidiryapsizmi?</h2>
               <p>Tovar nomi, tavsif va sonini yozing — katalogdan mos tovarlarni ajratib, <strong>3 xil eng yaxshi taklif</strong> beramiz.</p>
             </div>
             <a href="#tanlash" class="btn-primary">
