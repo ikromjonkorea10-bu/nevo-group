@@ -10,7 +10,7 @@ export function renderFooter() {
         <div class="footer-top-grid">
           <div class="footer-brand">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-              <img src="/brand/nevo-logo.png" alt="NEVO GROUP" style="height: 36px; width: auto;" onerror="this.src='/brand/nevo-logo-sm.png';">
+              <img src="/brand/nevo-logo.webp" alt="NEVO GROUP" width="36" height="36" style="height: 36px; width: auto;" onerror="this.src='/brand/nevo-logo-sm.png';">
               <h4 style="margin: 0; font-size: 20px; font-weight: 800;">NEVO GROUP</h4>
             </div>
             <p>Santexnika va qurilish mahsulotlari. 10 000+ mahsulot.</p>

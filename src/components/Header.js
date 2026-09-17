@@ -72,7 +72,7 @@ export function renderHeader() {
       <div class="shell">
         <div class="header-main-row">
           <a href="#home" class="brand-logo" id="logo-link">
-            <img src="/brand/nevo-logo.png" alt="NEVO GROUP" onerror="this.src='/brand/nevo-logo-sm.png';">
+            <img src="/brand/nevo-logo.webp" alt="NEVO GROUP" width="38" height="38" onerror="this.src='/brand/nevo-logo-sm.png';">
             <div class="brand-title">
               <span class="brand-name">NEVO GROUP</span>
             </div>

@@ -158,7 +158,7 @@ function renderCategoriesBlock(catalog) {
             <div class="category-card-desc">${esc(cat.shortDesc)}</div>
             <div class="category-card-count">${cat.count} ta mahsulot</div>
           </div>
-          <img src="${esc(cat.image)}" alt="${esc(cat.name)}" class="category-card-img" onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';">
+          <img src="${esc(cat.image)}" alt="${esc(cat.name)}" class="category-card-img" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';">
           <div class="category-card-arrow">${icon('arrow-right', '', 14)}</div>
         </a>
       `).join('')}
@@ -203,9 +203,9 @@ export function renderHomePage() {
               <!-- Real Team / Staff Trust Badge -->
               <div class="hero-team-strip">
                 <div class="team-avatars-stack">
-                  <img src="/workers/worker-consultant.jpg" alt="Muhandis maslahatchi" class="avatar-circle">
-                  <img src="/workers/worker-construction.jpg" alt="Qurilish ustasi" class="avatar-circle">
-                  <img src="/workers/worker-warehouse.jpg" alt="Ombor logistikasi" class="avatar-circle">
+                  <img src="/workers/worker-consultant-thumb.webp" alt="Muhandis maslahatchi" class="avatar-circle" width="38" height="38">
+                  <img src="/workers/worker-construction-thumb.webp" alt="Qurilish ustasi" class="avatar-circle" width="38" height="38">
+                  <img src="/workers/worker-warehouse-thumb.webp" alt="Ombor logistikasi" class="avatar-circle" width="38" height="38">
                 </div>
                 <div class="team-trust-info">
                   <div class="team-trust-title">
@@ -308,7 +308,7 @@ export function renderHomePage() {
             <div class="workers-grid">
               <div class="worker-card">
                 <div class="worker-img-wrap">
-                  <img src="/workers/worker-pipefitting.jpg" alt="Quvurlar montaji">
+                  <img src="/workers/worker-pipefitting.webp" alt="Quvurlar montaji" loading="lazy" decoding="async">
                   <span class="worker-role-badge">🔧 Montaj va O'rnatish</span>
                 </div>
                 <div class="worker-card-body">
@@ -323,7 +323,7 @@ export function renderHomePage() {
 
               <div class="worker-card">
                 <div class="worker-img-wrap">
-                  <img src="/workers/worker-warehouse.jpg" alt="Ombor logistikasi">
+                  <img src="/workers/worker-warehouse.webp" alt="Ombor logistikasi" loading="lazy" decoding="async">
                   <span class="worker-role-badge">📦 Markaziy Ombor</span>
                 </div>
                 <div class="worker-card-body">
@@ -338,7 +338,7 @@ export function renderHomePage() {
 
               <div class="worker-card">
                 <div class="worker-img-wrap">
-                  <img src="/workers/worker-construction.jpg" alt="Qurilish muhandisi">
+                  <img src="/workers/worker-construction.webp" alt="Qurilish muhandisi" loading="lazy" decoding="async">
                   <span class="worker-role-badge">🏗️ Muhandislik Nazorati</span>
                 </div>
                 <div class="worker-card-body">
@@ -353,7 +353,7 @@ export function renderHomePage() {
 
               <div class="worker-card">
                 <div class="worker-img-wrap">
-                  <img src="/workers/worker-delivery.jpg" alt="Nevo brendli yetkazib berish mashinasi">
+                  <img src="/workers/worker-delivery.webp" alt="Nevo brendli yetkazib berish mashinasi" loading="lazy" decoding="async">
                   <span class="worker-role-badge">🚚 Respublika Bo'ylab</span>
                 </div>
                 <div class="worker-card-body">
@@ -407,7 +407,7 @@ export function renderHomePage() {
               <!-- Video Card 2: Central warehouse and logistics -->
               <div class="video-showcase-card">
                 <div class="video-media-wrap">
-                  <video class="lazy-video" muted loop playsinline preload="none" poster="/workers/worker-warehouse.jpg">
+                  <video class="lazy-video" muted loop playsinline preload="none" poster="/workers/worker-warehouse.webp">
                     <source src="/videos/warehouse-showcase.webm" type="video/webm">
                   </video>
                   <div class="video-card-overlay"></div>
@@ -494,7 +494,7 @@ export function renderHomePage() {
           <section class="consultant-spotlight-section">
             <div class="consultant-card">
               <div class="consultant-photo-wrap">
-                <img src="/workers/worker-consultant.jpg" alt="NEVO Bosh Muhandisi">
+                <img src="/workers/worker-consultant.webp" alt="NEVO Bosh Muhandisi" loading="lazy" decoding="async">
                 <span class="consultant-status-online">
                   <span class="pulse-dot-green"></span>
                   <span>Hozir tarmoqda</span>
