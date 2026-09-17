@@ -382,7 +382,7 @@ export function renderHomePage() {
               <!-- Video Card 1: Pipeline welding and fitting -->
               <div class="video-showcase-card">
                 <div class="video-media-wrap">
-                  <video autoplay muted loop playsinline poster="/mahsulot/pe-otvod.webp">
+                  <video class="lazy-video" muted loop playsinline preload="none" poster="/mahsulot/pe-otvod.webp">
                     <source src="/videos/pipeline-showcase.webm" type="video/webm">
                   </video>
                   <div class="video-card-overlay"></div>
@@ -407,7 +407,7 @@ export function renderHomePage() {
               <!-- Video Card 2: Central warehouse and logistics -->
               <div class="video-showcase-card">
                 <div class="video-media-wrap">
-                  <video autoplay muted loop playsinline poster="/workers/worker-warehouse.jpg">
+                  <video class="lazy-video" muted loop playsinline preload="none" poster="/workers/worker-warehouse.jpg">
                     <source src="/videos/warehouse-showcase.webm" type="video/webm">
                   </video>
                   <div class="video-card-overlay"></div>
@@ -598,7 +598,7 @@ export function renderHomePage() {
             ${icon('x', '', 24)}
           </button>
           <div class="video-player-wrap">
-            <video id="modal-video-element" controls playsinline>
+            <video id="modal-video-element" controls playsinline preload="none">
               <source id="modal-video-source" src="/videos/pipeline-showcase.webm" type="video/webm">
               Brauzeringiz video formatini qo'llab-quvvatlamaydi.
             </video>
@@ -613,7 +613,40 @@ export function renderHomePage() {
   `;
 }
 
+// Fon videolari sahifa ochilganda yuklanmaydi (preload="none", autoplay yo'q):
+// ekranga 200px qolganda yuklanib ijro etiladi, ekrandan chiqqanda pauza qilinadi.
+let lazyVideoObserver = null;
+
+function initLazyVideos() {
+  lazyVideoObserver?.disconnect();
+  const videos = document.querySelectorAll('video.lazy-video');
+  if (!videos.length) return;
+
+  if (!('IntersectionObserver' in window)) {
+    videos.forEach(v => v.play().catch(() => {}));
+    return;
+  }
+
+  lazyVideoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(({ target: video, isIntersecting }) => {
+      if (isIntersecting) {
+        if (!video.dataset.loaded) {
+          video.dataset.loaded = '1';
+          video.load();
+        }
+        video.play().catch(() => {});
+      } else if (video.dataset.loaded) {
+        video.pause();
+      }
+    });
+  }, { rootMargin: '200px 0px' });
+
+  videos.forEach(v => lazyVideoObserver.observe(v));
+}
+
 export function initHomeAnimations() {
+  initLazyVideos();
+
   // Animated Stat Counters
   const counters = document.querySelectorAll('.stat-number[data-count]');
   if (counters.length > 0 && 'IntersectionObserver' in window) {
