@@ -10,6 +10,8 @@ const app = document.getElementById('admin-app');
 document.body.classList.add('admin-body');
 
 let session = null;
+// Supabase client — kutubxona init()'da import() orqali yuklangach o'rnatiladi
+let supabase = null;
 let adminVerified = false;
 let loginState = { email: '', error: '', submitting: false };
 let renderToken = 0;
@@ -117,7 +119,7 @@ function renderLogin() {
 
     let result;
     try {
-      result = await getAdminSupabase().auth.signInWithPassword({ email, password });
+      result = await supabase.auth.signInWithPassword({ email, password });
     } catch (err) {
       result = { error: err };
     }
@@ -170,7 +172,7 @@ async function logout() {
   session = null;
   adminVerified = false;
   try {
-    await getAdminSupabase().auth.signOut();
+    await supabase.auth.signOut();
   } catch {
     // tarmoq bo'lmasa ham lokal sessiya tozalanadi
   }
@@ -180,7 +182,7 @@ async function logout() {
 
 async function verifyAdmin() {
   renderCentered('Tekshirilmoqda…', "Kirish huquqi tekshirilmoqda, bir oz kuting.");
-  const { data, error } = await getAdminSupabase().rpc('is_admin');
+  const { data, error } = await supabase.rpc('is_admin');
   if (error) {
     const network = isNetworkError(error);
     renderCentered(
@@ -219,7 +221,7 @@ async function render() {
 
   const { section, param } = parseRoute();
   const ctx = {
-    supabase: getAdminSupabase(),
+    supabase,
     navigate: (hash) => {
       if (window.location.hash === hash) render();
       else window.location.hash = hash;
@@ -245,7 +247,17 @@ async function init() {
     return;
   }
 
-  const supabase = getAdminSupabase();
+  try {
+    supabase = await getAdminSupabase();
+  } catch (error) {
+    console.warn('Supabase kutubxonasi yuklanmadi:', error);
+    renderCentered(
+      'Admin panel yuklanmadi',
+      isNetworkError(error) ? "Internet aloqasi yo'q yoki server javob bermadi." : error.message || "Noma'lum xatolik",
+      '<button type="button" class="btn-primary" onclick="location.reload()">Qayta urinish</button>'
+    );
+    return;
+  }
   const { data } = await supabase.auth.getSession();
   session = data.session;
 

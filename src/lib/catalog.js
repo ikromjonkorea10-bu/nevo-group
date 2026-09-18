@@ -2,7 +2,7 @@
 // va sessiya davomida keshlanadi: xotirada (sahifa yangilanmaguncha) va
 // sessionStorage'da (sahifa yangilansa ham, tab yopilguncha).
 
-import { getSupabase, isNetworkError } from './supabase.js';
+import { selectRows, isNetworkError } from './supabase.js';
 import { formatPrice } from './format.js';
 
 const CACHE_KEY = 'nevo_catalog_v3';
@@ -125,38 +125,29 @@ function writeCache(categoryRows, productRows) {
   }
 }
 
-async function fetchAllProducts(supabase) {
+async function fetchAllProducts() {
   const rows = [];
   for (let from = 0; ; from += PAGE_SIZE) {
-    const { data, error } = await supabase
-      .from('products')
-      .select(PRODUCT_COLUMNS)
-      .order('sort_order', { ascending: true })
-      .order('id', { ascending: true })
-      .range(from, from + PAGE_SIZE - 1)
-      .retry(false);
-    if (error) throw error;
+    const data = await selectRows('products', {
+      select: PRODUCT_COLUMNS,
+      order: 'sort_order.asc,id.asc',
+      offset: from,
+      limit: PAGE_SIZE,
+    });
     rows.push(...data);
     if (data.length < PAGE_SIZE) return rows;
   }
 }
 
 async function fetchCatalogOnce() {
-  const supabase = getSupabase();
-  const [categoriesRes, productRows] = await Promise.all([
-    supabase
-      .from('categories')
-      .select(CATEGORY_COLUMNS)
-      .order('sort_order', { ascending: true })
-      .order('id', { ascending: true })
-      .retry(false),
-    fetchAllProducts(supabase),
+  const [categoryRows, productRows] = await Promise.all([
+    selectRows('categories', { select: CATEGORY_COLUMNS, order: 'sort_order.asc,id.asc' }),
+    fetchAllProducts(),
   ]);
-  if (categoriesRes.error) throw categoriesRes.error;
-  return { categoryRows: categoriesRes.data, productRows };
+  return { categoryRows, productRows };
 }
 
-// Kutubxonaning uzoq (1+2+4 s) retry'i o'rniga: tarmoq xatosida 1 soniyadan
+// Uzoq avtomatik retry o'rniga: tarmoq xatosida 1 soniyadan
 // so'ng bitta qayta urinish, keyin foydalanuvchiga "Qayta urinish" tugmasi.
 async function fetchCatalog() {
   try {

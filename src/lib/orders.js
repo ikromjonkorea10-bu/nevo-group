@@ -40,7 +40,8 @@ export async function submitOrder({ customerName, phone, address, comment, order
 
   let result;
   try {
-    result = await getSupabase().rpc('place_order', payload);
+    const supabase = await getSupabase();
+    result = await supabase.rpc('place_order', payload);
   } catch (error) {
     return { ok: false, field: null, message: networkMessage(error) };
   }
