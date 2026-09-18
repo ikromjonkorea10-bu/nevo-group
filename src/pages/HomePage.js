@@ -296,7 +296,10 @@ export function renderHomePage() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
+      <div class="shell">
           <!-- 👷‍♂️ WORKERS & ON-SITE STAFF STORYTELLING SECTION -->
           <section class="home-section workers-story-section">
             <div class="section-head">
@@ -596,9 +599,7 @@ export function renderHomePage() {
               <span>Bog'lanish</span>
             </a>
           </div>
-
-        </div>
-      </section>
+      </div>
 
       <!-- Video Modal Popup -->
       <div id="video-modal-backdrop" class="video-modal-backdrop" onclick="if(event.target===this) window.__closeVideoModal()">
