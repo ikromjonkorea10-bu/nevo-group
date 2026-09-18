@@ -3,6 +3,7 @@ import { store } from '../store.js';
 import { getCatalog, matchesSearch } from '../lib/catalog.js';
 import { esc } from '../lib/format.js';
 import { renderNavSkeleton } from './StatusViews.js';
+import { CONTACTS, MAIN_PHONE, INSTAGRAM_URL } from '../data/content.js';
 
 function renderCategoryNav(categories) {
   return categories.map(cat => `
@@ -56,13 +57,13 @@ export function renderHeader() {
         </span>
         <div class="top-links">
           <a href="#aloqa" class="top-link top-link-contact">Biz bilan bog'lanish</a>
-          <a href="https://instagram.com/nevo_group_uzbekistan" target="_blank" rel="noopener" class="top-link" aria-label="Instagram: @nevo_group_uzbekistan">
+          <a href="${INSTAGRAM_URL}" target="_blank" rel="noopener" class="top-link" aria-label="Instagram: @${CONTACTS.instagram}">
             ${icon('instagram', '', 14)}
-            <span class="top-link-text">@nevo_group_uzbekistan</span>
+            <span class="top-link-text">@${CONTACTS.instagram}</span>
           </a>
-          <a href="tel:+998952601100" class="top-link" aria-label="Qo'ng'iroq qilish: +998 95 260 11 00">
+          <a href="tel:${MAIN_PHONE.tel}" class="top-link" aria-label="Qo'ng'iroq qilish: ${MAIN_PHONE.label}">
             ${icon('phone', '', 14)}
-            <span class="top-link-text">+998 95 260 11 00</span>
+            <span class="top-link-text">${MAIN_PHONE.label}</span>
           </a>
         </div>
       </div>
@@ -106,7 +107,7 @@ export function renderHeader() {
                 ${cartCount}
               </span>
             </a>
-            <a href="tel:+998952601100" class="header-icon-btn" aria-label="Qo'ng'iroq qilish">
+            <a href="tel:${MAIN_PHONE.tel}" class="header-icon-btn" aria-label="Qo'ng'iroq qilish">
               ${icon('phone', '', 20)}
             </a>
           </div>

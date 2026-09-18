@@ -1,6 +1,7 @@
 import { icon } from '../icons.js';
 import { getCatalog } from '../lib/catalog.js';
 import { esc } from '../lib/format.js';
+import { CONTACTS, INSTAGRAM_URL } from '../data/content.js';
 
 export function renderFooter() {
   const { categories } = getCatalog();
@@ -13,23 +14,21 @@ export function renderFooter() {
               <img src="/brand/nevo-logo.webp" alt="NEVO GROUP" width="36" height="36" style="height: 36px; width: auto;" onerror="this.src='/brand/nevo-logo-sm.png';">
               <h4 style="margin: 0; font-size: 20px; font-weight: 800;">NEVO GROUP</h4>
             </div>
-            <p>Santexnika va qurilish mahsulotlari. 10 000+ mahsulot.</p>
+            <p>Santexnika va qurilish mahsulotlari.</p>
             <div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--muted);">
               <div style="display: flex; align-items: center; gap: 8px;">
                 ${icon('map-pin', '', 16)}
                 <span>O'zbekiston bo'ylab yetkazib berish</span>
               </div>
-              <a href="tel:+998952601100" style="display: flex; align-items: center; gap: 8px; color: inherit;">
-                ${icon('phone', '', 16)}
-                <span>+998 95 260 11 00</span>
-              </a>
-              <a href="tel:+998998631100" style="display: flex; align-items: center; gap: 8px; color: inherit;">
-                ${icon('phone', '', 16)}
-                <span>+998 99 863 11 00</span>
-              </a>
-              <a href="https://instagram.com/nevo_group_uzbekistan" target="_blank" rel="noopener" style="display: flex; align-items: center; gap: 8px; color: inherit;">
+              ${CONTACTS.phones.map((p) => `
+                <a href="tel:${p.tel}" style="display: flex; align-items: center; gap: 8px; color: inherit;">
+                  ${icon('phone', '', 16)}
+                  <span>${p.label}</span>
+                </a>
+              `).join('')}
+              <a href="${INSTAGRAM_URL}" target="_blank" rel="noopener" style="display: flex; align-items: center; gap: 8px; color: inherit;">
                 ${icon('instagram', '', 16)}
-                <span>@nevo_group_uzbekistan</span>
+                <span>@${CONTACTS.instagram}</span>
               </a>
             </div>
           </div>

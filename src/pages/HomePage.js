@@ -1,5 +1,5 @@
 import { icon } from '../icons.js';
-import { BENEFITS } from '../data/content.js';
+import { BENEFITS, MAIN_PHONE, TELEGRAM_URL, INSTAGRAM_DM_URL } from '../data/content.js';
 import { getCatalog } from '../lib/catalog.js';
 import { isSupabaseConfigured } from '../lib/supabase.js';
 import { esc } from '../lib/format.js';
@@ -131,6 +131,13 @@ function renderHeroCards(catalog, heroProducts) {
   `).join('');
 }
 
+// Statistika faqat bazadagi haqiqiy katalogdan hisoblanadi
+function renderStatNumber(catalog, value) {
+  return catalog.status === 'ready' && value
+    ? `<div class="stat-number" data-count="${value}" data-suffix="">${value}</div>`
+    : '<div class="stat-number">…</div>';
+}
+
 function renderProductsBlock(products, catalog) {
   if (!isSupabaseConfigured || catalog.status === 'error') return renderInlineLoadError();
   if (catalog.status !== 'ready') return renderProductsGridSkeleton(4);
@@ -171,6 +178,8 @@ export function renderHomePage() {
   const inStock = catalog.products.filter(p => p.inStock);
   const { hero: heroProducts, featured: featuredProducts } = pickHomeProducts(catalog.products);
   const budgetProducts = inStock.filter(p => p.budget || (p.price < 5000 && p.categorySlug === 'truba-va-fitinglar')).slice(0, 8);
+  const brandCount = new Set(catalog.products.map(p => p.brand).filter(Boolean)).size;
+  const subcategoryCount = catalog.categories.reduce((sum, c) => sum + c.subcategories.length, 0);
 
   return `
     <main class="home-page-content">
@@ -185,7 +194,7 @@ export function renderHomePage() {
                 <span>NEVO GROUP RASMIY PORTALI</span>
               </div>
               <h1 class="hero-title">
-                10 000+ santexnika va qurilish mahsulotlari — barchasi bir joyda
+                Santexnika va qurilish mahsulotlari — barchasi bir joyda
               </h1>
               <p class="hero-desc">
                 Keng assortiment, qulay muhandislik yechimlari va butun O'zbekiston bo'ylab to'g'ridan-to'g'ri yetkazib berish.
@@ -209,10 +218,9 @@ export function renderHomePage() {
                 </div>
                 <div class="team-trust-info">
                   <div class="team-trust-title">
-                    <span class="stars-gold">★★★★★</span>
-                    <strong>40+ malakali mutaxassislar</strong>
+                    <strong>Mutaxassislarimiz yordam beradi</strong>
                   </div>
-                  <div class="team-trust-sub">Loyiha va smetangiz bo'yicha 10 daqiqada bepul maslahat</div>
+                  <div class="team-trust-sub">Loyiha yoki ro'yxatingiz bo'yicha bepul maslahat</div>
                 </div>
               </div>
 
@@ -220,15 +228,15 @@ export function renderHomePage() {
               <div class="hero-trust-badges">
                 <div class="trust-item">
                   <span class="trust-check">✓</span>
-                  <span>1-qo'l ulgurji narxlar</span>
+                  <span>Narxlar so'mda, ochiq</span>
                 </div>
                 <div class="trust-item">
                   <span class="trust-check">✓</span>
-                  <span>100% Sifat kafolati</span>
+                  <span>Kodi va o'lchami bilan</span>
                 </div>
                 <div class="trust-item">
                   <span class="trust-check">✓</span>
-                  <span>Tezkor yetkazish</span>
+                  <span>O'zbekiston bo'ylab yetkazish</span>
                 </div>
               </div>
             </div>
@@ -237,7 +245,7 @@ export function renderHomePage() {
               <!-- Floating 3D Micro Badges -->
               <div class="floating-badge badge-float-top">
                 <span class="live-dot-green"></span>
-                <span>✨ 10 000+ muvaffaqiyatli buyurtma</span>
+                <span>Narxlar praysdan</span>
               </div>
 
               <div class="hero-image-matrix">
@@ -268,25 +276,23 @@ export function renderHomePage() {
             <div class="stats-grid">
               <div class="stat-card">
                 <div class="stat-icon-wrap">${icon('boxes', '', 22)}</div>
-                <div class="stat-number" data-count="10000" data-suffix="+">10 000+</div>
-                <div class="stat-label">Mahsulot turlari</div>
+                ${renderStatNumber(catalog, catalog.products.length)}
+                <div class="stat-label">Katalogdagi tovarlar</div>
               </div>
               <div class="stat-card">
-                <div class="stat-icon-wrap">${icon('truck', '', 22)}</div>
-                <div class="stat-number" data-count="24" data-suffix="/7">24/7</div>
-                <div class="stat-label">Yetkazib berish xizmati</div>
+                <div class="stat-icon-wrap">${icon('layout-grid', '', 22)}</div>
+                ${renderStatNumber(catalog, catalog.categories.length)}
+                <div class="stat-label">Asosiy bo'limlar</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon-wrap">${icon('tag', '', 22)}</div>
+                ${renderStatNumber(catalog, subcategoryCount)}
+                <div class="stat-label">Mahsulot guruhlari</div>
               </div>
               <div class="stat-card">
                 <div class="stat-icon-wrap">${icon('shield-check', '', 22)}</div>
-                <div class="stat-number" data-count="100" data-suffix="%">100%</div>
-                <div class="stat-label">Sertifikatlangan sifat</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon-wrap">${icon('phone', '', 22)}</div>
-                ${catalog.status === 'ready' && catalog.products.length
-                  ? `<div class="stat-number" data-count="${catalog.products.length}" data-suffix="">${catalog.products.length}</div>`
-                  : '<div class="stat-number">…</div>'}
-                <div class="stat-label">Katalogdagi tovarlar</div>
+                ${renderStatNumber(catalog, brandCount)}
+                <div class="stat-label">Brendlar</div>
               </div>
             </div>
           </div>
@@ -328,10 +334,10 @@ export function renderHomePage() {
                 </div>
                 <div class="worker-card-body">
                   <h3>Katta zaxiradagi ombor tizimi</h3>
-                  <p>10 000 dan ortiq mahsulotlar zamonaviy omborimizda qat'iy saqlash qoidalari asosida saralanadi va jo'natiladi.</p>
+                  <p>Mahsulotlar omborda saralanadi, buyurtma bo'yicha qadoqlanadi va jo'natiladi.</p>
                   <div class="worker-feature-check">
                     <span class="check-icon">✓</span>
-                    <span>24 soat ichida qadoqlash</span>
+                    <span>Buyurtma bo'yicha qadoqlash</span>
                   </div>
                 </div>
               </div>
@@ -358,7 +364,7 @@ export function renderHomePage() {
                 </div>
                 <div class="worker-card-body">
                   <h3>Xavfsiz va tezkor yetkazish</h3>
-                  <p>Toshkent shahri va O'zbekistonning barcha viloyatlariga tovarlarni butunligi kafolatlangan holda yetkazib beramiz.</p>
+                  <p>Toshkent shahri va O'zbekiston viloyatlariga tovarlarni ehtiyotkorlik bilan yetkazib beramiz.</p>
                   <div class="worker-feature-check">
                     <span class="check-icon">✓</span>
                     <span>Yuk ortish va tushirish xizmati</span>
@@ -494,27 +500,30 @@ export function renderHomePage() {
           <section class="consultant-spotlight-section">
             <div class="consultant-card">
               <div class="consultant-photo-wrap">
-                <img src="/workers/worker-consultant.webp" alt="NEVO Bosh Muhandisi" loading="lazy" decoding="async">
-                <span class="consultant-status-online">
-                  <span class="pulse-dot-green"></span>
-                  <span>Hozir tarmoqda</span>
-                </span>
+                <img src="/workers/worker-consultant.webp" alt="Mutaxassis maslahati" loading="lazy" decoding="async">
               </div>
               <div class="consultant-content">
-                <div class="consultant-badge">BOSH MUHANDIS MASLAHATI</div>
+                <div class="consultant-badge">MUTAXASSIS MASLAHATI</div>
                 <h3 class="consultant-name">Loyiha va Smetangizni Bizga Yuboring</h3>
                 <p class="consultant-quote">
-                  "Qurilish loyihangiz uchun qaysi diametr, devor qalinligi va bosim darajasi mos kelishiga ikkilanyapsizmi? Biz sizga mahsulotlarni eng arzon ulgurji narxda jamlab beramiz."
+                  "Qurilish loyihangiz uchun qaysi diametr, devor qalinligi va bosim darajasi mos kelishiga ikkilanyapsizmi? Kerakli mahsulotlarni prays bo'yicha jamlab beramiz."
                 </p>
                 <div class="consultant-actions">
-                  <a href="tel:+998952601100" class="btn-primary">
+                  <a href="tel:${MAIN_PHONE.tel}" class="btn-primary">
                     ${icon('phone', '', 18)}
-                    <span>+998 95 260 11 00</span>
+                    <span>${MAIN_PHONE.label}</span>
                   </a>
-                  <a href="https://t.me/nevo_group_uz" target="_blank" rel="noopener" class="btn-secondary consultant-tg-btn">
-                    ${icon('message-circle', '', 18)}
-                    <span>Telegram orqali yozish</span>
-                  </a>
+                  ${TELEGRAM_URL ? `
+                    <a href="${TELEGRAM_URL}" target="_blank" rel="noopener" class="btn-secondary consultant-tg-btn">
+                      ${icon('message-circle', '', 18)}
+                      <span>Telegram orqali yozish</span>
+                    </a>
+                  ` : `
+                    <a href="${INSTAGRAM_DM_URL}" target="_blank" rel="noopener" class="btn-secondary consultant-tg-btn">
+                      ${icon('instagram', '', 18)}
+                      <span>Instagramda yozish</span>
+                    </a>
+                  `}
                 </div>
               </div>
             </div>

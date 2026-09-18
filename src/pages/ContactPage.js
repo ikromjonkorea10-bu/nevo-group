@@ -1,5 +1,7 @@
 import { icon } from '../icons.js';
 import { store } from '../store.js';
+import { getCatalog } from '../lib/catalog.js';
+import { CONTACTS, INSTAGRAM_DM_URL } from '../data/content.js';
 
 // Kafolat va qaytarish bo'limi.
 // [MIJOZ: bu yerga haqiqiy siyosatni yozing] — hozirgi matnlar hech narsa va'da qilmaydi,
@@ -23,6 +25,11 @@ const WARRANTY_ITEMS = [
 ];
 
 export function renderContactPage() {
+  const catalog = getCatalog();
+  const assortment = catalog.status === 'ready' && catalog.products.length
+    ? `${catalog.products.length} ta mahsulot`
+    : 'Santexnika va qurilish mahsulotlari';
+
   return `
     <div class="shell contact-page-wrap">
       <h1 class="contact-title">Aloqa</h1>
@@ -44,7 +51,7 @@ export function renderContactPage() {
 
       <!-- Instagram Direct CTA -->
       <a 
-        href="https://ig.me/m/nevo_group_uzbekistan" 
+        href="${INSTAGRAM_DM_URL}"
         target="_blank" 
         rel="noopener" 
         class="btn-instagram-direct"
@@ -55,14 +62,12 @@ export function renderContactPage() {
 
       <!-- Direct Phone Numbers -->
       <div class="contact-phones-row">
-        <a href="tel:+998952601100" class="phone-action-card">
-          ${icon('phone', '', 18)}
-          <span>+998 95 260 11 00</span>
-        </a>
-        <a href="tel:+998998631100" class="phone-action-card">
-          ${icon('phone', '', 18)}
-          <span>+998 99 863 11 00</span>
-        </a>
+        ${CONTACTS.phones.map((p) => `
+          <a href="tel:${p.tel}" class="phone-action-card">
+            ${icon('phone', '', 18)}
+            <span>${p.label}</span>
+          </a>
+        `).join('')}
       </div>
 
       <!-- Qisqacha ma'lumot -->
@@ -88,7 +93,7 @@ export function renderContactPage() {
             </div>
             <div>
               <div class="info-box-title">Assortiment</div>
-              <div class="info-box-value">10 000+ mahsulot</div>
+              <div class="info-box-value">${assortment}</div>
             </div>
           </div>
 
@@ -98,7 +103,7 @@ export function renderContactPage() {
             </div>
             <div>
               <div class="info-box-title">Instagram</div>
-              <div class="info-box-value">@nevo_group_uzbekistan</div>
+              <div class="info-box-value">@${CONTACTS.instagram}</div>
             </div>
           </div>
 

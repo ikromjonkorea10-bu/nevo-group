@@ -4,6 +4,7 @@ import { esc } from '../lib/format.js';
 import { store } from '../store.js';
 import { renderProductCard } from '../components/ProductCard.js';
 import { renderNotFound } from '../components/StatusViews.js';
+import { INSTAGRAM_DM_URL } from '../data/content.js';
 
 let currentQty = 1;
 
@@ -126,7 +127,7 @@ export function renderProductDetailPage(slug) {
               </button>
 
               <a 
-                href="https://ig.me/m/nevo_group_uzbekistan" 
+                href="${INSTAGRAM_DM_URL}"
                 target="_blank" 
                 rel="noopener"
                 class="detail-inquire-btn"

@@ -1,5 +1,6 @@
 import { getSupabase, isNetworkError } from './supabase.js';
 import { normalizePhone } from './format.js';
+import { MAIN_PHONE } from '../data/content.js';
 
 export const PHONE_ERROR = "Telefon raqami +998 XX XXX XX XX formatida bo'lishi kerak (9 raqam)";
 
@@ -54,7 +55,7 @@ export async function submitOrder({ customerName, phone, address, comment, order
     return {
       ok: false,
       field: null,
-      message: "Buyurtmani yuborib bo'lmadi. Birozdan so'ng qayta urinib ko'ring yoki +998 95 260 11 00 raqamiga qo'ng'iroq qiling.",
+      message: `Buyurtmani yuborib bo'lmadi. Birozdan so'ng qayta urinib ko'ring yoki ${MAIN_PHONE.label} raqamiga qo'ng'iroq qiling.`,
     };
   }
 

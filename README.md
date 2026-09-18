@@ -25,6 +25,7 @@ src/
   lib/orders.js            buyurtma yuborish (place_order RPC)
   lib/pageMeta.js          sahifa sarlavhasi va description
   lib/analytics.js         Vercel Web Analytics (hash-sahifalar uchun)
+  data/content.js          aloqa ma'lumotlari (telefon, Instagram, Telegram) va marketing matnlari
   pages/, components/      sahifalar va komponentlar
   admin/                   admin panel: login, buyurtmalar, mahsulotlar
 supabase/migrations/       baza sxemasi, RLS, place_order() funksiyasi
@@ -95,11 +96,12 @@ npm run dev
 
 ## 2. Migratsiyalarni qo'llash
 
-`supabase/migrations/` papkasida 3 ta fayl bor. Ular **aynan shu tartibda** qo'llanishi kerak:
+`supabase/migrations/` papkasida 4 ta fayl bor. Ular **aynan shu tartibda** qo'llanishi kerak:
 
 1. `20260913000001_init_schema.sql` — jadvallar va indekslar
 2. `20260913000002_security_rls.sql` — huquqlar va RLS siyosatlari
 3. `20260913000003_place_order.sql` — buyurtma berish funksiyasi
+4. `20260913000004_catalog_import_columns.sql` — prays-list importi uchun qo'shimcha ustunlar
 
 **Variant 1 — SQL Editor (eng oson):** Supabase panelida **SQL Editor → New query**.
 Har bir fayl mazmunini navbat bilan joylab, **Run** tugmasini bosing.
