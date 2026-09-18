@@ -85,8 +85,9 @@ export function renderHeader() {
           </a>
 
           <div class="header-search-wrap">
-            <form class="header-search-form" id="header-search-form" onsubmit="event.preventDefault();">
-              <input 
+            <form class="header-search-form" id="header-search-form" role="search" onsubmit="event.preventDefault();">
+              <label for="header-search-input" class="visually-hidden">Mahsulot qidirish</label>
+              <input
                 type="text" 
                 class="header-search-input" 
                 id="header-search-input" 

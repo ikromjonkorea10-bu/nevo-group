@@ -2653,7 +2653,7 @@ input, textarea, select {
 }
 
 .trust-check {
-  color: #16a34a;
+  color: #15803d; /* WCAG AA: fon ustida ~5:1 (#16a34a ~3.3:1 edi) */
   font-weight: 800;
 }
 
