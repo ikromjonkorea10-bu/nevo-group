@@ -1,14 +1,15 @@
 // Saytning statik marketing matnlari (bazada saqlanmaydi).
 
 // Aloqa ma'lumotlari — saytning hamma joyi shu yerdan oladi.
-// telegram bo'sh bo'lsa, Telegram tugmalari ko'rinmaydi.
+// telegram bo'sh bo'lsa, Telegram tugma va havolalari (bosh sahifa, footer,
+// aloqa sahifasi) ko'rinmaydi.
 export const CONTACTS = {
   phones: [
     { tel: '+998952601100', label: '+998 95 260 11 00' },
     { tel: '+998998631100', label: '+998 99 863 11 00' },
   ],
   instagram: 'nevo_group_uzbekistan',
-  // Mijoz tasdiqlagach to'ldiriladi (masalan: 'nevo_group_uz')
+  // [MIJOZ] Telegram username, @ belgisisiz (masalan: 'nevo_group_uz')
   telegram: '',
 };
 
@@ -16,6 +17,14 @@ export const MAIN_PHONE = CONTACTS.phones[0];
 export const INSTAGRAM_URL = `https://instagram.com/${CONTACTS.instagram}`;
 export const INSTAGRAM_DM_URL = `https://ig.me/m/${CONTACTS.instagram}`;
 export const TELEGRAM_URL = CONTACTS.telegram ? `https://t.me/${CONTACTS.telegram}` : '';
+
+// "Mijozlar fikri" — bosh sahifa bo'limi. Faqat haqiqiy, egasi rozi bo'lgan sharhlar qo'shiladi.
+// Ro'yxat bo'sh bo'lsa bo'lim umuman chiqmaydi.
+//
+// [MIJOZ] bu yerga haqiqiy sharhlarni qo'shing. Namuna:
+//   { text: 'Sharh matni', name: 'Ism F.', role: 'Qurilish kompaniyasi', source: 'Instagram' },
+// role va source ixtiyoriy.
+export const TESTIMONIALS = [];
 
 export const BENEFITS = [
   {

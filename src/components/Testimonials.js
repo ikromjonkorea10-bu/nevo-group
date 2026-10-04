@@ -1,13 +1,7 @@
-// "Mijozlar fikri" — bosh sahifa bo'limi. Faqat haqiqiy, egasi rozi bo'lgan sharhlar qo'shiladi.
-// Ro'yxat bo'sh bo'lsa bo'lim umuman chiqmaydi.
-//
-// [MIJOZ: bu yerga haqiqiy sharhlarni qo'shing]. Namuna:
-//   { text: 'Sharh matni', name: 'Ism F.', role: 'Qurilish kompaniyasi', source: 'Instagram' },
-// role va source ixtiyoriy.
+// "Mijozlar fikri" bo'limi. Sharhlar src/data/content.js dagi TESTIMONIALS dan olinadi.
 
 import { esc } from '../lib/format.js';
-
-export const TESTIMONIALS = [];
+import { TESTIMONIALS } from '../data/content.js';
 
 export function renderTestimonials(items = TESTIMONIALS) {
   if (!items.length) return '';

@@ -1,7 +1,7 @@
 import { icon } from '../icons.js';
 import { store } from '../store.js';
 import { getCatalog } from '../lib/catalog.js';
-import { CONTACTS, INSTAGRAM_DM_URL } from '../data/content.js';
+import { CONTACTS, INSTAGRAM_DM_URL, TELEGRAM_URL } from '../data/content.js';
 
 // Kafolat va qaytarish bo'limi.
 // [MIJOZ: bu yerga haqiqiy siyosatni yozing] — hozirgi matnlar hech narsa va'da qilmaydi,
@@ -106,6 +106,18 @@ export function renderContactPage() {
               <div class="info-box-value">@${CONTACTS.instagram}</div>
             </div>
           </div>
+
+          ${TELEGRAM_URL ? `
+            <a href="${TELEGRAM_URL}" target="_blank" rel="noopener" class="info-box-card" style="color: inherit;">
+              <div class="info-box-icon">
+                ${icon('message-circle', '', 20)}
+              </div>
+              <div>
+                <div class="info-box-title">Telegram</div>
+                <div class="info-box-value">@${CONTACTS.telegram}</div>
+              </div>
+            </a>
+          ` : ''}
 
           <div class="info-box-card">
             <div class="info-box-icon">

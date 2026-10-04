@@ -1,7 +1,7 @@
 import { icon } from '../icons.js';
 import { getCatalog } from '../lib/catalog.js';
 import { esc } from '../lib/format.js';
-import { CONTACTS, INSTAGRAM_URL } from '../data/content.js';
+import { CONTACTS, INSTAGRAM_URL, TELEGRAM_URL } from '../data/content.js';
 
 export function renderFooter() {
   const { categories } = getCatalog();
@@ -30,6 +30,12 @@ export function renderFooter() {
                 ${icon('instagram', '', 16)}
                 <span>@${CONTACTS.instagram}</span>
               </a>
+              ${TELEGRAM_URL ? `
+                <a href="${TELEGRAM_URL}" target="_blank" rel="noopener" style="display: flex; align-items: center; gap: 8px; color: inherit;">
+                  ${icon('message-circle', '', 16)}
+                  <span>@${CONTACTS.telegram}</span>
+                </a>
+              ` : ''}
             </div>
           </div>
 
