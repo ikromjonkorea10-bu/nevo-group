@@ -2,7 +2,7 @@ import { icon } from '../icons.js';
 import { esc, formatPrice, slugify } from '../lib/format.js';
 import { PRODUCT_COLUMNS, invalidateCatalog } from '../lib/catalog.js';
 import { describeError, toast, renderErrorBox, confirmDialog } from './ui.js';
-import { uploadProductImage, ImageError } from './imageUpload.js';
+import { uploadProductImage, loadImage, drawToCanvas, ImageError } from './imageUpload.js';
 
 const PAGE_SIZE = 50;
 const FETCH_PAGE = 1000;
@@ -315,6 +315,37 @@ function toRow(v) {
   };
 }
 
+// "Oldin / Keyin" ko'rinishi uchun kichik JPEG (CSP: img-src data: ruxsat etilgan)
+function previewUrl(canvas) {
+  return drawToCanvas(canvas, 480).toDataURL('image/jpeg', 0.85);
+}
+
+function renderReview(review, busy) {
+  const { result } = review;
+  return `
+    <div class="admin-photo-review">
+      <figure>
+        <figcaption>Oldin</figcaption>
+        <img src="${review.beforeUrl}" alt="Asl rasm" />
+      </figure>
+      <figure>
+        <figcaption>Keyin</figcaption>
+        ${result.ok ? `<img src="${review.afterUrl}" alt="Avtomatik tozalangan rasm" />` : '<div class="admin-photo-review-empty">Fonni olib tashlab bo\'lmadi</div>'}
+      </figure>
+    </div>
+    ${result.blurry ? `
+      <div class="admin-photo-warning" role="alert">
+        Rasm xira chiqqanga o'xshaydi. Iloji bo'lsa, telefonni qimirlatmasdan, yorug'roq joyda qayta suratga oling. Baribir yuklash mumkin.
+      </div>
+    ` : ''}
+    <div class="admin-photo-actions">
+      ${result.ok ? `<button type="button" class="btn-primary" id="p-use-processed" ${busy ? 'disabled' : ''}>Shu rasmni ishlatish</button>` : ''}
+      <button type="button" class="btn-secondary" id="p-use-original" ${busy ? 'disabled' : ''}>Asl rasmni ishlatish</button>
+      <button type="button" class="btn-link" id="p-review-cancel" ${busy ? 'disabled' : ''}>Boshqa rasm tanlash</button>
+    </div>
+  `;
+}
+
 function field({ id, name, label, errors, required = false, hint = '', type = 'text', value = '', attrs = '', span2 = false }) {
   const err = errors[name];
   return `
@@ -374,7 +405,22 @@ export async function renderProductFormPage(container, ctx, param) {
   let saving = false;
   let uploading = false;
   let uploadFailed = false;
-  let uploadStatus = "Telefon rasmi ham bo'ladi — avtomatik kichraytiriladi.";
+  let uploadStatus = "Telefondan qanday suratga olsangiz ham bo'ladi — fon olib tashlanadi, rasm avtomatik tozalanadi.";
+  // Tanlangan rasm ko'rib chiqilmoqda: { original, result, beforeUrl, afterUrl }
+  let review = null;
+
+  // "Guruhdagi barcha o'lchamlar": bir xil group_name va brendli mahsulotlar
+  const row0 = isNew ? null : prodRes.data[0];
+  const group = row0?.group_name ? { name: row0.group_name, brand: row0.brand ?? null, count: 0 } : null;
+  const groupQuery = (q) => {
+    q = q.eq('group_name', group.name);
+    return group.brand === null ? q.is('brand', null) : q.eq('brand', group.brand);
+  };
+  if (group) {
+    const { count } = await groupQuery(ctx.supabase.from('products').select('id', { count: 'exact', head: true }));
+    group.count = count || 0;
+  }
+  if (!ctx.isCurrent() || !body.isConnected) return;
 
   const draw = () => {
     body.innerHTML = `
@@ -408,11 +454,18 @@ export async function renderProductFormPage(container, ctx, param) {
                 <div class="admin-photo-tips" id="p-photo-tips">
                   <strong>Yaxshi rasm uchun:</strong> oq fon · kunduzgi yorug'lik (deraza yonida) · flash'siz · mahsulot kadr o'rtasida
                 </div>
-                <label class="btn-secondary admin-upload-btn" for="p-image-file">
-                  ${icon('plus', '', 16)}<span>${values.image_url ? 'Rasmni almashtirish' : 'Rasm yuklash'}</span>
-                </label>
-                <input class="visually-hidden" type="file" id="p-image-file" accept="image/*,.heic,.heif" aria-describedby="p-photo-tips p-upload-status" ${uploading ? 'disabled' : ''} />
+                ${review ? renderReview(review, uploading) : `
+                  <label class="btn-secondary admin-upload-btn" for="p-image-file">
+                    ${icon('plus', '', 16)}<span>${values.image_url ? 'Rasmni almashtirish' : 'Rasm yuklash'}</span>
+                  </label>
+                  <input class="visually-hidden" type="file" id="p-image-file" accept="image/*,.heic,.heif" aria-describedby="p-photo-tips p-upload-status" ${uploading ? 'disabled' : ''} />
+                `}
                 <div class="${uploadFailed ? 'field-error' : 'form-hint'}" id="p-upload-status" role="status" aria-live="polite">${esc(uploadStatus)}</div>
+                ${group && group.count > 1 && values.image_url && !review ? `
+                  <button type="button" class="btn-secondary admin-group-apply" id="p-group-apply" ${uploading ? 'disabled' : ''}>
+                    Shu rasmni guruhdagi barcha o'lchamlarga qo'llash (${group.count} ta)
+                  </button>
+                ` : ''}
 
                 <details class="admin-image-url" ${errors.image_url ? 'open' : ''}>
                   <summary>Yoki rasm havolasini (URL) kiriting</summary>
@@ -468,27 +521,103 @@ export async function renderProductFormPage(container, ctx, param) {
     };
     updatePreview();
 
-    body.querySelector('#p-image-file').addEventListener('change', async (e) => {
+    const setStatus = (text) => {
+      const el = body.querySelector('#p-upload-status');
+      if (el) el.textContent = text;
+    };
+    const showError = (err) => {
+      uploadFailed = true;
+      if (err instanceof ImageError) uploadStatus = err.message;
+      else if (/bucket not found/i.test(err?.message || '')) uploadStatus = "Rasm ombori (Storage) hali sozlanmagan. Dasturchiga murojaat qiling.";
+      else uploadStatus = "Yuklab bo'lmadi: " + describeError(err);
+    };
+
+    // 1) Rasm tanlandi: o'qish (HEIC bo'lsa o'girish) → avtomatik ishlov → "Oldin / Keyin"
+    body.querySelector('#p-image-file')?.addEventListener('change', async (e) => {
       const file = e.target.files?.[0];
       e.target.value = '';
       if (!file || uploading) return;
       uploading = true;
       uploadFailed = false;
-      uploadStatus = 'Rasm kichraytirilmoqda va yuklanmoqda…';
+      uploadStatus = "Rasm o'qilmoqda…";
       draw();
       try {
-        const res = await uploadProductImage(ctx.supabase, file, values.slug || slugify(values.name_uz));
+        const source = await loadImage(file, { onStatus: setStatus });
+        const original = drawToCanvas(source, 1200);
+        let result;
+        try {
+          const { makeStorePhoto } = await import('./productPhoto.js');
+          result = await makeStorePhoto(source, { onStatus: setStatus });
+        } catch (err) {
+          console.error(err);
+          result = { ok: false, message: "Avtomatik ishlov yuklanmadi (internetni tekshiring). Asl rasmni ishlatishingiz mumkin." };
+        }
+        source.close?.();
+        review = {
+          original,
+          result,
+          beforeUrl: previewUrl(original),
+          afterUrl: result.ok ? previewUrl(result.canvas) : '',
+        };
+        uploadStatus = result.ok
+          ? "Natijani tekshiring va tanlang."
+          : result.message;
+        uploadFailed = !result.ok;
+      } catch (err) {
+        showError(err);
+      }
+      uploading = false;
+      if (body.isConnected) draw();
+    });
+
+    // 2) Tanlov: tayyor rasm yoki asl rasm → Storage'ga yuklash
+    const useImage = async (canvas) => {
+      uploading = true;
+      uploadFailed = false;
+      uploadStatus = 'Yuklanmoqda…';
+      draw();
+      try {
+        const res = await uploadProductImage(ctx.supabase, canvas, values.slug || slugify(values.name_uz));
         values.image_url = res.url;
         delete errors.image_url;
+        review = null;
         const kb = Math.round(res.blob.size / 1024);
         uploadStatus = `✓ Yuklandi: ${res.width}×${res.height}, ${kb} KB. O'zgarish «Saqlash» bosilganda saytga chiqadi.`;
       } catch (err) {
-        uploadFailed = true;
-        if (err instanceof ImageError) uploadStatus = err.message;
-        else if (/bucket not found/i.test(err?.message || '')) uploadStatus = "Rasm ombori (Storage) hali sozlanmagan. Dasturchiga murojaat qiling.";
-        else uploadStatus = 'Yuklab bo\'lmadi: ' + describeError(err);
+        showError(err);
       }
       uploading = false;
+      if (body.isConnected) draw();
+    };
+    body.querySelector('#p-use-processed')?.addEventListener('click', () => useImage(review.result.canvas));
+    body.querySelector('#p-use-original')?.addEventListener('click', () => useImage(review.original));
+    body.querySelector('#p-review-cancel')?.addEventListener('click', () => {
+      review = null;
+      uploadFailed = false;
+      uploadStatus = 'Boshqa rasm tanlang.';
+      draw();
+    });
+
+    // 3) Rasmni butun guruhga (barcha o'lchamlarga) qo'llash — darhol bazaga yoziladi
+    body.querySelector('#p-group-apply')?.addEventListener('click', async () => {
+      const ok = await confirmDialog({
+        title: "Rasmni guruhga qo'llash",
+        message: `«${group.name}${group.brand ? ` (${group.brand})` : ''}» guruhidagi ${group.count} ta mahsulotning rasmi shu rasmga almashtiriladi.`,
+        confirmLabel: "Qo'llash",
+      });
+      if (!ok || !body.isConnected) return;
+      uploading = true;
+      draw();
+      const { data, error } = await groupQuery(ctx.supabase.from('products').update({ image_url: values.image_url })).select('id');
+      uploading = false;
+      if (error) {
+        showError(error);
+      } else {
+        invalidateCatalog();
+        uploadFailed = false;
+        uploadStatus = `✓ Guruhdagi ${data.length} ta mahsulotga shu rasm qo'yildi.`;
+        toast(`${data.length} ta mahsulot rasmi yangilandi`);
+      }
       if (body.isConnected) draw();
     });
 

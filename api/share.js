@@ -9,10 +9,16 @@ import { SLUG_RE, restGet, siteOrigin, escapeHtml, formatPrice, jsonLdScript } f
 
 const SITE = 'NEVO GROUP';
 
-function ogImageFor(imageUrl) {
+function ogImageFor(imageUrl, origin) {
   // /images/products/<nom>.webp → /images/og/<nom>.jpg (scripts/make-social-images.mjs yasaydi)
-  const m = /^\/images\/products\/([a-z0-9-]+)\.webp$/.exec(imageUrl || '');
-  return m ? `/images/og/${m[1]}.jpg` : '/og-image.jpg';
+  const local = /^\/images\/products\/([a-z0-9-]+)\.webp$/.exec(imageUrl || '');
+  if (local) return `${origin}/images/og/${local[1]}.jpg`;
+  // Admin paneldan yuklangan rasm: Storage'da yonida og/<nom>.jpg (1200x630) turadi
+  const stored = /^(https:\/\/[a-z0-9]+\.supabase\.co\/storage\/v1\/object\/public\/product-images)\/products\/([a-z0-9-]+)\.(?:webp|jpg)$/.exec(
+    imageUrl || ''
+  );
+  if (stored) return `${stored[1]}/og/${stored[2]}.jpg`;
+  return `${origin}/og-image.jpg`;
 }
 
 function productJsonLd({ origin, slug, product }) {
@@ -45,7 +51,7 @@ function renderPage({ origin, slug, product }) {
     ? `${formatPrice(product.price)} / ${product.unit}${product.brand ? ` · ${product.brand}` : ''}. ` +
       'Buyurtma bering — operator narx va mavjudligini tasdiqlaydi.'
     : "Santexnika va qurilish mahsulotlari: truba va fitinglar, zapor armatura, yong'in va elektr jihozlari.";
-  const image = `${origin}${ogImageFor(product?.image_url)}`;
+  const image = ogImageFor(product?.image_url, origin);
   const e = escapeHtml;
 
   return `<!DOCTYPE html>
