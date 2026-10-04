@@ -159,7 +159,7 @@ function createSession(u) {
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET,POST,PATCH,DELETE,HEAD,OPTIONS',
-  'Access-Control-Allow-Headers': 'authorization,apikey,content-type,prefer,accept,accept-profile,content-profile,range,x-client-info,x-supabase-api-version',
+  'Access-Control-Allow-Headers': 'authorization,apikey,content-type,prefer,accept,accept-profile,content-profile,range,x-client-info,x-supabase-api-version,x-upsert,cache-control',
   'Access-Control-Expose-Headers': 'content-range,x-supabase-api-version',
 };
 
@@ -438,6 +438,63 @@ async function handleRpc(req, res, fn, auth) {
 }
 
 // ---------------------------------------------------------------------
+// Storage (faqat yuklash va ochiq o'qish; fayllar xotirada)
+// ---------------------------------------------------------------------
+const storedFiles = new Map(); // "bucket/path" -> { type, buf }
+
+function storageError(res, status, error, message) {
+  return send(res, status, { statusCode: String(status), error, message });
+}
+
+async function handleStorage(req, res, url, auth) {
+  const pub = url.pathname.match(/^\/storage\/v1\/object\/public\/([^/]+)\/(.+)$/);
+  if (pub && (req.method === 'GET' || req.method === 'HEAD')) {
+    const [, bucket, name] = pub;
+    const { rows } = await db.query('select public from storage.buckets where id = $1', [bucket]);
+    const file = storedFiles.get(`${bucket}/${decodeURIComponent(name)}`);
+    if (!rows[0]?.public || !file) return storageError(res, 404, 'not_found', 'Object not found');
+    res.writeHead(200, { ...CORS, 'Content-Type': file.type, 'Content-Length': file.buf.length, 'Cache-Control': 'public, max-age=31536000' });
+    return res.end(req.method === 'HEAD' ? undefined : file.buf);
+  }
+
+  const up = url.pathname.match(/^\/storage\/v1\/object\/([^/]+)\/(.+)$/);
+  if (up && req.method === 'POST') {
+    const [, bucket, rawName] = up;
+    const name = decodeURIComponent(rawName);
+    const { rows } = await db.query('select file_size_limit, allowed_mime_types from storage.buckets where id = $1', [bucket]);
+    if (!rows[0]) return storageError(res, 404, 'Bucket not found', 'Bucket not found');
+    const chunks = [];
+    for await (const c of req) chunks.push(c);
+    let buf = Buffer.concat(chunks);
+    let type = String(req.headers['content-type'] || 'application/octet-stream').split(';')[0];
+    // supabase-js Blob/File'ni multipart/form-data qilib yuboradi; turi fayl qismidan olinadi
+    if (type === 'multipart/form-data') {
+      const form = await new Request('http://local/', { method: 'POST', headers: { 'content-type': req.headers['content-type'] }, body: buf }).formData();
+      const file = [...form.values()].find((v) => typeof v === 'object');
+      if (!file) return storageError(res, 400, 'invalid_request', 'File is missing');
+      buf = Buffer.from(await file.arrayBuffer());
+      type = file.type || 'application/octet-stream';
+    }
+    const { file_size_limit: limit, allowed_mime_types: mimes } = rows[0];
+    if (limit && buf.length > Number(limit)) return storageError(res, 413, 'Payload too large', 'The object exceeded the maximum allowed size');
+    if (mimes?.length && !mimes.includes(type)) return storageError(res, 415, 'invalid_mime_type', `mime type ${type} is not supported`);
+    try {
+      await asRole(db, auth, (tx) =>
+        tx.query('insert into storage.objects (bucket_id, name, metadata) values ($1, $2, $3)', [bucket, name, { mimetype: type, size: buf.length }])
+      );
+    } catch (err) {
+      if (err.code === '23505') return storageError(res, 409, 'Duplicate', 'The resource already exists');
+      if (err.code === '42501') return storageError(res, 403, 'Unauthorized', 'new row violates row-level security policy');
+      throw err;
+    }
+    storedFiles.set(`${bucket}/${name}`, { type, buf });
+    return send(res, 200, { Key: `${bucket}/${name}` });
+  }
+
+  return storageError(res, 404, 'not_found', 'Not found');
+}
+
+// ---------------------------------------------------------------------
 // Auth (GoTrue)
 // ---------------------------------------------------------------------
 function authError(res, status, code, msg) {
@@ -499,6 +556,7 @@ const server = http.createServer(async (req, res) => {
   const auth = authFromRequest(req);
   try {
     if (url.pathname.startsWith('/auth/v1')) return await handleAuth(req, res, url);
+    if (url.pathname.startsWith('/storage/v1')) return await handleStorage(req, res, url, auth);
     const rpc = url.pathname.match(/^\/rest\/v1\/rpc\/([^/]+)$/);
     if (rpc && req.method === 'POST') return await handleRpc(req, res, rpc[1], auth);
     const table = url.pathname.match(/^\/rest\/v1\/([^/]+)$/);

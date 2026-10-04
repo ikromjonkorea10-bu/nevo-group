@@ -37,6 +37,31 @@ const SUPABASE_BOOTSTRAP = `
 
   grant usage on schema auth to anon, authenticated, service_role;
   grant execute on all functions in schema auth to anon, authenticated, service_role;
+
+  -- Supabase Storage'ning minimal nusxasi: bucket va fayl yozuvlari.
+  -- Ruxsatlar haqiqiydagidek storage.objects RLS policy'lari orqali tekshiriladi.
+  create schema storage;
+  create table storage.buckets (
+    id text primary key,
+    name text not null unique,
+    public boolean not null default false,
+    file_size_limit bigint,
+    allowed_mime_types text[],
+    created_at timestamptz not null default now()
+  );
+  create table storage.objects (
+    id uuid primary key default gen_random_uuid(),
+    bucket_id text references storage.buckets (id),
+    name text not null,
+    owner uuid default auth.uid(),
+    metadata jsonb,
+    created_at timestamptz not null default now(),
+    unique (bucket_id, name)
+  );
+  alter table storage.objects enable row level security;
+  grant usage on schema storage to anon, authenticated, service_role;
+  grant select on storage.buckets to anon, authenticated, service_role;
+  grant all on storage.objects to anon, authenticated, service_role;
   grant usage on schema public to anon, authenticated, service_role;
 
   -- Supabase standarti: public sxemadagi yangi obyektlarga hamma rollar

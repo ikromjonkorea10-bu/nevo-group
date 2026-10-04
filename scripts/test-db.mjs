@@ -303,6 +303,47 @@ await test('mahsulot o\'chirilsa buyurtma tarixi saqlanadi', async () => {
   assert.equal(Number(item.price), 2500);
 });
 
+console.log('\nMahsulot rasmlari (storage)');
+
+const putImage = (auth, name) =>
+  asRole(db, auth, (tx) =>
+    tx.query(`insert into storage.objects (bucket_id, name) values ('product-images', $1) returning id`, [name])
+  );
+
+await test('product-images bucket ochiq, faqat WebP/JPEG, 2 MB gacha', async () => {
+  const { rows: [b] } = await db.query(`select * from storage.buckets where id = 'product-images'`);
+  assert.equal(b.public, true);
+  assert.equal(Number(b.file_size_limit), 2 * 1024 * 1024);
+  assert.deepEqual([...b.allowed_mime_types].sort(), ['image/jpeg', 'image/webp']);
+});
+
+await test('anon va admin bo\'lmagan foydalanuvchi rasm yuklay olmaydi', async () => {
+  await expectError(putImage(ANON, 'products/anon.webp'), { code: '42501' });
+  await expectError(putImage(USER, 'products/user.webp'), { code: '42501' });
+});
+
+await test('anon bucket\'dagi fayllar ro\'yxatini ko\'ra olmaydi', async () => {
+  await putImage(ADMIN, 'products/royxat.webp');
+  const r = await asRole(db, ANON, (tx) => tx.query(`select name from storage.objects`));
+  assert.equal(r.rows.length, 0);
+});
+
+await test('admin rasm yuklaydi va o\'chiradi, boshqalar o\'chira olmaydi', async () => {
+  await putImage(ADMIN, 'products/admin.webp');
+  const delUser = await asRole(db, USER, (tx) => tx.query(`delete from storage.objects where name = 'products/admin.webp' returning id`));
+  assert.equal(delUser.rows.length, 0, 'RLS delete\'ni bloklashi kerak');
+  const delAdmin = await asRole(db, ADMIN, (tx) => tx.query(`delete from storage.objects where name = 'products/admin.webp' returning id`));
+  assert.equal(delAdmin.rows.length, 1);
+});
+
+await test('boshqa bucket\'ga admin policy\'si tegishli emas', async () => {
+  await db.query(`insert into storage.buckets (id, name) values ('boshqa', 'boshqa')`);
+  await expectError(
+    asRole(db, ADMIN, (tx) => tx.query(`insert into storage.objects (bucket_id, name) values ('boshqa', 'x.webp')`)),
+    { code: '42501' }
+  );
+});
+
 await db.close();
 
 const failed = results.filter((r) => !r.ok);

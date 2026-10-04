@@ -528,3 +528,21 @@ a.admin-order-row:hover { background: #f8fafc; }
   .admin-table .num { white-space: normal; }
   .shell.admin-main { padding-left: 14px; padding-right: 14px; }
 }
+
+/* Mahsulot rasmini yuklash */
+.admin-photo-tips {
+  background: var(--tint);
+  border: 1px solid var(--tint-border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.admin-upload-btn { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; width: auto !important; }
+.admin-upload-btn:has(+ #p-image-file:focus-visible) { outline: 2px solid var(--nevo-blue); outline-offset: 2px; }
+.admin-upload-btn:has(+ #p-image-file:disabled) { opacity: 0.6; cursor: progress; }
+#p-upload-status { margin-top: 8px; }
+.admin-image-url { margin-top: 12px; font-size: 13px; }
+.admin-image-url summary { cursor: pointer; color: var(--muted); margin-bottom: 8px; }

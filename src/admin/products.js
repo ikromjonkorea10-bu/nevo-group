@@ -2,6 +2,7 @@ import { icon } from '../icons.js';
 import { esc, formatPrice, slugify } from '../lib/format.js';
 import { PRODUCT_COLUMNS, invalidateCatalog } from '../lib/catalog.js';
 import { describeError, toast, renderErrorBox, confirmDialog } from './ui.js';
+import { uploadProductImage, ImageError } from './imageUpload.js';
 
 const PAGE_SIZE = 50;
 const FETCH_PAGE = 1000;
@@ -371,6 +372,9 @@ export async function renderProductFormPage(container, ctx, param) {
   let errors = {};
   let formAlert = '';
   let saving = false;
+  let uploading = false;
+  let uploadFailed = false;
+  let uploadStatus = "Telefon rasmi ham bo'ladi — avtomatik kichraytiriladi.";
 
   const draw = () => {
     body.innerHTML = `
@@ -398,11 +402,23 @@ export async function renderProductFormPage(container, ctx, param) {
           ${field({ id: 'p-brand', name: 'brand', label: 'Brend', errors, value: values.brand, attrs: 'maxlength="100"' })}
 
           <div class="form-group span-2">
-            <label class="form-label" for="p-image">Rasm havolasi (URL)</label>
+            <span class="form-label" id="p-image-label">Rasm</span>
             <div style="display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap;">
               <div style="flex: 1 1 260px;">
-                <input class="form-input ${errors.image_url ? 'has-error' : ''}" type="url" id="p-image" name="image_url" value="${esc(values.image_url)}" placeholder="https://… yoki /mahsulot/rasm.webp" maxlength="1000" ${errors.image_url ? 'aria-invalid="true" aria-describedby="err-image_url"' : ''} />
-                ${errors.image_url ? `<div class="field-error" id="err-image_url">${esc(errors.image_url)}</div>` : '<div class="form-hint">Rasm fayli boshqa joyda saqlangan bo\'lishi kerak.</div>'}
+                <div class="admin-photo-tips" id="p-photo-tips">
+                  <strong>Yaxshi rasm uchun:</strong> oq fon · kunduzgi yorug'lik (deraza yonida) · flash'siz · mahsulot kadr o'rtasida
+                </div>
+                <label class="btn-secondary admin-upload-btn" for="p-image-file">
+                  ${icon('plus', '', 16)}<span>${values.image_url ? 'Rasmni almashtirish' : 'Rasm yuklash'}</span>
+                </label>
+                <input class="visually-hidden" type="file" id="p-image-file" accept="image/*,.heic,.heif" aria-describedby="p-photo-tips p-upload-status" ${uploading ? 'disabled' : ''} />
+                <div class="${uploadFailed ? 'field-error' : 'form-hint'}" id="p-upload-status" role="status" aria-live="polite">${esc(uploadStatus)}</div>
+
+                <details class="admin-image-url" ${errors.image_url ? 'open' : ''}>
+                  <summary>Yoki rasm havolasini (URL) kiriting</summary>
+                  <input class="form-input ${errors.image_url ? 'has-error' : ''}" type="url" id="p-image" name="image_url" value="${esc(values.image_url)}" placeholder="https://… yoki /images/products/rasm.webp" maxlength="1000" aria-label="Rasm havolasi (URL)" ${errors.image_url ? 'aria-invalid="true" aria-describedby="err-image_url"' : ''} />
+                  ${errors.image_url ? `<div class="field-error" id="err-image_url">${esc(errors.image_url)}</div>` : ''}
+                </details>
               </div>
               <div class="admin-image-preview" id="p-image-preview"></div>
             </div>
@@ -428,7 +444,7 @@ export async function renderProductFormPage(container, ctx, param) {
 
         <div class="admin-form-actions">
           <a href="#products" class="btn-secondary">Bekor qilish</a>
-          <button type="submit" class="btn-primary" ${saving ? 'disabled aria-busy="true"' : ''}>
+          <button type="submit" class="btn-primary" ${saving || uploading ? 'disabled aria-busy="true"' : ''}>
             ${saving ? '<span class="btn-spinner" aria-hidden="true"></span><span>Saqlanmoqda…</span>' : `<span>${isNew ? "Qo'shish" : 'Saqlash'}</span>`}
           </button>
         </div>
@@ -451,6 +467,30 @@ export async function renderProductFormPage(container, ctx, param) {
       }
     };
     updatePreview();
+
+    body.querySelector('#p-image-file').addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      e.target.value = '';
+      if (!file || uploading) return;
+      uploading = true;
+      uploadFailed = false;
+      uploadStatus = 'Rasm kichraytirilmoqda va yuklanmoqda…';
+      draw();
+      try {
+        const res = await uploadProductImage(ctx.supabase, file, values.slug || slugify(values.name_uz));
+        values.image_url = res.url;
+        delete errors.image_url;
+        const kb = Math.round(res.blob.size / 1024);
+        uploadStatus = `✓ Yuklandi: ${res.width}×${res.height}, ${kb} KB. O'zgarish «Saqlash» bosilganda saytga chiqadi.`;
+      } catch (err) {
+        uploadFailed = true;
+        if (err instanceof ImageError) uploadStatus = err.message;
+        else if (/bucket not found/i.test(err?.message || '')) uploadStatus = "Rasm ombori (Storage) hali sozlanmagan. Dasturchiga murojaat qiling.";
+        else uploadStatus = 'Yuklab bo\'lmadi: ' + describeError(err);
+      }
+      uploading = false;
+      if (body.isConnected) draw();
+    });
 
     formEl.addEventListener('input', (e) => {
       const el = e.target;
@@ -496,7 +536,7 @@ export async function renderProductFormPage(container, ctx, param) {
 
     formEl.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (saving) return;
+      if (saving || uploading) return;
       errors = validateProduct(values);
       formAlert = '';
       if (Object.keys(errors).length) {
