@@ -2,6 +2,7 @@ import { icon } from '../icons.js';
 import { getCatalog, matchesSearch } from '../lib/catalog.js';
 import { esc } from '../lib/format.js';
 import { renderProductCard } from '../components/ProductCard.js';
+import { t } from '../lib/i18n.js';
 
 const PAGE_SIZE = 48;
 
@@ -112,23 +113,43 @@ export function renderCatalogPage(params = {}, routeKey = '') {
   const visible = filtered.slice(0, state.visibleCount);
 
   return `
-    <!-- VERO STYLE CATALOG HERO BANNER (Screenshot 2) -->
-    <div class="catalog-vero-hero-banner">
-      <div class="shell">
+    <!-- VERO STYLE CATALOG HERO BANNER WITH LUXURY MACRO SLIDESHOW (Screenshot 2 & 4) -->
+    <div class="catalog-vero-hero-banner" id="catalog-hero-banner">
+      <!-- Macro Photography Slideshow Background -->
+      <div class="catalog-banner-slideshow" id="catalog-slideshow-track">
+        <div class="cat-slide-item active" data-slide="0">
+          <img src="/images/catalog-slides/slide-pipes.jpg" alt="PP-R & Kompozit Quvurlar" class="cat-slide-img" loading="eager" />
+        </div>
+        <div class="cat-slide-item" data-slide="1">
+          <img src="/images/catalog-slides/slide-valves.jpg" alt="Sanoat Armaturalari & Zadvijkalar" class="cat-slide-img" loading="lazy" />
+        </div>
+        <div class="cat-slide-item" data-slide="2">
+          <img src="/images/catalog-slides/slide-sewer.jpg" alt="Kanalizatsiya va Tashqi Quvurlar" class="cat-slide-img" loading="lazy" />
+        </div>
+        <div class="cat-slide-gradient-overlay"></div>
+        <div class="cat-slide-mesh-glow"></div>
+      </div>
+
+      <div class="shell catalog-hero-shell">
         <div class="catalog-vero-hero-content">
-          <h1 class="catalog-vero-title">Mahsulotlar<br><span class="text-gradient-orange">va Katalog</span></h1>
+          <div class="catalog-vero-badge">
+            <span class="catalog-badge-dot"></span>
+            <span>NEVO GROUP · SANOAT ASSORTIMENTI</span>
+          </div>
+
+          <h1 class="catalog-vero-title">${t('catalogTitle')}<br><span class="text-gradient-orange">NEVO GROUP</span></h1>
           <p class="catalog-vero-sub">
-            Isitish, suv ta'minoti va muhandislik tizimlari uchun sanoat jihozlari, komplektovchi qismlar va materiallarning keng assortimenti.
+            ${t('catalogSub')}
           </p>
 
           <div class="catalog-vero-search-wrap">
-            <span class="catalog-vero-search-label">KATALOGDAN QIDIRISH</span>
+            <span class="catalog-vero-search-label">${t('catalogSearchLabel')}</span>
             <div class="catalog-search-bar vero-dark-search-bar">
               ${icon('search', '', 20)}
               <input
                 type="text"
                 id="catalog-inner-search"
-                placeholder="Mahsulot qidirish — masalan: PN20, fiting, kran..."
+                placeholder="${t('catalogSearchPlaceholder')}"
                 value="${esc(state.searchQuery || '')}"
               />
               ${state.searchQuery ? `
@@ -141,10 +162,26 @@ export function renderCatalogPage(params = {}, routeKey = '') {
             </div>
           </div>
         </div>
+
+        <!-- Slide Switcher Controls (Bottom of Banner) -->
+        <div class="catalog-slides-controls" id="catalog-slides-nav">
+          <button type="button" class="cat-slide-pill-btn active" data-slide-idx="0" onclick="window.__switchCatalogSlide(0)">
+            <span class="cat-slide-pill-indicator"></span>
+            <span class="cat-slide-pill-text">${t('slidePipes')}</span>
+          </button>
+          <button type="button" class="cat-slide-pill-btn" data-slide-idx="1" onclick="window.__switchCatalogSlide(1)">
+            <span class="cat-slide-pill-indicator"></span>
+            <span class="cat-slide-pill-text">${t('slideValves')}</span>
+          </button>
+          <button type="button" class="cat-slide-pill-btn" data-slide-idx="2" onclick="window.__switchCatalogSlide(2)">
+            <span class="cat-slide-pill-indicator"></span>
+            <span class="cat-slide-pill-text">${t('slideSewer')}</span>
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="shell" style="padding-top: 10px; padding-bottom: 60px;">
+    <div class="shell" style="padding-top: 14px; padding-bottom: 60px;">
 
       <!-- Quick Category Pills -->
       <div class="category-pills-row">
@@ -152,7 +189,7 @@ export function renderCatalogPage(params = {}, routeKey = '') {
           class="cat-pill ${state.selectedCategory === 'all' ? 'active' : ''}"
           onclick="window.__setCatalogCat('all')"
         >
-          Barchasi (${products.length})
+          ${t('allProducts')} (${products.length})
         </button>
         ${categories.map(c => `
           <button
@@ -404,5 +441,44 @@ export function initCatalogEvents(rerenderCallback) {
         }
       }, 300);
     });
+  }
+
+  // Macro Photography Slideshow Controller
+  let currentSlide = 0;
+  const slideItems = document.querySelectorAll('#catalog-slideshow-track .cat-slide-item');
+  const slideBtns = document.querySelectorAll('#catalog-slides-nav .cat-slide-pill-btn');
+  const totalSlides = slideItems.length;
+
+  window.__switchCatalogSlide = (idx) => {
+    if (totalSlides === 0) return;
+    currentSlide = (idx + totalSlides) % totalSlides;
+    slideItems.forEach((el, i) => {
+      el.classList.toggle('active', i === currentSlide);
+    });
+    slideBtns.forEach((btn, i) => {
+      btn.classList.toggle('active', i === currentSlide);
+    });
+  };
+
+  if (totalSlides > 1) {
+    if (window.__catalogSlideInterval) {
+      clearInterval(window.__catalogSlideInterval);
+    }
+    window.__catalogSlideInterval = setInterval(() => {
+      window.__switchCatalogSlide(currentSlide + 1);
+    }, 4500);
+
+    const bannerEl = document.getElementById('catalog-hero-banner');
+    if (bannerEl) {
+      bannerEl.addEventListener('mouseenter', () => {
+        clearInterval(window.__catalogSlideInterval);
+      });
+      bannerEl.addEventListener('mouseleave', () => {
+        clearInterval(window.__catalogSlideInterval);
+        window.__catalogSlideInterval = setInterval(() => {
+          window.__switchCatalogSlide(currentSlide + 1);
+        }, 4500);
+      });
+    }
   }
 }

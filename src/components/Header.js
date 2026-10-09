@@ -63,10 +63,12 @@ export function renderHeader() {
           <span>${t('deliveryTop')}</span>
         </span>
         <div class="top-links">
-          <div class="lang-switch-wrap" role="group" aria-label="Tilni tanlash / Выбор языка">
+          <div class="lang-switch-wrap" role="group" aria-label="Tilni tanlash / Language / Язык">
             <button type="button" class="lang-toggle-btn ${currentLang === 'uz' ? 'active' : ''}" onclick="window.__setLanguage('uz')">UZ</button>
             <span class="lang-divider">/</span>
             <button type="button" class="lang-toggle-btn ${currentLang === 'ru' ? 'active' : ''}" onclick="window.__setLanguage('ru')">RU</button>
+            <span class="lang-divider">/</span>
+            <button type="button" class="lang-toggle-btn ${currentLang === 'en' ? 'active' : ''}" onclick="window.__setLanguage('en')">EN</button>
           </div>
           <a href="#aloqa" class="top-link top-link-contact">${t('contactUs')}</a>
           <a href="${INSTAGRAM_URL}" target="_blank" rel="noopener" class="top-link" aria-label="Instagram: @${CONTACTS.instagram}">
