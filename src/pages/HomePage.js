@@ -264,7 +264,7 @@ function renderProjectsCarousel() {
 function renderVeroCorporateAbout(catalog) {
   const productCount = catalog.status === 'ready' && catalog.products.length ? catalog.products.length : 1000;
   return `
-    <!-- EXACT IMAGE 3 CORPORATE ABOUT & METRICS (media_1791561900743.jpg) -->
+    <!-- NEVO CORPORATE ABOUT & METRICS (REALISTIC & AUTHENTIC) -->
     <section class="nevo-corp-about-section" id="stats-anchor">
       <div class="shell">
         <div class="nevo-corp-about-header">
@@ -277,35 +277,22 @@ function renderVeroCorporateAbout(catalog) {
           </div>
           <div class="nevo-corp-intro-text">
             <p>
-              O'zbekiston va Markaziy Osiyo bozorida suv ta'minoti va isitish tizimlari uchun polimer quvurlar hamda fitinglar ishlab chiqaruvchi eng yirik korxonalardan biri. Guruhimiz jami <strong class="corp-highlight">12 ta</strong> qurilish materiallari ishlab chiqaruvchi zavodlarni birlashtiradi va yillik aylanmasi <strong class="corp-highlight">80 million AQSh dollaridan</strong> oshadi.
+              O'zbekiston bo'ylab suv ta'minoti, isitish, kanalizatsiya va sanoat muhandislik tizimlari uchun sertifikatlangan polimer quvurlar, fitinglar hamda zapor armaturalarni to'g'ridan-to'g'ri birinchi qo'l kafolati va professional servis bilan yetkazib beruvchi ishonchli korxona.
             </p>
           </div>
         </div>
 
-        <!-- 4 Minimalist Line-Art Metrics (Exact Image 3 Layout) -->
+        <!-- 4 Minimalist Line-Art Metrics (Authentic & Realistic for Nevo Group) -->
         <div class="nevo-corp-metrics-grid">
           <div class="nevo-metric-stat-item">
             <div class="nevo-metric-icon-wrap">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
-                <path d="M17 18h1"></path>
-                <path d="M12 18h1"></path>
-                <path d="M7 18h1"></path>
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
               </svg>
             </div>
-            <div class="nevo-metric-big-num" data-count="12" data-suffix=" ta">12 ta</div>
-            <div class="nevo-metric-tag-label">ZAVOD</div>
-          </div>
-
-          <div class="nevo-metric-stat-item">
-            <div class="nevo-metric-icon-wrap">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="2" x2="12" y2="22"></line>
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-              </svg>
-            </div>
-            <div class="nevo-metric-big-num" data-count="80" data-suffix="M+">80M+</div>
-            <div class="nevo-metric-tag-label">YILLIK AYLANMA</div>
+            <div class="nevo-metric-big-num" data-count="10" data-suffix="+">10+</div>
+            <div class="nevo-metric-tag-label">YIL TAJRIBA</div>
           </div>
 
           <div class="nevo-metric-stat-item">
@@ -323,14 +310,25 @@ function renderVeroCorporateAbout(catalog) {
           <div class="nevo-metric-stat-item">
             <div class="nevo-metric-icon-wrap">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <path d="m9 12 2 2 4-4"></path>
+              </svg>
+            </div>
+            <div class="nevo-metric-big-num" data-count="100" data-suffix="%">100%</div>
+            <div class="nevo-metric-tag-label">SIFAT KAFOLATI</div>
+          </div>
+
+          <div class="nevo-metric-stat-item">
+            <div class="nevo-metric-icon-wrap">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
                 <circle cx="9" cy="7" r="4"></circle>
                 <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
                 <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
               </svg>
             </div>
-            <div class="nevo-metric-big-num" data-count="25000" data-suffix="+">25 000+</div>
-            <div class="nevo-metric-tag-label">HAMKORLAR VA USTA-MUTAXASSISLAR</div>
+            <div class="nevo-metric-big-num" data-count="3000" data-suffix="+">3 000+</div>
+            <div class="nevo-metric-tag-label">MAMNUN HAMKORLAR</div>
           </div>
         </div>
       </div>
@@ -488,7 +486,7 @@ export function renderHomePage() {
 
         <!-- Slide Switcher Dots on Hero Bottom Center/Right -->
         <div class="hero-slides-nav" id="hero-slides-dots">
-          <button type="button" class="hero-slide-dot active" data-slide="0" onclick="window.__switchHeroSlide(0)" aria-label="1-slayd: Sanoat Zavodi">
+          <button type="button" class="hero-slide-dot active" data-slide="0" onclick="window.__switchHeroSlide(0)" aria-label="1-slayd: Sanoat Muhandisligi">
             <span class="hero-dot-fill"></span>
             <span class="hero-dot-tooltip">Sanoat Korxonasi</span>
           </button>
