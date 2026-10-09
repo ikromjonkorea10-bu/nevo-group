@@ -21,8 +21,10 @@ import { renderCartPage, initCartEvents } from './pages/CartPage.js';
 import { renderContactPage, initContactEvents } from './pages/ContactPage.js';
 import { initAnalytics, trackPageview } from './lib/analytics.js';
 import { updatePageMeta } from './lib/pageMeta.js';
+import { initIntroSplash } from './components/IntroSplash.js';
 
 initAnalytics();
+initIntroSplash();
 
 // Global add to cart helper with tactile micro-animation
 window.__addToCart = (productId, event) => {
@@ -245,6 +247,7 @@ store.subscribe(({ count }) => updateCartBadges(count));
 
 // Router Event Listeners
 window.addEventListener('hashchange', router);
+window.addEventListener('nevolangchanged', router);
 // Katalog so'rovi birinchi bo'lib jo'natiladi; sahifa keyingi vazifada bir marta chiziladi,
 // shunda og'ir birinchi render so'rovning tarmoqqa chiqishini kechiktirmaydi.
 if (isSupabaseConfigured) loadCatalog({ silent: true });

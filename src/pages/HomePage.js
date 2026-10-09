@@ -6,6 +6,7 @@ import { esc } from '../lib/format.js';
 import { renderProductCard } from '../components/ProductCard.js';
 import { renderProductsGridSkeleton } from '../components/StatusViews.js';
 import { renderTestimonials } from '../components/Testimonials.js';
+import { t } from '../lib/i18n.js';
 
 function renderInlineLoadError() {
   return `
@@ -173,6 +174,136 @@ function renderCategoriesBlock(catalog) {
   `;
 }
 
+function renderProjectsCarousel() {
+  const projects = [
+    {
+      img: '/projects/nest-one.webp',
+      title: t('project1Title'),
+      type: t('project1Type'),
+      desc: t('project1Desc'),
+      tags: ['#Quvurlar', '#ZaporArmatura', '#NestOne'],
+    },
+    {
+      img: '/projects/humo-arena.webp',
+      title: t('project2Title'),
+      type: t('project2Type'),
+      desc: t('project2Desc'),
+      tags: ['#HumoArena', '#Sovutish', '#Flaneslar'],
+    },
+    {
+      img: '/projects/islamic-center.webp',
+      title: t('project3Title'),
+      type: t('project3Type'),
+      desc: t('project3Desc'),
+      tags: ['#IslomSivilizatsiyasi', '#Gidrantlar', '#Isitish'],
+    },
+    {
+      img: '/projects/tashkent-city.webp',
+      title: t('project4Title'),
+      type: t('project4Type'),
+      desc: t('project4Desc'),
+      tags: ['#CongressHall', '#SanoatQuvurlari', '#TashkentCity'],
+    },
+    {
+      img: '/workers/worker-construction.webp',
+      title: t('project5Title'),
+      type: t('project5Type'),
+      desc: t('project5Desc'),
+      tags: ['#YangiOzbekiston', '#Muhandislik', '#PEQuvurlar'],
+    },
+    {
+      img: '/workers/worker-pipefitting.webp',
+      title: t('project6Title'),
+      type: t('project6Type'),
+      desc: t('project6Desc'),
+      tags: ['#Magistral', '#SanoatMontaj', '#Vstavkalar'],
+    },
+  ];
+
+  return `
+    <section class="home-section projects-carousel-section">
+      <div class="section-head projects-section-head">
+        <div>
+          <div class="section-pill-tag">${t('projectsTag')}</div>
+          <h2 class="section-title">${t('projectsTitle')}</h2>
+          <div class="section-subtitle">${t('projectsSub')}</div>
+        </div>
+        <div class="projects-carousel-nav-arrows">
+          <button type="button" class="carousel-arrow-btn" id="proj-prev-btn" aria-label="Oldingi loyiha">
+            ${icon('chevron-left', '', 20)}
+          </button>
+          <button type="button" class="carousel-arrow-btn" id="proj-next-btn" aria-label="Keyingi loyiha">
+            ${icon('chevron-right', '', 20)}
+          </button>
+        </div>
+      </div>
+
+      <div class="projects-carousel-wrapper">
+        <div class="projects-carousel-track" id="projects-carousel-track">
+          ${projects.map((proj, idx) => `
+            <article class="project-card" data-index="${idx}">
+              <div class="project-img-wrap">
+                <img src="${proj.img}" alt="${esc(proj.title)}" loading="lazy" decoding="async">
+                <span class="project-type-badge">${esc(proj.type)}</span>
+              </div>
+              <div class="project-card-body">
+                <h3 class="project-title">${esc(proj.title)}</h3>
+                <p class="project-desc">${esc(proj.desc)}</p>
+                <div class="project-tags">
+                  ${proj.tags.map(tag => `<span class="project-tag">${tag}</span>`).join('')}
+                </div>
+              </div>
+            </article>
+          `).join('')}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderVeroStats(catalog) {
+  const productCount = catalog.status === 'ready' && catalog.products.length ? catalog.products.length : 1000;
+  return `
+    <section class="vero-stats-section" id="stats-anchor">
+      <div class="shell">
+        <div class="vero-stats-grid">
+          <div class="vero-stat-card">
+            <div class="vero-stat-num-wrap">
+              <span class="vero-stat-value" data-count="10" data-suffix="+">10+</span>
+              <span class="vero-stat-unit">${t('statYears')}</span>
+            </div>
+            <div class="vero-stat-label">${t('statYearsLabel')}</div>
+          </div>
+
+          <div class="vero-stat-card">
+            <div class="vero-stat-num-wrap">
+              <span class="vero-stat-value" data-count="${productCount}" data-suffix="+">${productCount}+</span>
+              <span class="vero-stat-unit">${t('statProducts')}</span>
+            </div>
+            <div class="vero-stat-label">${t('statProductsLabel')}</div>
+          </div>
+
+          <div class="vero-stat-card">
+            <div class="vero-stat-num-wrap">
+              <span class="vero-stat-value" data-count="100" data-suffix="%">100%</span>
+              <span class="vero-stat-unit">${t('statDelivery')}</span>
+            </div>
+            <div class="vero-stat-label">${t('statDeliveryLabel')}</div>
+          </div>
+
+          <div class="vero-stat-card">
+            <div class="vero-stat-num-wrap">
+              <span class="vero-stat-value" data-count="5000" data-suffix="+">5000+</span>
+              <span class="vero-stat-unit">${t('statPartners')}</span>
+            </div>
+            <div class="vero-stat-label">${t('statPartnersLabel')}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 export function renderHomePage() {
   const catalog = getCatalog();
   const inStock = catalog.products.filter(p => p.inStock);
@@ -183,34 +314,42 @@ export function renderHomePage() {
 
   return `
     <main class="home-page-content">
-      <!-- Hero Section with Glowing Aurora -->
-      <section class="hero-section">
-        <div class="hero-aurora-glow"></div>
-        <div class="shell">
-          <div class="hero-grid">
+      <!-- VERO STYLE FULLSCREEN INDUSTRIAL HERO -->
+      <section class="hero-section hero-section-vero">
+        <div class="hero-video-backdrop">
+          <video class="hero-bg-video lazy-video" autoplay muted loop playsinline preload="auto" poster="/workers/worker-warehouse.webp">
+            <source src="/videos/warehouse-showcase.webm" type="video/webm">
+          </video>
+          <div class="hero-video-overlay-gradient"></div>
+          <div class="hero-video-grid-pattern"></div>
+        </div>
+
+        <div class="shell hero-vero-shell">
+          <div class="hero-grid hero-vero-grid">
             <div class="hero-text-col">
-              <div class="hero-tag">
+              <div class="hero-tag hero-vero-tag">
                 <span class="tag-pulse-dot"></span>
-                <span>NEVO GROUP RASMIY PORTALI</span>
+                <span>${t('heroBadge')}</span>
               </div>
-              <h1 class="hero-title">
-                Santexnika va qurilish mahsulotlari — barchasi bir joyda
+              <h1 class="hero-title hero-title-vero">
+                ${t('heroTitlePrefix')}<span class="text-gradient-orange">${t('heroTitleAccent')}</span>
               </h1>
-              <p class="hero-desc">
-                Keng assortiment, qulay muhandislik yechimlari va butun O'zbekiston bo'ylab to'g'ridan-to'g'ri yetkazib berish.
+              <p class="hero-desc hero-desc-vero">
+                ${t('heroDesc')}
               </p>
-              <div class="hero-buttons">
-                <a href="#catalog" class="btn-primary hero-btn-glow">
-                  <span>Mahsulotlarni ko'rish</span>
+              <div class="hero-buttons hero-buttons-vero">
+                <a href="#catalog" class="btn-primary hero-btn-glow btn-primary-vero">
+                  <span>${t('heroCtaCatalog')}</span>
                   ${icon('arrow-right', '', 18)}
                 </a>
-                <a href="#tanlash" class="btn-secondary">
-                  <span>Menga mahsulot topib bering</span>
+                <a href="#aloqa" class="btn-secondary btn-secondary-vero">
+                  ${icon('phone', '', 18)}
+                  <span>${t('heroCtaFind')}</span>
                 </a>
               </div>
 
               <!-- Real Team / Staff Trust Badge -->
-              <div class="hero-team-strip">
+              <div class="hero-team-strip hero-team-strip-vero">
                 <div class="team-avatars-stack">
                   <img src="/workers/worker-consultant-thumb.webp" alt="Muhandis maslahatchi" class="avatar-circle" width="38" height="38">
                   <img src="/workers/worker-construction-thumb.webp" alt="Qurilish ustasi" class="avatar-circle" width="38" height="38">
@@ -218,25 +357,25 @@ export function renderHomePage() {
                 </div>
                 <div class="team-trust-info">
                   <div class="team-trust-title">
-                    <strong>Mutaxassislarimiz yordam beradi</strong>
+                    <strong>${t('heroConsultBadge')}</strong>
                   </div>
-                  <div class="team-trust-sub">Loyiha yoki ro'yxatingiz bo'yicha bepul maslahat</div>
+                  <div class="team-trust-sub">${t('heroConsultSub')}</div>
                 </div>
               </div>
 
               <!-- Trust Micro Badges -->
-              <div class="hero-trust-badges">
+              <div class="hero-trust-badges hero-trust-badges-vero">
                 <div class="trust-item">
                   <span class="trust-check">✓</span>
-                  <span>Narxlar so'mda, ochiq</span>
+                  <span>${t('heroTrust1')}</span>
                 </div>
                 <div class="trust-item">
                   <span class="trust-check">✓</span>
-                  <span>Kodi va o'lchami bilan</span>
+                  <span>${t('heroTrust2')}</span>
                 </div>
                 <div class="trust-item">
                   <span class="trust-check">✓</span>
-                  <span>O'zbekiston bo'ylab yetkazish</span>
+                  <span>${t('heroTrust3')}</span>
                 </div>
               </div>
             </div>
@@ -245,7 +384,7 @@ export function renderHomePage() {
               <!-- Floating 3D Micro Badges -->
               <div class="floating-badge badge-float-top">
                 <span class="live-dot-green"></span>
-                <span>Narxlar praysdan</span>
+                <span>${t('heroFloat1')}</span>
               </div>
 
               <div class="hero-image-matrix">
@@ -254,52 +393,38 @@ export function renderHomePage() {
 
               <div class="floating-badge badge-float-bottom">
                 <span class="live-dot-blue"></span>
-                <span>🔧 Mutaxassislar tanlovi</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Teaser Card -->
-          <div class="teaser-banner">
-            <div class="teaser-content">
-              <h2>Qurilish uchun mahsulot qidiryapsizmi?</h2>
-              <p>Tovar nomi, tavsif va sonini yozing — katalogdan mos tovarlarni ajratib, <strong>3 xil eng yaxshi taklif</strong> beramiz.</p>
-            </div>
-            <a href="#tanlash" class="btn-primary">
-              <span>3 xil taklif olish</span>
-              ${icon('arrow-right', '', 18)}
-            </a>
-          </div>
-
-          <!-- Animated Stats Strip -->
-          <div class="stats-section">
-            <div class="stats-grid">
-              <div class="stat-card">
-                <div class="stat-icon-wrap">${icon('boxes', '', 22)}</div>
-                ${renderStatNumber(catalog, catalog.products.length)}
-                <div class="stat-label">Katalogdagi tovarlar</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon-wrap">${icon('layout-grid', '', 22)}</div>
-                ${renderStatNumber(catalog, catalog.categories.length)}
-                <div class="stat-label">Asosiy bo'limlar</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon-wrap">${icon('tag', '', 22)}</div>
-                ${renderStatNumber(catalog, subcategoryCount)}
-                <div class="stat-label">Mahsulot guruhlari</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon-wrap">${icon('shield-check', '', 22)}</div>
-                ${renderStatNumber(catalog, brandCount)}
-                <div class="stat-label">Brendlar</div>
+                <span>${t('heroFloat2')}</span>
               </div>
             </div>
           </div>
         </div>
+
+        <a href="#stats-anchor" class="hero-scroll-indicator" aria-label="${t('heroScrollDown')}">
+          <div class="scroll-mouse-icon">
+            <span class="scroll-mouse-dot"></span>
+          </div>
+          <span class="scroll-label-text">${t('heroScrollDown')}</span>
+        </a>
       </section>
 
+      <!-- VERO 4-METRICS STATS STRIP -->
+      ${renderVeroStats(catalog)}
+
       <div class="shell">
+        <!-- YIRIK LOYIHALARDA (MAJOR PROJECTS IN UZBEKISTAN) CAROUSEL -->
+        ${renderProjectsCarousel()}
+
+        <!-- Teaser Card -->
+        <div class="teaser-banner">
+          <div class="teaser-content">
+            <h2>${t('teaserTitle')}</h2>
+            <p>${t('teaserDesc')}</p>
+          </div>
+          <a href="#tanlash" class="btn-primary">
+            <span>${t('teaserBtn')}</span>
+            ${icon('arrow-right', '', 18)}
+          </a>
+        </div>
           <!-- 👷‍♂️ WORKERS & ON-SITE STAFF STORYTELLING SECTION -->
           <section class="home-section workers-story-section">
             <div class="section-head">
@@ -658,7 +783,7 @@ export function initHomeAnimations() {
   initLazyVideos();
 
   // Animated Stat Counters
-  const counters = document.querySelectorAll('.stat-number[data-count]');
+  const counters = document.querySelectorAll('.stat-number[data-count], .vero-stat-value[data-count]');
   if (counters.length > 0 && 'IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries, obs) => {
       entries.forEach(entry => {
@@ -684,6 +809,24 @@ export function initHomeAnimations() {
       });
     }, { threshold: 0.15 });
     counters.forEach(c => observer.observe(c));
+  }
+
+  // Projects Carousel Navigation
+  const prevBtn = document.getElementById('proj-prev-btn');
+  const nextBtn = document.getElementById('proj-next-btn');
+  const track = document.getElementById('projects-carousel-track');
+  if (track) {
+    const scrollAmount = 380;
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      });
+    }
   }
 
   // Video Modal Handlers
@@ -718,7 +861,7 @@ export function initHomeAnimations() {
   };
 
   // 3D Card Hover Perspective Tilt
-  const tiltCards = document.querySelectorAll('.hero-img-card, .product-card, .benefit-card, .worker-card, .video-showcase-card');
+  const tiltCards = document.querySelectorAll('.hero-img-card, .product-card, .benefit-card, .worker-card, .video-showcase-card, .project-card');
   tiltCards.forEach(card => {
     card.addEventListener('mousemove', (e) => {
       const rect = card.getBoundingClientRect();

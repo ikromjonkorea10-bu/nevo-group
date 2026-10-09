@@ -4,6 +4,12 @@ import { getCatalog, matchesSearch } from '../lib/catalog.js';
 import { esc } from '../lib/format.js';
 import { renderNavSkeleton } from './StatusViews.js';
 import { CONTACTS, MAIN_PHONE, INSTAGRAM_URL } from '../data/content.js';
+import { getLang, setLang, t } from '../lib/i18n.js';
+
+window.__setLanguage = (lang) => {
+  setLang(lang);
+  window.dispatchEvent(new CustomEvent('nevolangchanged'));
+};
 
 function renderCategoryNav(categories) {
   return categories.map(cat => `
@@ -47,16 +53,22 @@ function renderCategoryNav(categories) {
 export function renderHeader() {
   const cartCount = store.getCartCount();
   const catalog = getCatalog();
+  const currentLang = getLang();
 
   return `
     <aside class="top-bar">
       <div class="shell">
         <span class="top-badge">
           <span>🇺🇿</span>
-          <span>O'zbekiston bo'ylab yetkazib berish</span>
+          <span>${t('deliveryTop')}</span>
         </span>
         <div class="top-links">
-          <a href="#aloqa" class="top-link top-link-contact">Biz bilan bog'lanish</a>
+          <div class="lang-switch-wrap" role="group" aria-label="Tilni tanlash / Выбор языка">
+            <button type="button" class="lang-toggle-btn ${currentLang === 'uz' ? 'active' : ''}" onclick="window.__setLanguage('uz')">UZ</button>
+            <span class="lang-divider">/</span>
+            <button type="button" class="lang-toggle-btn ${currentLang === 'ru' ? 'active' : ''}" onclick="window.__setLanguage('ru')">RU</button>
+          </div>
+          <a href="#aloqa" class="top-link top-link-contact">${t('contactUs')}</a>
           <a href="${INSTAGRAM_URL}" target="_blank" rel="noopener" class="top-link" aria-label="Instagram: @${CONTACTS.instagram}">
             ${icon('instagram', '', 14)}
             <span class="top-link-text">@${CONTACTS.instagram}</span>
@@ -81,7 +93,7 @@ export function renderHeader() {
 
           <a href="#catalog" class="catalog-trigger-btn">
             ${icon('menu', '', 18)}
-            <span>Katalog</span>
+            <span>${t('catalogBtn')}</span>
           </a>
 
           <div class="header-search-wrap">
@@ -91,7 +103,7 @@ export function renderHeader() {
                 type="text" 
                 class="header-search-input" 
                 id="header-search-input" 
-                placeholder="Mahsulot qidirish..." 
+                placeholder="${t('searchPlaceholder')}" 
                 autocomplete="off"
               />
               <button type="submit" class="header-search-btn" aria-label="Qidirish">
@@ -102,6 +114,12 @@ export function renderHeader() {
           </div>
 
           <div class="header-actions">
+            <!-- Mobile Language Switcher -->
+            <div class="header-mobile-lang">
+              <button type="button" class="lang-toggle-btn-sm ${currentLang === 'uz' ? 'active' : ''}" onclick="window.__setLanguage('uz')">UZ</button>
+              <span class="lang-divider">|</span>
+              <button type="button" class="lang-toggle-btn-sm ${currentLang === 'ru' ? 'active' : ''}" onclick="window.__setLanguage('ru')">RU</button>
+            </div>
             <a href="#savat" class="header-icon-btn" aria-label="Savat">
               ${icon('shopping-cart', '', 20)}
               <span class="cart-count-badge" id="header-cart-badge" style="${cartCount > 0 ? '' : 'display:none;'}">
