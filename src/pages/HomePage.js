@@ -268,10 +268,10 @@ function renderVeroCorporateAbout(catalog) {
     <section class="vero-about-section" id="stats-anchor">
       <div class="shell">
         <div class="vero-about-header">
-          <div class="vero-about-brand">
-            <span class="brand-triangle-icon">▲</span>
+          <div class="vero-about-brand nevo-about-brand">
+            <img src="/brand/nevo-logo.png" alt="NEVO GROUP" class="nevo-about-gold-emblem" width="56" height="56" />
             <div class="vero-about-brand-text">
-              <span class="brand-big">nevo</span>
+              <span class="brand-big brand-gold-word">NEVO</span>
               <span class="brand-sub">GROUP</span>
             </div>
           </div>
@@ -415,30 +415,44 @@ export function renderHomePage() {
 
   return `
     <main class="home-page-content">
-      <!-- VERO STYLE FULLSCREEN INDUSTRIAL HERO WITH ZAVOD VIDEO & SOUND (Screenshot 1) -->
-      <section class="hero-section hero-section-vero">
-        <div class="hero-video-backdrop">
-          <video id="hero-zavod-video" class="hero-bg-video" autoplay muted loop playsinline preload="auto" poster="/videos/zavod.jpg">
-            <source src="/videos/zavod.mp4" type="video/mp4">
-          </video>
-          <div class="hero-video-overlay-gradient"></div>
-          <div class="hero-video-grid-pattern"></div>
+      <!-- NEVO LUXURY 8K INDUSTRIAL ENGINEERING HERO SLIDESHOW (100% Bespoke, No Watermarks) -->
+      <section class="hero-section hero-section-nevo">
+        <div class="hero-slideshow-backdrop" id="nevo-hero-slideshow">
+          <div class="hero-slide-item active" data-slide="0">
+            <img src="/images/hero/hero-plant-1.jpg" alt="NEVO Zamonaviy Muhandislik Korxonasi" class="hero-slide-img" fetchpriority="high" />
+          </div>
+          <div class="hero-slide-item" data-slide="1">
+            <img src="/images/hero/hero-valves-2.jpg" alt="NEVO Sanoat Zapor Armaturalari va Zadvijkalar" class="hero-slide-img" loading="lazy" />
+          </div>
+          <div class="hero-slide-item" data-slide="2">
+            <img src="/images/hero/hero-factory-3.jpg" alt="NEVO Polimer Quvur Ishlab Chiqarish Liniyasi" class="hero-slide-img" loading="lazy" />
+          </div>
+          <div class="hero-slide-gradient-overlay"></div>
+          <div class="hero-slide-ambient-glow"></div>
+          <div class="hero-slide-blueprint-grid"></div>
         </div>
 
-        <div class="shell hero-vero-shell">
-          <div class="hero-vero-center-wrap">
-            <h1 class="hero-title hero-title-vero">
-              <span class="brand-orange-word">NEVO</span> — muhandislik tizimlari uchun O'zbekistonda ishlab chiqarilgan kompleks yechimlar
+        <div class="shell hero-nevo-shell">
+          <div class="hero-nevo-center-wrap">
+            <div class="hero-royal-badge">
+              <span class="royal-badge-emblem">
+                <img src="/brand/nevo-logo-sm.png" alt="NEVO" width="18" height="18" />
+              </span>
+              <span>NEVO GROUP · SANOAT VA MUHANDISLIK TIZIMLARI</span>
+            </div>
+
+            <h1 class="hero-title hero-title-nevo">
+              <span class="brand-gold-word">NEVO GROUP</span> — muhandislik tizimlari uchun O'zbekistonda ishlab chiqarilgan kompleks yechimlar
             </h1>
-            <p class="hero-desc hero-desc-vero">
+            <p class="hero-desc hero-desc-nevo">
               Suv ta'minoti, isitish va kanalizatsiya uchun 1000+ turdagi quvur, fiting va komplektatsiyalar.
             </p>
-            <div class="hero-buttons hero-buttons-vero">
-              <a href="#catalog" class="btn-primary hero-btn-glow btn-primary-vero">
+            <div class="hero-buttons hero-buttons-nevo">
+              <a href="#catalog" class="btn-royal-gold hero-btn-glow">
                 <span>Katalogni ko'rish</span>
                 ${icon('arrow-right', '', 18)}
               </a>
-              <a href="#aloqa" class="btn-secondary btn-secondary-vero">
+              <a href="#aloqa" class="btn-royal-glass">
                 ${icon('phone', '', 18)}
                 <span>Biz bilan bog'lanish</span>
               </a>
@@ -446,11 +460,21 @@ export function renderHomePage() {
           </div>
         </div>
 
-        <!-- Sound Toggle Button (Bottom Right - Matching Screenshot 1) -->
-        <button type="button" class="hero-sound-toggle-btn" id="hero-sound-btn" onclick="window.__toggleHeroSound()" aria-label="Ovozni yoqish">
-          <span class="sound-icon-wrap" id="hero-sound-icon">${icon('volume-2', '', 18)}</span>
-          <span class="sound-label-text" id="hero-sound-label">Ovoz yoqish</span>
-        </button>
+        <!-- Slide Switcher Dots on Hero Bottom Center/Right -->
+        <div class="hero-slides-nav" id="hero-slides-dots">
+          <button type="button" class="hero-slide-dot active" data-slide="0" onclick="window.__switchHeroSlide(0)" aria-label="1-slayd: Sanoat Zavodi">
+            <span class="hero-dot-fill"></span>
+            <span class="hero-dot-tooltip">Sanoat Korxonasi</span>
+          </button>
+          <button type="button" class="hero-slide-dot" data-slide="1" onclick="window.__switchHeroSlide(1)" aria-label="2-slayd: Zapor Armatura">
+            <span class="hero-dot-fill"></span>
+            <span class="hero-dot-tooltip">Zapor Armatura</span>
+          </button>
+          <button type="button" class="hero-slide-dot" data-slide="2" onclick="window.__switchHeroSlide(2)" aria-label="3-slayd: Ishlab Chiqarish">
+            <span class="hero-dot-fill"></span>
+            <span class="hero-dot-tooltip">Ishlab Chiqarish</span>
+          </button>
+        </div>
 
         <!-- Scroll Mouse Indicator -->
         <a href="#stats-anchor" class="hero-scroll-indicator" aria-label="Pastga tushish">
@@ -488,25 +512,42 @@ export function renderHomePage() {
 }
 
 export function initHomeAnimations() {
-  // Hero Video Sound Toggle (Screenshot 1)
-  window.__toggleHeroSound = () => {
-    const vid = document.getElementById('hero-zavod-video');
-    const label = document.getElementById('hero-sound-label');
-    const iconWrap = document.getElementById('hero-sound-icon');
-    const btn = document.getElementById('hero-sound-btn');
-    if (vid) {
-      if (vid.muted) {
-        vid.muted = false;
-        vid.volume = 0.55;
-        if (label) label.textContent = "Ovozni o'chirish";
-        if (btn) btn.classList.add('sound-active');
-      } else {
-        vid.muted = true;
-        if (label) label.textContent = "Ovoz yoqish";
-        if (btn) btn.classList.remove('sound-active');
-      }
-    }
+  // Bespoke NEVO Hero 8K Industrial Slideshow Controller
+  let heroCurrent = 0;
+  const heroSlides = document.querySelectorAll('#nevo-hero-slideshow .hero-slide-item');
+  const heroDots = document.querySelectorAll('#hero-slides-dots .hero-slide-dot');
+  const totalHeroSlides = heroSlides.length;
+
+  window.__switchHeroSlide = (idx) => {
+    if (totalHeroSlides === 0) return;
+    heroCurrent = (idx + totalHeroSlides) % totalHeroSlides;
+    heroSlides.forEach((el, i) => {
+      el.classList.toggle('active', i === heroCurrent);
+    });
+    heroDots.forEach((btn, i) => {
+      btn.classList.toggle('active', i === heroCurrent);
+    });
   };
+
+  if (totalHeroSlides > 1) {
+    if (window.__heroSlideInterval) {
+      clearInterval(window.__heroSlideInterval);
+    }
+    window.__heroSlideInterval = setInterval(() => {
+      window.__switchHeroSlide(heroCurrent + 1);
+    }, 5500);
+
+    const heroWrap = document.getElementById('nevo-hero-slideshow');
+    if (heroWrap) {
+      heroWrap.addEventListener('mouseenter', () => clearInterval(window.__heroSlideInterval));
+      heroWrap.addEventListener('mouseleave', () => {
+        clearInterval(window.__heroSlideInterval);
+        window.__heroSlideInterval = setInterval(() => {
+          window.__switchHeroSlide(heroCurrent + 1);
+        }, 5500);
+      });
+    }
+  }
   // Animated Stat Counters
   const counters = document.querySelectorAll('.stat-number[data-count], .vero-stat-value[data-count], .vero-metric-val[data-count]');
   if (counters.length > 0 && 'IntersectionObserver' in window) {
