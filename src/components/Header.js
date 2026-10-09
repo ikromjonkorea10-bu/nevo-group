@@ -99,7 +99,7 @@ export function renderHeader() {
           </a>
 
           <div class="header-search-wrap">
-            <form class="header-search-form" id="header-search-form" role="search" onsubmit="event.preventDefault();">
+            <div class="header-search-form" id="header-search-form" role="search" onclick="window.__openQuickSearch();">
               <label for="header-search-input" class="visually-hidden">Mahsulot qidirish</label>
               <input
                 type="text" 
@@ -107,12 +107,13 @@ export function renderHeader() {
                 id="header-search-input" 
                 placeholder="${t('searchPlaceholder')}" 
                 autocomplete="off"
+                readonly
               />
-              <button type="submit" class="header-search-btn" aria-label="Qidirish">
+              <kbd class="header-search-kbd">⌘K</kbd>
+              <button type="button" class="header-search-btn" aria-label="Qidirish">
                 ${icon('search', '', 18)}
               </button>
-            </form>
-            <div class="search-results-dropdown" id="search-dropdown"></div>
+            </div>
           </div>
 
           <div class="header-actions">

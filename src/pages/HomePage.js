@@ -1,24 +1,8 @@
 import { icon } from '../icons.js';
-import { BENEFITS, MAIN_PHONE, TELEGRAM_URL, INSTAGRAM_DM_URL } from '../data/content.js';
 import { getCatalog } from '../lib/catalog.js';
-import { isSupabaseConfigured } from '../lib/supabase.js';
 import { esc } from '../lib/format.js';
-import { renderProductCard } from '../components/ProductCard.js';
-import { renderProductsGridSkeleton } from '../components/StatusViews.js';
 import { renderTestimonials } from '../components/Testimonials.js';
 import { t } from '../lib/i18n.js';
-
-function renderInlineLoadError() {
-  return `
-    <div class="status-card" role="alert" style="padding: 32px 20px;">
-      <h3 class="status-title" style="font-size: 18px;">Ma'lumot yuklanmadi, qayta urinib ko'ring</h3>
-      <p class="status-text" style="margin-bottom: 16px;">
-        ${isSupabaseConfigured ? "Internet aloqangizni tekshiring." : "Sayt sozlanmagan: Supabase ulanish ma'lumotlari topilmadi."}
-      </p>
-      ${isSupabaseConfigured ? `<button type="button" class="btn-primary" onclick="window.__retryCatalog()">Qayta urinish</button>` : ''}
-    </div>
-  `;
-}
 
 // Hero kartalari bazadagi mahsulotlardan qoida bo'yicha tanlanadi — ID yozilmaydi.
 // Mahsulot o'chsa, tugasa yoki rasmi bo'lmasa, qoidaga mos keyingisi olinadi.
@@ -111,67 +95,6 @@ export function pickHomeProducts(products) {
   const hero = pickHeroProducts(products);
   const featured = pickFeaturedProducts(products, hero);
   return { hero, featured, featuredSource: 'auto' };
-}
-
-function renderHeroCards(catalog, heroProducts) {
-  if (catalog.status === 'loading' || (catalog.status === 'idle' && isSupabaseConfigured)) {
-    return Array.from({ length: HERO_COUNT }, () => '<div class="hero-img-card skeleton" aria-hidden="true"></div>').join('');
-  }
-  return heroProducts.map((p) => `
-    <a href="#product/${esc(p.slug)}" class="hero-img-card" title="${esc(p.name)}">
-      <img
-        src="${esc(p.image)}"
-        alt="${esc(p.name)}"
-        width="600"
-        height="600"
-        decoding="async"
-        onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';"
-      >
-      <span class="card-glass-sheen"></span>
-    </a>
-  `).join('');
-}
-
-// Statistika faqat bazadagi haqiqiy katalogdan hisoblanadi
-function renderStatNumber(catalog, value) {
-  return catalog.status === 'ready' && value
-    ? `<div class="stat-number" data-count="${value}" data-suffix="">${value}</div>`
-    : '<div class="stat-number">…</div>';
-}
-
-function renderProductsBlock(products, catalog) {
-  if (!isSupabaseConfigured || catalog.status === 'error') return renderInlineLoadError();
-  if (catalog.status !== 'ready') return renderProductsGridSkeleton(4);
-  if (products.length === 0) {
-    return `<p style="color: var(--muted); font-size: 15px;">Hozircha mahsulotlar yo'q.</p>`;
-  }
-  return `<div class="products-grid">${products.map(renderProductCard).join('')}</div>`;
-}
-
-function renderCategoriesBlock(catalog) {
-  if (!isSupabaseConfigured || catalog.status === 'error') return renderInlineLoadError();
-  if (catalog.status !== 'ready') {
-    return `
-      <div class="popular-categories-grid" aria-hidden="true">
-        ${Array.from({ length: 5 }, () => '<div class="skeleton" style="height: 150px; border-radius: var(--radius-xl);"></div>').join('')}
-      </div>
-    `;
-  }
-  return `
-    <div class="popular-categories-grid">
-      ${catalog.categories.map(cat => `
-        <a href="#bolim/${esc(cat.slug)}" class="category-card" data-cat="${esc(cat.slug)}">
-          <div>
-            <h3 class="category-card-name">${esc(cat.name)}</h3>
-            <div class="category-card-desc">${esc(cat.shortDesc)}</div>
-            <div class="category-card-count">${cat.count} ta mahsulot</div>
-          </div>
-          <img src="${esc(cat.image)}" alt="${esc(cat.name)}" class="category-card-img" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';">
-          <div class="category-card-arrow">${icon('arrow-right', '', 14)}</div>
-        </a>
-      `).join('')}
-    </div>
-  `;
 }
 
 function renderProjectsCarousel() {

@@ -7,7 +7,9 @@ let currentLang = (() => {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === 'ru' || saved === 'uz' || saved === 'en') return saved;
-  } catch (e) {}
+  } catch (e) {
+    void e;
+  }
   return 'uz';
 })();
 
@@ -22,7 +24,9 @@ export function setLang(lang) {
   currentLang = lang;
   try {
     localStorage.setItem(STORAGE_KEY, lang);
-  } catch (e) {}
+  } catch (e) {
+    void e;
+  }
   document.documentElement.lang = lang;
   listeners.forEach(fn => fn(currentLang));
 }
@@ -153,6 +157,35 @@ export const DICT = {
     sortPriceDesc: "Avval qimmatlari",
     sortName: "Nomi bo'yicha (A-Z)",
     showMore: "Ko'proq ko'rsatish",
+    viewCatalogBtn: "Katalogni ko'rish",
+    viewPhoto: "Rasmni ko'rish",
+    view3D: "3D modelni ko'rish",
+    openCategory: "Ochish",
+    backToCatalog: "Katalogga qaytish",
+    downloadCatalogs: "Kataloglarni ko'rish va yuklab olish",
+    pdfCatalog: "PDF Katalog",
+    viewPdf: "Ko'rish",
+    downloadPdf: "Yuklab olish",
+    productDimensions: "O'lchamlar va Parametrlar",
+    diameterCol: "Diametr / O'lchami",
+    packQtyCol: "O'ramda",
+    unitCol: "Birligi",
+    brandCol: "Brend",
+    skuCol: "Kodi",
+    orderNow: "Buyurtma berish",
+    requestPrice: "Narx so'rash",
+    relatedProducts: "O'xshash mahsulotlar",
+    specNote: "Ulgurji narxlar va qulay shartlar bo'yicha mutaxassisimiz bilan bog'laning.",
+    rotate3DHint: "Aylantirish uchun sichqoncha yoki barmog'ingiz bilan suring",
+    zoomIn: "Kattalashtirish",
+    zoomOut: "Kichraytirish",
+    resetView: "Tiklash",
+    recentSearches: "So'nggi qidiruvlar",
+    noSearchResults: "Mahsulot topilmadi",
+    escToClose: "Yopish uchun ESC",
+    productsWord: "ta mahsulot",
+    breadHome: "Bosh sahifa",
+    breadCatalog: "Katalog",
   },
 
   ru: {
@@ -275,6 +308,35 @@ export const DICT = {
     sortPriceDesc: "Сначала дорогие",
     sortName: "По названию (А-Я)",
     showMore: "Показать больше",
+    viewCatalogBtn: "Смотреть каталог",
+    viewPhoto: "Смотреть фото",
+    view3D: "Смотреть 3D модель",
+    openCategory: "Открыть",
+    backToCatalog: "Вернуться в каталог",
+    downloadCatalogs: "Просмотр и скачивание каталогов",
+    pdfCatalog: "PDF Каталог",
+    viewPdf: "Смотреть",
+    downloadPdf: "Скачать",
+    productDimensions: "Размеры и параметры",
+    diameterCol: "Диаметр / Размер",
+    packQtyCol: "В упаковке",
+    unitCol: "Ед. изм.",
+    brandCol: "Бренд",
+    skuCol: "Артикул",
+    orderNow: "Заказать",
+    requestPrice: "Запросить цену",
+    relatedProducts: "Похожие товары",
+    specNote: "За оптовыми ценами и условиями поставки обращайтесь к нашим специалистам.",
+    rotate3DHint: "Перетаскивайте мышью или пальцем для вращения 3D-модели",
+    zoomIn: "Увеличить",
+    zoomOut: "Уменьшить",
+    resetView: "Сбросить",
+    recentSearches: "Недавние поиски",
+    noSearchResults: "Ничего не найдено",
+    escToClose: "Нажмите ESC чтобы закрыть",
+    productsWord: "товаров",
+    breadHome: "Главная",
+    breadCatalog: "Каталог",
   },
   en: {
     // Header
@@ -392,6 +454,35 @@ export const DICT = {
     sortPriceDesc: "Price: high to low",
     sortName: "Alphabetical (A-Z)",
     showMore: "Show more",
+    viewCatalogBtn: "Browse Catalog",
+    viewPhoto: "View Photo",
+    view3D: "View 3D Model",
+    openCategory: "Open",
+    backToCatalog: "Back to Catalog",
+    downloadCatalogs: "Browse & Download Catalogs",
+    pdfCatalog: "PDF Catalog",
+    viewPdf: "View",
+    downloadPdf: "Download",
+    productDimensions: "Dimensions & Specifications",
+    diameterCol: "Diameter / Size",
+    packQtyCol: "In Package",
+    unitCol: "Unit",
+    brandCol: "Brand",
+    skuCol: "Article / SKU",
+    orderNow: "Order Now",
+    requestPrice: "Request Price",
+    relatedProducts: "Related Products",
+    specNote: "Contact our engineering specialists for wholesale prices and delivery schedules.",
+    rotate3DHint: "Drag with mouse or swipe finger to rotate 3D model",
+    zoomIn: "Zoom In",
+    zoomOut: "Zoom Out",
+    resetView: "Reset",
+    recentSearches: "Recent Searches",
+    noSearchResults: "No products found",
+    escToClose: "Press ESC to close",
+    productsWord: "products",
+    breadHome: "Home",
+    breadCatalog: "Catalog",
   }
 };
 

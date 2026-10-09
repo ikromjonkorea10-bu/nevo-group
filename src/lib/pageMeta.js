@@ -37,12 +37,15 @@ export function updatePageMeta(route, param = '') {
     } else {
       title = `Mahsulot topilmadi — ${SITE}`;
     }
-  } else if (route === 'bolim' && ready) {
+  } else if ((route === 'bolim' || route === 'catalog') && param && ready) {
     const category = getCategoryBySlug(param);
     if (category) {
       title = `${category.name} — ${SITE}`;
       description = `${category.name}: ${category.count} ta mahsulot narxi bilan. ${category.shortDesc}`.trim();
     }
+  } else if (route === 'catalog') {
+    title = `Mahsulotlar va Sanoat Katalogi — ${SITE}`;
+    description = `NEVO GROUP to'liq sanoat katalogi: polimer quvurlar, zapor armatura, yong'in va isitish jihozlari.`;
   } else if (STATIC_TITLES[route]) {
     title = `${STATIC_TITLES[route]} — ${SITE}`;
   }

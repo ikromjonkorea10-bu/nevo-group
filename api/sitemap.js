@@ -9,7 +9,10 @@ const PAGE = 1000;
 
 export default async function handler(req, res) {
   const origin = siteOrigin(req);
-  const urls = [{ loc: `${origin}/`, changefreq: 'weekly', priority: '1.0' }];
+  const urls = [
+    { loc: `${origin}/`, changefreq: 'weekly', priority: '1.0' },
+    { loc: `${origin}/catalog`, changefreq: 'weekly', priority: '0.9' },
+  ];
 
   try {
     const categories = await restGet('categories?select=slug&order=sort_order.asc,id.asc');
@@ -22,7 +25,12 @@ export default async function handler(req, res) {
         `products?select=slug,updated_at&in_stock=is.true&order=id.asc&limit=${PAGE}&offset=${offset}`
       );
       for (const p of rows) {
-        urls.push({ loc: `${origin}/p/${p.slug}`, lastmod: String(p.updated_at || '').slice(0, 10), changefreq: 'weekly', priority: '0.7' });
+        urls.push({
+          loc: `${origin}/p/${p.slug}`,
+          lastmod: String(p.updated_at || '').slice(0, 10),
+          changefreq: 'weekly',
+          priority: '0.7',
+        });
       }
       if (rows.length < PAGE) break;
     }

@@ -4,6 +4,11 @@ if (window.location.pathname.replace(/\/+$/, '') === '/admin') {
 }
 
 import './style.css';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/free-mode';
+
 import { icon } from './icons.js';
 import { store } from './store.js';
 import { isSupabaseConfigured } from './lib/supabase.js';
@@ -23,6 +28,10 @@ import { initAnalytics, trackPageview } from './lib/analytics.js';
 import { updatePageMeta } from './lib/pageMeta.js';
 import { initIntroSplash } from './components/IntroSplash.js';
 import { renderMaintenanceScreen, initMaintenanceUnlock } from './components/MaintenanceScreen.js';
+import { initProductModalGlobal } from './components/ProductModal.js';
+import { initQuickSearchGlobal } from './components/QuickSearch.js';
+
+window.__getCatalog = getCatalog;
 
 // Maintenance & Stealth Preview Gate
 const urlParams = new URLSearchParams(window.location.search);
@@ -75,6 +84,11 @@ function parseRoute() {
   const [path, queryString] = hash.split('?');
   const queryParams = {};
 
+  const searchParams = new URLSearchParams(window.location.search);
+  for (const [k, v] of searchParams.entries()) {
+    queryParams[k] = v;
+  }
+
   if (queryString) {
     const pairs = queryString.split('&');
     for (const pair of pairs) {
@@ -83,11 +97,16 @@ function parseRoute() {
     }
   }
 
-  const parts = path.split('/').filter(Boolean);
+  let cleanPath = path;
+  if (!cleanPath && window.location.pathname !== '/') {
+    cleanPath = window.location.pathname.replace(/^\/+|\/+$/g, '');
+  }
+
+  const parts = cleanPath.split('/').filter(Boolean);
   const route = parts[0] || 'home';
   const param = parts[1] || '';
 
-  return { route, param, queryParams, raw: path };
+  return { route, param, queryParams, raw: cleanPath };
 }
 
 function sameAttributes(a, b) {
@@ -181,7 +200,7 @@ function router() {
   } else if (route === 'home' || route === '') {
     pageHtml = renderHomePage();
   } else if (route === 'catalog') {
-    pageHtml = renderCatalogPage(queryParams, window.location.hash);
+    pageHtml = renderCatalogPage(param ? { category: param, ...queryParams } : queryParams, window.location.hash);
   } else if (route === 'bolim') {
     pageHtml = renderCatalogPage({ category: param, ...queryParams }, window.location.hash);
   } else if (route === 'product') {
@@ -273,6 +292,9 @@ store.subscribe(({ count }) => updateCartBadges(count));
 // Router Event Listeners
 window.addEventListener('hashchange', router);
 window.addEventListener('nevolangchanged', router);
+initProductModalGlobal();
+initQuickSearchGlobal();
+
 // Katalog so'rovi birinchi bo'lib jo'natiladi; sahifa keyingi vazifada bir marta chiziladi,
 // shunda og'ir birinchi render so'rovning tarmoqqa chiqishini kechiktirmaydi.
 if (isSupabaseConfigured) loadCatalog({ silent: true });
