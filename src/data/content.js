@@ -9,8 +9,7 @@ export const CONTACTS = {
     { tel: '+998998631100', label: '+998 99 863 11 00' },
   ],
   instagram: 'nevo_group_uzbekistan',
-  // [MIJOZ] Telegram username, @ belgisisiz (masalan: 'nevo_group_uz')
-  telegram: '',
+  telegram: 'Nevo_Group',
 };
 
 export const MAIN_PHONE = CONTACTS.phones[0];
