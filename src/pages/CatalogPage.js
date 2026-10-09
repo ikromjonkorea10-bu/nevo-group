@@ -112,32 +112,39 @@ export function renderCatalogPage(params = {}, routeKey = '') {
   const visible = filtered.slice(0, state.visibleCount);
 
   return `
-    <div class="shell" style="padding-top: 24px; padding-bottom: 60px;">
-      <!-- Catalog Page Header -->
-      <div class="catalog-page-head">
-        <h1 class="catalog-page-title">${esc(title)}</h1>
-        <p class="catalog-page-sub">${esc(subtext)}</p>
+    <!-- VERO STYLE CATALOG HERO BANNER (Screenshot 2) -->
+    <div class="catalog-vero-hero-banner">
+      <div class="shell">
+        <div class="catalog-vero-hero-content">
+          <h1 class="catalog-vero-title">Mahsulotlar<br><span class="text-gradient-orange">va Katalog</span></h1>
+          <p class="catalog-vero-sub">
+            Isitish, suv ta'minoti va muhandislik tizimlari uchun sanoat jihozlari, komplektovchi qismlar va materiallarning keng assortimenti.
+          </p>
 
-        <div class="catalog-search-bar">
-          ${icon('search', '', 20)}
-          <input
-            type="text"
-            id="catalog-inner-search"
-            placeholder="Nomi yoki o'lchami bo'yicha qidirish (masalan: 32/20)"
-            value="${esc(state.searchQuery || '')}"
-          />
-          ${state.searchQuery ? `
-            <button onclick="window.__clearCatalogSearch()" style="color: var(--muted); padding: 4px;" aria-label="Qidiruvni tozalash">
-              ${icon('x', '', 16)}
-            </button>
-          ` : ''}
-        </div>
-
-        <div class="catalog-notice">
-          ${icon('zap', '', 18)}
-          <span>Narxlar NEVO GROUP praysidan olingan. Prays vaqti-vaqti bilan yangilanadi — buyurtma berishdan oldin operatorimiz aniq narxni tasdiqlaydi.</span>
+          <div class="catalog-vero-search-wrap">
+            <span class="catalog-vero-search-label">KATALOGDAN QIDIRISH</span>
+            <div class="catalog-search-bar vero-dark-search-bar">
+              ${icon('search', '', 20)}
+              <input
+                type="text"
+                id="catalog-inner-search"
+                placeholder="Mahsulot qidirish — masalan: PN20, fiting, kran..."
+                value="${esc(state.searchQuery || '')}"
+              />
+              ${state.searchQuery ? `
+                <button onclick="window.__clearCatalogSearch()" style="color: var(--muted); padding: 4px;" aria-label="Qidiruvni tozalash">
+                  ${icon('x', '', 16)}
+                </button>
+              ` : `
+                <span class="search-kbd-badge">⌘K</span>
+              `}
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+
+    <div class="shell" style="padding-top: 10px; padding-bottom: 60px;">
 
       <!-- Quick Category Pills -->
       <div class="category-pills-row">

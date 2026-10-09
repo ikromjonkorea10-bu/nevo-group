@@ -349,20 +349,31 @@ function renderVeroCatalogShowcase() {
   ];
 
   return `
-    <!-- VERO STYLE LUXURY CATALOG SHOWCASE (Screenshot 5) -->
-    <section class="home-section vero-catalog-showcase-section">
-      <div class="section-head">
+    <!-- VERO STYLE LUXURY CATALOG SHOWCASE (Screenshot 2 & 5) -->
+    <section class="home-section vero-catalog-showcase-section" id="catalog-anchor">
+      <div class="section-head vero-catalog-section-head">
         <div>
           <div class="section-pill-tag">ASOSIY YO'NALISHLAR</div>
-          <h2 class="section-title">Mahsulotlar Katalogi</h2>
-          <div class="section-subtitle">Yuqori sifatli polimer quvurlar, fitinglar va sanoat armaturasi</div>
+          <h2 class="section-title">Mahsulotlar va Katalog</h2>
+          <div class="section-subtitle">Isitish, suv ta'minoti va muhandislik tizimlari uchun sanoat jihozlari, komplektovchi qismlar va materiallarning keng assortimenti.</div>
         </div>
-        <a href="#catalog" class="section-link">
-          <span>To'liq katalog</span>
+        <a href="#catalog" class="section-link vero-catalog-head-link">
+          <span>Katalogni ko'rish</span>
           ${icon('arrow-right', '', 16)}
         </a>
       </div>
 
+      <!-- Quick Search Bar (Matching Screenshot 2) -->
+      <div class="vero-catalog-search-strip">
+        <span class="vero-search-label">KATALOGDAN QIDIRISH</span>
+        <div class="vero-search-box-wrap" onclick="window.location.hash='#catalog';">
+          ${icon('search', '', 18)}
+          <input type="text" placeholder="Mahsulot qidirish — masalan: PN20, fiting, kran..." readonly class="vero-search-input-fake" />
+          <span class="search-kbd-badge">⌘K</span>
+        </div>
+      </div>
+
+      <!-- Cards Grid -->
       <div class="vero-catalog-grid">
         ${categories.map(c => `
           <a href="#bolim/${esc(c.slug)}" class="vero-cat-card">
@@ -387,112 +398,69 @@ function renderVeroCatalogShowcase() {
           </a>
         `).join('')}
       </div>
+
+      <!-- Slider Dots Pagination -->
+      <div class="vero-catalog-dots">
+        <span class="vero-dot active"></span>
+        <span class="vero-dot"></span>
+        <span class="vero-dot"></span>
+        <span class="vero-dot"></span>
+      </div>
     </section>
   `;
 }
 
 export function renderHomePage() {
   const catalog = getCatalog();
-  const inStock = catalog.products.filter(p => p.inStock);
-  const { hero: heroProducts, featured: featuredProducts } = pickHomeProducts(catalog.products);
-  const budgetProducts = inStock.filter(p => p.budget || (p.price < 5000 && p.categorySlug === 'truba-va-fitinglar')).slice(0, 8);
-  const brandCount = new Set(catalog.products.map(p => p.brand).filter(Boolean)).size;
-  const subcategoryCount = catalog.categories.reduce((sum, c) => sum + c.subcategories.length, 0);
 
   return `
     <main class="home-page-content">
-      <!-- VERO STYLE FULLSCREEN INDUSTRIAL HERO -->
+      <!-- VERO STYLE FULLSCREEN INDUSTRIAL HERO WITH ZAVOD VIDEO & SOUND (Screenshot 1) -->
       <section class="hero-section hero-section-vero">
-        <div class="hero-creative-backdrop">
-          <img src="/brand/hero-industrial-bg.webp" alt="NEVO GROUP" class="hero-backdrop-img" decoding="async">
+        <div class="hero-video-backdrop">
+          <video id="hero-zavod-video" class="hero-bg-video" autoplay muted loop playsinline preload="auto" poster="/videos/zavod.jpg">
+            <source src="/videos/zavod.mp4" type="video/mp4">
+          </video>
           <div class="hero-video-overlay-gradient"></div>
           <div class="hero-video-grid-pattern"></div>
         </div>
 
         <div class="shell hero-vero-shell">
-          <div class="hero-grid hero-vero-grid">
-            <div class="hero-text-col">
-              <div class="hero-tag hero-vero-tag">
-                <span class="tag-pulse-dot"></span>
-                <span>${t('heroBadge')}</span>
-              </div>
-              <h1 class="hero-title hero-title-vero">
-                Suv ta'minoti va isitish tizimlari uchun <span class="text-gradient-orange">kompleks muhandislik yechimlari</span>
-              </h1>
-              <p class="hero-desc hero-desc-vero">
-                Ishonchli muhandislik tarmoqlari uchun yuqori sifatli polimer quvurlar, fitinglar va sanoat zapor armaturasining keng assortimenti
-              </p>
-              <div class="hero-buttons hero-buttons-vero">
-                <a href="#catalog" class="btn-primary hero-btn-glow btn-primary-vero">
-                  <span>${t('heroCtaCatalog')}</span>
-                  ${icon('arrow-right', '', 18)}
-                </a>
-                <a href="#aloqa" class="btn-secondary btn-secondary-vero">
-                  ${icon('phone', '', 18)}
-                  <span>${t('heroCtaFind')}</span>
-                </a>
-              </div>
-
-              <!-- Real Team / Staff Trust Badge -->
-              <div class="hero-team-strip hero-team-strip-vero">
-                <div class="team-avatars-stack">
-                  <img src="/workers/worker-consultant-thumb.webp" alt="Muhandis maslahatchi" class="avatar-circle" width="38" height="38">
-                  <img src="/workers/worker-construction-thumb.webp" alt="Qurilish ustasi" class="avatar-circle" width="38" height="38">
-                  <img src="/workers/worker-warehouse-thumb.webp" alt="Ombor logistikasi" class="avatar-circle" width="38" height="38">
-                </div>
-                <div class="team-trust-info">
-                  <div class="team-trust-title">
-                    <strong>${t('heroConsultBadge')}</strong>
-                  </div>
-                  <div class="team-trust-sub">${t('heroConsultSub')}</div>
-                </div>
-              </div>
-
-              <!-- Trust Micro Badges -->
-              <div class="hero-trust-badges hero-trust-badges-vero">
-                <div class="trust-item">
-                  <span class="trust-check">✓</span>
-                  <span>${t('heroTrust1')}</span>
-                </div>
-                <div class="trust-item">
-                  <span class="trust-check">✓</span>
-                  <span>${t('heroTrust2')}</span>
-                </div>
-                <div class="trust-item">
-                  <span class="trust-check">✓</span>
-                  <span>${t('heroTrust3')}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="hero-matrix-wrapper">
-              <!-- Floating 3D Micro Badges -->
-              <div class="floating-badge badge-float-top">
-                <span class="live-dot-green"></span>
-                <span>${t('heroFloat1')}</span>
-              </div>
-
-              <div class="hero-image-matrix">
-                ${renderHeroCards(catalog, heroProducts)}
-              </div>
-
-              <div class="floating-badge badge-float-bottom">
-                <span class="live-dot-blue"></span>
-                <span>${t('heroFloat2')}</span>
-              </div>
+          <div class="hero-vero-center-wrap">
+            <h1 class="hero-title hero-title-vero">
+              <span class="brand-orange-word">NEVO</span> — muhandislik tizimlari uchun O'zbekistonda ishlab chiqarilgan kompleks yechimlar
+            </h1>
+            <p class="hero-desc hero-desc-vero">
+              Suv ta'minoti, isitish va kanalizatsiya uchun 1000+ turdagi quvur, fiting va komplektatsiyalar.
+            </p>
+            <div class="hero-buttons hero-buttons-vero">
+              <a href="#catalog" class="btn-primary hero-btn-glow btn-primary-vero">
+                <span>Katalogni ko'rish</span>
+                ${icon('arrow-right', '', 18)}
+              </a>
+              <a href="#aloqa" class="btn-secondary btn-secondary-vero">
+                ${icon('phone', '', 18)}
+                <span>Biz bilan bog'lanish</span>
+              </a>
             </div>
           </div>
         </div>
 
-        <a href="#stats-anchor" class="hero-scroll-indicator" aria-label="${t('heroScrollDown')}">
+        <!-- Sound Toggle Button (Bottom Right - Matching Screenshot 1) -->
+        <button type="button" class="hero-sound-toggle-btn" id="hero-sound-btn" onclick="window.__toggleHeroSound()" aria-label="Ovozni yoqish">
+          <span class="sound-icon-wrap" id="hero-sound-icon">${icon('volume-2', '', 18)}</span>
+          <span class="sound-label-text" id="hero-sound-label">Ovoz yoqish</span>
+        </button>
+
+        <!-- Scroll Mouse Indicator -->
+        <a href="#stats-anchor" class="hero-scroll-indicator" aria-label="Pastga tushish">
           <div class="scroll-mouse-icon">
             <span class="scroll-mouse-dot"></span>
           </div>
-          <span class="scroll-label-text">${t('heroScrollDown')}</span>
         </a>
       </section>
 
-      <!-- VERO STYLE CORPORATE ABOUT & METRICS (Screenshot 2) -->
+      <!-- VERO STYLE CORPORATE ABOUT & 4 METRICS (Screenshot 2) -->
       ${renderVeroCorporateAbout(catalog)}
 
       <div class="shell">
@@ -502,259 +470,43 @@ export function renderHomePage() {
         <!-- YIRIK LOYIHALARDA (MAJOR PROJECTS IN UZBEKISTAN) CAROUSEL -->
         ${renderProjectsCarousel()}
 
-        <!-- Teaser Card -->
-        <div class="teaser-banner">
-          <div class="teaser-content">
-            <h2>${t('teaserTitle')}</h2>
-            <p>${t('teaserDesc')}</p>
-          </div>
-          <a href="#tanlash" class="btn-primary">
-            <span>${t('teaserBtn')}</span>
-            ${icon('arrow-right', '', 18)}
+        <!-- MIJOZLAR FIKRI (TESTIMONIALS) -->
+        ${renderTestimonials()}
+
+        <!-- Dark Final CTA Banner -->
+        <div class="cta-banner-dark" style="margin-top: 54px; margin-bottom: 54px;">
+          <h3>Kerakli mahsulotni topdingizmi?</h3>
+          <p>Narx va mavjudligini bilish uchun biz bilan hoziroq bog'laning.</p>
+          <a href="#aloqa" class="btn-white">
+            ${icon('message-circle', '', 18)}
+            <span>Bog'lanish</span>
           </a>
         </div>
-          <!-- 👷‍♂️ WORKERS & ON-SITE STAFF STORYTELLING SECTION -->
-          <section class="home-section workers-story-section">
-            <div class="section-head">
-              <div>
-                <div class="section-pill-tag">MUTAXASSISLAR VA ISH JARAYONI</div>
-                <h2 class="section-title">Bizning Jamoa va Amaliyotdagi Sifat</h2>
-                <div class="section-subtitle">Obyektlarda o'rnatish, ombor nazorati va muhandislik xizmatlari</div>
-              </div>
-              <a href="#aloqa" class="section-link">
-                <span>Mutaxassislar bilan bog'lanish</span>
-                ${icon('arrow-right', '', 16)}
-              </a>
-            </div>
-
-            <div class="workers-grid">
-              <div class="worker-card">
-                <div class="worker-img-wrap">
-                  <img src="/workers/worker-pipefitting.webp" alt="Quvurlar montaji va muhandislik nazorati" loading="lazy" decoding="async">
-                  <span class="worker-role-badge">📐 Muhandislik Nazorati</span>
-                </div>
-                <div class="worker-card-body">
-                  <h3>Zamonaviy muhandislik nazorati va montaj</h3>
-                  <p>Loyiha chizmalari, bosim hisob-kitoblari va quvur tarmoqlarining standartlarga to'liq mosligini professional muhandislarimiz nazorat qiladi.</p>
-                  <div class="worker-feature-check">
-                    <span class="check-icon">✓</span>
-                    <span>Standartlarga muvofiqlik nazorati</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="worker-card">
-                <div class="worker-img-wrap">
-                  <img src="/workers/worker-warehouse.webp" alt="Ombor logistikasi" loading="lazy" decoding="async">
-                  <span class="worker-role-badge">📦 Markaziy Ombor</span>
-                </div>
-                <div class="worker-card-body">
-                  <h3>Katta zaxiradagi ombor tizimi</h3>
-                  <p>Mahsulotlar omborda saralanadi, buyurtma bo'yicha qadoqlanadi va jo'natiladi.</p>
-                  <div class="worker-feature-check">
-                    <span class="check-icon">✓</span>
-                    <span>Buyurtma bo'yicha qadoqlash</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="worker-card">
-                <div class="worker-img-wrap">
-                  <img src="/workers/worker-construction.webp" alt="Qurilish muhandisi" loading="lazy" decoding="async">
-                  <span class="worker-role-badge">🏗️ Muhandislik Nazorati</span>
-                </div>
-                <div class="worker-card-body">
-                  <h3>Qurilish obyektlari ta'minoti</h3>
-                  <p>Ko'p qavatli binolar, sanoat inshootlari va turar-joylar uchun loyiha smetasiga mos tovarlarni aniq hisoblab beramiz.</p>
-                  <div class="worker-feature-check">
-                    <span class="check-icon">✓</span>
-                    <span>Smeta bo'yicha bepul maslahat</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="worker-card">
-                <div class="worker-img-wrap">
-                  <img src="/workers/worker-delivery.webp" alt="Nevo brendli yetkazib berish mashinasi" loading="lazy" decoding="async">
-                  <span class="worker-role-badge">🚚 Respublika Bo'ylab</span>
-                </div>
-                <div class="worker-card-body">
-                  <h3>Xavfsiz va tezkor yetkazish</h3>
-                  <p>Toshkent shahri va O'zbekiston viloyatlariga tovarlarni ehtiyotkorlik bilan yetkazib beramiz.</p>
-                  <div class="worker-feature-check">
-                    <span class="check-icon">✓</span>
-                    <span>Yuk ortish va tushirish xizmati</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Mashhur bo'limlar -->
-          <section class="home-section">
-            <div class="section-head">
-              <div>
-                <h2 class="section-title">Mashhur bo'limlar</h2>
-                <div class="section-subtitle">Asosiy yo'nalishlar bo'yicha mahsulotlar</div>
-              </div>
-            </div>
-
-            ${renderCategoriesBlock(catalog)}
-
-            <!-- Two Big Promo Cards Side by Side -->
-            <div class="side-promos-grid">
-              <div class="promo-card light">
-                <div>
-                  <div class="promo-icon-wrap">
-                    ${icon('compass', '', 22)}
-                  </div>
-                  <h3>Nima kerakligini bilmayapsizmi?</h3>
-                  <p>Bir nechta savolga javob bering — katalogdan uchta mos variantni ko'rsatamiz.</p>
-                </div>
-                <a href="#tanlash" class="promo-action">
-                  <span>Mahsulot tanlash</span>
-                  ${icon('arrow-right', '', 16)}
-                </a>
-              </div>
-
-              <div class="promo-card dark">
-                <div>
-                  <div class="promo-icon-wrap">
-                    ${icon('hard-hat', '', 22)}
-                  </div>
-                  <h3>Obyekt uchun ko'p miqdorda kerakmi?</h3>
-                  <p>Ro'yxatni bitta joyga yozing — narx va muddatni operatorimiz aytadi.</p>
-                </div>
-                <a href="#katta-buyurtma" class="promo-action">
-                  <span>Katta buyurtma</span>
-                  ${icon('arrow-right', '', 16)}
-                </a>
-              </div>
-            </div>
-          </section>
-
-          <!-- Tanlangan mahsulotlar -->
-          <section class="home-section">
-            <div class="section-head">
-              <div>
-                <h2 class="section-title">Tanlangan mahsulotlar</h2>
-                <div class="section-subtitle">Ko'p so'raladigan va eng sifatli pozitsiyalar</div>
-              </div>
-              <a href="#catalog" class="section-link">
-                <span>Hammasi</span>
-                ${icon('arrow-right', '', 16)}
-              </a>
-            </div>
-
-            ${renderProductsBlock(featuredProducts, catalog)}
-          </section>
-
-          <!-- 👨‍💼 Real Consultant Specialist Interactive Card -->
-          <section class="consultant-spotlight-section">
-            <div class="consultant-card">
-              <div class="consultant-photo-wrap">
-                <img src="/workers/worker-consultant.webp" alt="Mutaxassis maslahati" loading="lazy" decoding="async">
-              </div>
-              <div class="consultant-content">
-                <div class="consultant-badge">MUTAXASSIS MASLAHATI</div>
-                <h3 class="consultant-name">Loyiha va Smetangizni Bizga Yuboring</h3>
-                <p class="consultant-quote">
-                  "Qurilish loyihangiz uchun qaysi diametr, devor qalinligi va bosim darajasi mos kelishiga ikkilanyapsizmi? Kerakli mahsulotlarni prays bo'yicha jamlab beramiz."
-                </p>
-                <div class="consultant-actions">
-                  <a href="tel:${MAIN_PHONE.tel}" class="btn-primary">
-                    ${icon('phone', '', 18)}
-                    <span>${MAIN_PHONE.label}</span>
-                  </a>
-                  ${TELEGRAM_URL ? `
-                    <a href="${TELEGRAM_URL}" target="_blank" rel="noopener" class="btn-secondary consultant-tg-btn">
-                      ${icon('message-circle', '', 18)}
-                      <span>Telegram orqali yozish</span>
-                    </a>
-                  ` : `
-                    <a href="${INSTAGRAM_DM_URL}" target="_blank" rel="noopener" class="btn-secondary consultant-tg-btn">
-                      ${icon('instagram', '', 18)}
-                      <span>Instagramda yozish</span>
-                    </a>
-                  `}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Arzon narxlar -->
-          <section class="home-section">
-            <div class="section-head">
-              <div>
-                <h2 class="section-title">Arzon narxlar</h2>
-                <div class="section-subtitle">Kichik diametrdagi ommabop fitinglar</div>
-              </div>
-              <a href="#catalog?sort=arzon" class="section-link">
-                <span>Hammasi</span>
-                ${icon('arrow-right', '', 16)}
-              </a>
-            </div>
-
-            ${renderProductsBlock(budgetProducts, catalog)}
-          </section>
-
-          <!-- Nega NEVO GROUP? -->
-          <section class="home-section">
-            <div class="section-head">
-              <div>
-                <h2 class="section-title">Nega NEVO GROUP?</h2>
-                <div class="section-subtitle">Biz bilan ishlashning asosiy afzalliklari</div>
-              </div>
-            </div>
-
-            <div class="benefits-grid">
-              ${BENEFITS.map(b => `
-                <div class="benefit-card">
-                  <div class="benefit-icon-wrap">
-                    ${icon(b.icon, '', 20)}
-                  </div>
-                  <div class="benefit-title">${b.title}</div>
-                  <div class="benefit-desc">${b.desc}</div>
-                </div>
-              `).join('')}
-            </div>
-          </section>
-
-          <!-- Mijozlar fikri: TESTIMONIALS bo'sh bo'lsa chiqmaydi -->
-          ${renderTestimonials()}
-
-          <!-- Light CTA Banner -->
-          <div class="cta-banner-light">
-            <div>
-              <h3>Uy uchunmi yoki qurilish uchunmi?</h3>
-              <p>Kerakli mahsulotni topishda professional mutaxassislarimiz yordam beradi.</p>
-            </div>
-            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-              <a href="#catalog" class="btn-secondary" style="background: #ffffff;">
-                Mahsulotlarni ko'rish
-              </a>
-              <a href="#aloqa" class="btn-primary">
-                ${icon('message-circle', '', 18)}
-                <span>Mutaxassis bilan bog'lanish</span>
-              </a>
-            </div>
-          </div>
-
-          <!-- Dark Final CTA Banner -->
-          <div class="cta-banner-dark">
-            <h3>Kerakli mahsulotni topdingizmi?</h3>
-            <p>Narx va mavjudligini bilish uchun biz bilan hoziroq bog'laning.</p>
-            <a href="#aloqa" class="btn-white">
-              ${icon('message-circle', '', 18)}
-              <span>Bog'lanish</span>
-            </a>
-          </div>
       </div>
     </main>
   `;
 }
 
 export function initHomeAnimations() {
+  // Hero Video Sound Toggle (Screenshot 1)
+  window.__toggleHeroSound = () => {
+    const vid = document.getElementById('hero-zavod-video');
+    const label = document.getElementById('hero-sound-label');
+    const iconWrap = document.getElementById('hero-sound-icon');
+    const btn = document.getElementById('hero-sound-btn');
+    if (vid) {
+      if (vid.muted) {
+        vid.muted = false;
+        vid.volume = 0.55;
+        if (label) label.textContent = "Ovozni o'chirish";
+        if (btn) btn.classList.add('sound-active');
+      } else {
+        vid.muted = true;
+        if (label) label.textContent = "Ovoz yoqish";
+        if (btn) btn.classList.remove('sound-active');
+      }
+    }
+  };
   // Animated Stat Counters
   const counters = document.querySelectorAll('.stat-number[data-count], .vero-stat-value[data-count], .vero-metric-val[data-count]');
   if (counters.length > 0 && 'IntersectionObserver' in window) {
