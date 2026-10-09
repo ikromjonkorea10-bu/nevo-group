@@ -2356,8 +2356,8 @@ input, textarea, select {
   bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-  color: #060B18 !important;
+  background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
+  color: #FFFFFF !important;
   padding: 12px 24px;
   border-radius: 9999px;
   font-size: 14.5px;
@@ -2365,15 +2365,17 @@ input, textarea, select {
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 8px 26px rgba(245, 158, 11, 0.45);
+  box-shadow: 0 8px 26px rgba(14, 165, 233, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.35);
   z-index: 85;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .floating-expert-btn:hover {
   transform: translateX(-50%) scale(1.04);
-  box-shadow: 0 12px 32px rgba(245, 158, 11, 0.6);
+  background: linear-gradient(135deg, #38BDF8 0%, #0EA5E9 100%);
+  box-shadow: 0 12px 32px rgba(56, 189, 248, 0.6);
+  color: #FFFFFF !important;
 }
 
 /* Responsive Media Queries */
@@ -3759,7 +3761,7 @@ input, textarea, select {
 }
 
 .intro-slide .slide-num {
-  color: #F15A22;
+  color: #38BDF8;
   font-family: monospace;
   font-weight: 800;
 }
@@ -3776,7 +3778,7 @@ input, textarea, select {
 .intro-splash-bar {
   width: 0%;
   height: 100%;
-  background: linear-gradient(90deg, #1D4ED8 0%, #F15A22 100%);
+  background: linear-gradient(90deg, #0284C7 0%, #38BDF8 100%);
   border-radius: 99px;
   animation: splashProgress 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -3925,13 +3927,13 @@ input, textarea, select {
   align-items: center;
   gap: 8px;
   padding: 6px 14px;
-  background: rgba(241, 90, 34, 0.12);
-  border: 1px solid rgba(241, 90, 34, 0.35);
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.35);
   border-radius: 99px;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.12em;
-  color: #FF7A00;
+  color: #38BDF8;
   margin-bottom: 20px;
   text-transform: uppercase;
 }
@@ -3947,10 +3949,10 @@ input, textarea, select {
 
 .text-gradient-orange,
 .text-gradient-gold {
-  background: linear-gradient(135deg, #FFF0CA 0%, #F59E0B 50%, #D97706 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 14px rgba(245, 158, 11, 0.35));
+  background: linear-gradient(135deg, #E0F2FE 0%, #38BDF8 50%, #0284C7 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 2px 14px rgba(56, 189, 248, 0.45));
 }
 
 .hero-desc-vero {
@@ -3973,19 +3975,19 @@ input, textarea, select {
   align-items: center;
   gap: 10px;
   padding: 14px 28px;
-  background: linear-gradient(135deg, #F15A22 0%, #D84315 100%);
+  background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
   color: #FFFFFF !important;
   font-size: 15.5px;
   font-weight: 800;
   border-radius: var(--radius-md);
-  box-shadow: 0 0 30px rgba(241, 90, 34, 0.45);
+  box-shadow: 0 0 30px rgba(14, 165, 233, 0.45);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   text-decoration: none;
 }
 
 .btn-primary-vero:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 40px rgba(241, 90, 34, 0.65);
+  box-shadow: 0 0 40px rgba(56, 189, 248, 0.65);
 }
 
 .btn-secondary-vero {
@@ -4078,7 +4080,7 @@ input, textarea, select {
 .scroll-mouse-dot {
   width: 4px;
   height: 6px;
-  background: #F15A22;
+  background: #38BDF8;
   border-radius: 99px;
   position: absolute;
   top: 6px;
@@ -4132,7 +4134,7 @@ input, textarea, select {
 .vero-stat-card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top: 2px solid #F15A22;
+  border-top: 2px solid #0EA5E9;
   border-radius: var(--radius-lg);
   padding: 24px 20px;
   transition: transform 0.25s ease, background 0.25s ease;
@@ -4164,7 +4166,7 @@ input, textarea, select {
 .vero-stat-unit {
   font-size: 13.5px;
   font-weight: 800;
-  color: #F15A22;
+  color: #38BDF8;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }

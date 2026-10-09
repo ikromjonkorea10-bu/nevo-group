@@ -137,7 +137,7 @@ export function renderCatalogPage(params = {}, routeKey = '') {
             <span>NEVO GROUP · SANOAT ASSORTIMENTI</span>
           </div>
 
-          <h1 class="catalog-vero-title">${t('catalogTitle')}<br><span class="text-gradient-orange">NEVO GROUP</span></h1>
+          <h1 class="catalog-vero-title">${t('catalogTitle')}<br><span class="text-gradient-sky">NEVO GROUP</span></h1>
           <p class="catalog-vero-sub">
             ${t('catalogSub')}
           </p>
