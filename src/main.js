@@ -22,9 +22,22 @@ import { renderContactPage, initContactEvents } from './pages/ContactPage.js';
 import { initAnalytics, trackPageview } from './lib/analytics.js';
 import { updatePageMeta } from './lib/pageMeta.js';
 import { initIntroSplash } from './components/IntroSplash.js';
+import { renderMaintenanceScreen, initMaintenanceUnlock } from './components/MaintenanceScreen.js';
+
+// Maintenance & Stealth Preview Gate
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('preview') === '1' || urlParams.get('preview') === 'true' || urlParams.get('admin') === '1' || window.location.hash.includes('preview=1')) {
+  localStorage.setItem('nevo_admin_preview', '1');
+}
+if (urlParams.get('exit_preview') === '1') {
+  localStorage.removeItem('nevo_admin_preview');
+}
+const isPreviewAuthorized = localStorage.getItem('nevo_admin_preview') === '1';
 
 initAnalytics();
-initIntroSplash();
+if (isPreviewAuthorized) {
+  initIntroSplash();
+}
 
 // Global add to cart helper with tactile micro-animation
 window.__addToCart = (productId, event) => {
@@ -138,6 +151,13 @@ function router() {
   const app = document.getElementById('app');
   if (!app) return;
 
+  const isPreview = localStorage.getItem('nevo_admin_preview') === '1';
+  if (!isPreview) {
+    app.innerHTML = renderMaintenanceScreen();
+    initMaintenanceUnlock();
+    return;
+  }
+
   const parsed = parseRoute();
   const route = KNOWN_ROUTES.has(parsed.route) ? parsed.route : 'home';
   const { param, queryParams, raw } = parsed;
@@ -191,6 +211,11 @@ function router() {
         <span>Mutaxassisdan so'rash</span>
       </a>
     ` : ''}
+    <div class="nevo-preview-floating-badge" id="preview-badge" title="Faqat siz ko'ra olasiz. Oddiy foydalanuvchilarga sayt texnik rejimda ko'rinadi.">
+      <span class="preview-dot"></span>
+      <span>🛡️ Maxfiy Preview</span>
+      <button type="button" class="preview-exit-btn" onclick="localStorage.removeItem('nevo_admin_preview'); window.location.href='/';">Yopish</button>
+    </div>
   `, !isNewRoute && route === 'home');
 
   // Initialize Page-Specific Events

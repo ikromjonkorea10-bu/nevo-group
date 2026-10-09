@@ -261,44 +261,131 @@ function renderProjectsCarousel() {
   `;
 }
 
-function renderVeroStats(catalog) {
+function renderVeroCorporateAbout(catalog) {
   const productCount = catalog.status === 'ready' && catalog.products.length ? catalog.products.length : 1000;
   return `
-    <section class="vero-stats-section" id="stats-anchor">
+    <!-- VERO STYLE CORPORATE ABOUT & METRICS (Screenshot 2) -->
+    <section class="vero-about-section" id="stats-anchor">
       <div class="shell">
-        <div class="vero-stats-grid">
-          <div class="vero-stat-card">
-            <div class="vero-stat-num-wrap">
-              <span class="vero-stat-value" data-count="10" data-suffix="+">10+</span>
-              <span class="vero-stat-unit">${t('statYears')}</span>
+        <div class="vero-about-header">
+          <div class="vero-about-brand">
+            <span class="brand-triangle-icon">▲</span>
+            <div class="vero-about-brand-text">
+              <span class="brand-big">nevo</span>
+              <span class="brand-sub">GROUP</span>
             </div>
-            <div class="vero-stat-label">${t('statYearsLabel')}</div>
           </div>
-
-          <div class="vero-stat-card">
-            <div class="vero-stat-num-wrap">
-              <span class="vero-stat-value" data-count="${productCount}" data-suffix="+">${productCount}+</span>
-              <span class="vero-stat-unit">${t('statProducts')}</span>
-            </div>
-            <div class="vero-stat-label">${t('statProductsLabel')}</div>
-          </div>
-
-          <div class="vero-stat-card">
-            <div class="vero-stat-num-wrap">
-              <span class="vero-stat-value" data-count="100" data-suffix="%">100%</span>
-              <span class="vero-stat-unit">${t('statDelivery')}</span>
-            </div>
-            <div class="vero-stat-label">${t('statDeliveryLabel')}</div>
-          </div>
-
-          <div class="vero-stat-card">
-            <div class="vero-stat-num-wrap">
-              <span class="vero-stat-value" data-count="5000" data-suffix="+">5000+</span>
-              <span class="vero-stat-unit">${t('statPartners')}</span>
-            </div>
-            <div class="vero-stat-label">${t('statPartnersLabel')}</div>
+          <div class="vero-about-text">
+            <p>
+              O'zbekiston va Markaziy Osiyo bozorida suv ta'minoti, isitish va kanalizatsiya tizimlari uchun polimer quvurlar hamda fitinglar yetkazib beruvchi eng yirik korxonalardan biri. Assortimentimiz 1 000 dan ortiq sertifikatlangan qurilish materiallari va muhandislik mahsulotlarini birlashtiradi hamda to'g'ridan-to'g'ri birinchi qo'l kafolati bilan xizmat ko'rsatadi.
+            </p>
           </div>
         </div>
+
+        <div class="vero-metrics-grid">
+          <div class="vero-metric-card">
+            <div class="vero-metric-icon-wrap">🏭</div>
+            <div class="vero-metric-val" data-count="10" data-suffix="+">10+</div>
+            <div class="vero-metric-lbl">YIL TAJRIBA</div>
+          </div>
+
+          <div class="vero-metric-card">
+            <div class="vero-metric-icon-wrap">📦</div>
+            <div class="vero-metric-val" data-count="${productCount}" data-suffix="+">${productCount}+</div>
+            <div class="vero-metric-lbl">MAHSULOT TURI</div>
+          </div>
+
+          <div class="vero-metric-card">
+            <div class="vero-metric-icon-wrap">🚚</div>
+            <div class="vero-metric-val" data-count="100" data-suffix="%">100%</div>
+            <div class="vero-metric-lbl">RESPUBLIKA BO'YLAB YETKAZISH</div>
+          </div>
+
+          <div class="vero-metric-card">
+            <div class="vero-metric-icon-wrap">👥</div>
+            <div class="vero-metric-val" data-count="5000" data-suffix="+">5 000+</div>
+            <div class="vero-metric-lbl">HAMKORLAR VA USTA-MUTAXASSISLAR</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderVeroCatalogShowcase() {
+  const categories = [
+    {
+      slug: 'truba-va-fitinglar',
+      title: 'Polipropilen (PP-R) va Kompozit Quvurlar',
+      sub: "Suv ta'minoti va isitish tizimlari uchun sertifikatlangan polimer quvurlar",
+      img: '/images/categories/ppr-pipes.webp',
+      badge: 'PP-R / PN20 / PN25',
+      iconHtml: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>',
+    },
+    {
+      slug: 'truba-va-fitinglar',
+      title: 'Kanalizatsiya tizimlari',
+      sub: "Ichki va tashqi oqova tarmoqlari uchun PVX va polipropilen quvurlar",
+      img: '/images/categories/sewer-pipes.webp',
+      badge: 'PVX / SN4 / SN8',
+      iconHtml: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M2 6h20M2 18h20"></path></svg>',
+    },
+    {
+      slug: 'zapor-armatura',
+      title: 'Zapor armatura va metall fitinglar',
+      sub: "Zadvijkalar, sharli kranlar, teskari klapanlar va demontaj vstavkalari",
+      img: '/images/categories/valves-fittings.webp',
+      badge: "Latun / Cho'yan / Po'lat",
+      iconHtml: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>',
+    },
+    {
+      slug: 'truba-va-fitinglar',
+      title: 'Polietilen (HDPE PE-100) bosimli quvurlar',
+      sub: "Ichimlik suvi va gaz magistrallari uchun yuqori bosimli polietilen quvurlar",
+      img: '/images/categories/hdpe-pipes.webp',
+      badge: 'PE 100 / SDR 11 / SDR 17',
+      iconHtml: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
+    },
+  ];
+
+  return `
+    <!-- VERO STYLE LUXURY CATALOG SHOWCASE (Screenshot 5) -->
+    <section class="home-section vero-catalog-showcase-section">
+      <div class="section-head">
+        <div>
+          <div class="section-pill-tag">ASOSIY YO'NALISHLAR</div>
+          <h2 class="section-title">Mahsulotlar Katalogi</h2>
+          <div class="section-subtitle">Yuqori sifatli polimer quvurlar, fitinglar va sanoat armaturasi</div>
+        </div>
+        <a href="#catalog" class="section-link">
+          <span>To'liq katalog</span>
+          ${icon('arrow-right', '', 16)}
+        </a>
+      </div>
+
+      <div class="vero-catalog-grid">
+        ${categories.map(c => `
+          <a href="#bolim/${esc(c.slug)}" class="vero-cat-card">
+            <div class="vero-cat-card-bg" style="background-image: url('${c.img}');"></div>
+            <div class="vero-cat-card-overlay"></div>
+            <div class="vero-cat-card-inner">
+              <div class="vero-cat-icon-pill">
+                ${c.iconHtml}
+                <span>${esc(c.badge)}</span>
+              </div>
+              <div class="vero-cat-footer">
+                <div>
+                  <h3 class="vero-cat-heading">${esc(c.title)}</h3>
+                  <p class="vero-cat-subtext">${esc(c.sub)}</p>
+                </div>
+                <span class="vero-cat-btn">
+                  <span>Ko'rish</span>
+                  ${icon('arrow-right', '', 16)}
+                </span>
+              </div>
+            </div>
+          </a>
+        `).join('')}
       </div>
     </section>
   `;
@@ -316,10 +403,8 @@ export function renderHomePage() {
     <main class="home-page-content">
       <!-- VERO STYLE FULLSCREEN INDUSTRIAL HERO -->
       <section class="hero-section hero-section-vero">
-        <div class="hero-video-backdrop">
-          <video class="hero-bg-video lazy-video" autoplay muted loop playsinline preload="auto" poster="/workers/worker-warehouse.webp">
-            <source src="/videos/warehouse-showcase.webm" type="video/webm">
-          </video>
+        <div class="hero-creative-backdrop">
+          <img src="/brand/hero-industrial-bg.webp" alt="NEVO GROUP" class="hero-backdrop-img" decoding="async">
           <div class="hero-video-overlay-gradient"></div>
           <div class="hero-video-grid-pattern"></div>
         </div>
@@ -332,10 +417,10 @@ export function renderHomePage() {
                 <span>${t('heroBadge')}</span>
               </div>
               <h1 class="hero-title hero-title-vero">
-                ${t('heroTitlePrefix')}<span class="text-gradient-orange">${t('heroTitleAccent')}</span>
+                Suv ta'minoti va isitish tizimlari uchun <span class="text-gradient-orange">kompleks muhandislik yechimlari</span>
               </h1>
               <p class="hero-desc hero-desc-vero">
-                ${t('heroDesc')}
+                Ishonchli muhandislik tarmoqlari uchun yuqori sifatli polimer quvurlar, fitinglar va sanoat zapor armaturasining keng assortimenti
               </p>
               <div class="hero-buttons hero-buttons-vero">
                 <a href="#catalog" class="btn-primary hero-btn-glow btn-primary-vero">
@@ -407,10 +492,13 @@ export function renderHomePage() {
         </a>
       </section>
 
-      <!-- VERO 4-METRICS STATS STRIP -->
-      ${renderVeroStats(catalog)}
+      <!-- VERO STYLE CORPORATE ABOUT & METRICS (Screenshot 2) -->
+      ${renderVeroCorporateAbout(catalog)}
 
       <div class="shell">
+        <!-- VERO STYLE LUXURY CATALOG SHOWCASE (Screenshot 5) -->
+        ${renderVeroCatalogShowcase()}
+
         <!-- YIRIK LOYIHALARDA (MAJOR PROJECTS IN UZBEKISTAN) CAROUSEL -->
         ${renderProjectsCarousel()}
 
@@ -442,15 +530,15 @@ export function renderHomePage() {
             <div class="workers-grid">
               <div class="worker-card">
                 <div class="worker-img-wrap">
-                  <img src="/workers/worker-pipefitting.webp" alt="Quvurlar montaji" loading="lazy" decoding="async">
-                  <span class="worker-role-badge">🔧 Montaj va O'rnatish</span>
+                  <img src="/workers/worker-pipefitting.webp" alt="Quvurlar montaji va muhandislik nazorati" loading="lazy" decoding="async">
+                  <span class="worker-role-badge">📐 Muhandislik Nazorati</span>
                 </div>
                 <div class="worker-card-body">
-                  <h3>Obyektda quvurlar montaji</h3>
-                  <p>Tajribali chilangar va montajchilarimiz yirik diametrli fitinglar, zapor armatura va quvurlarni germetik biriktiradi.</p>
+                  <h3>Zamonaviy muhandislik nazorati va montaj</h3>
+                  <p>Loyiha chizmalari, bosim hisob-kitoblari va quvur tarmoqlarining standartlarga to'liq mosligini professional muhandislarimiz nazorat qiladi.</p>
                   <div class="worker-feature-check">
                     <span class="check-icon">✓</span>
-                    <span>Yuqori bosimga chidamli fitinglar</span>
+                    <span>Standartlarga muvofiqlik nazorati</span>
                   </div>
                 </div>
               </div>
@@ -496,69 +584,6 @@ export function renderHomePage() {
                   <div class="worker-feature-check">
                     <span class="check-icon">✓</span>
                     <span>Yuk ortish va tushirish xizmati</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 🎥 DUAL VIDEO SHOWCASE: MATERIAL USAGE & WAREHOUSE IN ACTION -->
-          <section class="video-showcase-section">
-            <div class="section-head" style="margin-bottom: 24px;">
-              <div>
-                <div class="section-pill-tag">VIDEO SHARHLAR</div>
-                <h2 class="section-title">Mahsulotlarimiz Ish Jarayonida</h2>
-                <div class="section-subtitle">Haqiqiy montaj, payvandlash va ombor operatsiyalari</div>
-              </div>
-            </div>
-
-            <div class="dual-video-grid">
-              <!-- Video Card 1: Pipeline welding and fitting -->
-              <div class="video-showcase-card">
-                <div class="video-media-wrap">
-                  <video class="lazy-video" muted loop playsinline preload="none" poster="/mahsulot/pe-otvod.webp">
-                    <source src="/videos/pipeline-showcase.webm" type="video/webm">
-                  </video>
-                  <div class="video-card-overlay"></div>
-                  <button class="video-play-btn-circle" onclick="window.__openVideoModal('/videos/pipeline-showcase.webm', 'Magistral quvurlar va fitinglarni payvandlash jarayoni')" aria-label="Videoni tomosha qilish">
-                    ${icon('play', '', 24)}
-                  </button>
-                  <span class="video-tag-top">⚡ Obyektda montaj</span>
-                </div>
-                <div class="video-card-info">
-                  <h3>Magistral quvur va fitinglar montaji</h3>
-                  <p>Yuqori bosimli suv ta'minoti quvurlarining professional payvandlash va montaj jarayoni.</p>
-                  <div class="video-meta-row">
-                    <span>⏱ 1080p HD Video</span>
-                    <span>·</span>
-                    <button class="video-text-link" onclick="window.__openVideoModal('/videos/pipeline-showcase.webm', 'Magistral quvurlar va fitinglarni payvandlash jarayoni')">
-                      To'liq tomosha qilish →
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Video Card 2: Central warehouse and logistics -->
-              <div class="video-showcase-card">
-                <div class="video-media-wrap">
-                  <video class="lazy-video" muted loop playsinline preload="none" poster="/workers/worker-warehouse.webp">
-                    <source src="/videos/warehouse-showcase.webm" type="video/webm">
-                  </video>
-                  <div class="video-card-overlay"></div>
-                  <button class="video-play-btn-circle" onclick="window.__openVideoModal('/videos/warehouse-showcase.webm', 'NEVO GROUP markaziy ombori va logistika operatsiyalari')" aria-label="Videoni tomosha qilish">
-                    ${icon('play', '', 24)}
-                  </button>
-                  <span class="video-tag-top">📦 Ombor logistikasi</span>
-                </div>
-                <div class="video-card-info">
-                  <h3>Markaziy ombor va yuklarni saralash</h3>
-                  <p>Mijozlar buyurtmalarini tezkor saralash, qadoqlash va obyektlarga jo'natish tizimi.</p>
-                  <div class="video-meta-row">
-                    <span>⏱ 1080p HD Video</span>
-                    <span>·</span>
-                    <button class="video-text-link" onclick="window.__openVideoModal('/videos/warehouse-showcase.webm', 'NEVO GROUP markaziy ombori va logistika operatsiyalari')">
-                      To'liq tomosha qilish →
-                    </button>
                   </div>
                 </div>
               </div>
@@ -725,65 +750,13 @@ export function renderHomePage() {
             </a>
           </div>
       </div>
-
-      <!-- Video Modal Popup -->
-      <div id="video-modal-backdrop" class="video-modal-backdrop" onclick="if(event.target===this) window.__closeVideoModal()">
-        <div class="video-modal-content">
-          <button class="video-modal-close" onclick="window.__closeVideoModal()" aria-label="Yopish">
-            ${icon('x', '', 24)}
-          </button>
-          <div class="video-player-wrap">
-            <video id="modal-video-element" controls playsinline preload="none">
-              <source id="modal-video-source" src="/videos/pipeline-showcase.webm" type="video/webm">
-              Brauzeringiz video formatini qo'llab-quvvatlamaydi.
-            </video>
-          </div>
-          <div class="video-modal-caption">
-            <h4 id="modal-video-title">NEVO GROUP — Obyektlar uchun yuqori bosimli quvur va armatura ta'minoti</h4>
-            <p id="modal-video-desc">Sifatli metall, sertifikatlangan ishlab chiqarish va ishonchli muhandislik yechimlari.</p>
-          </div>
-        </div>
-      </div>
     </main>
   `;
 }
 
-// Fon videolari sahifa ochilganda yuklanmaydi (preload="none", autoplay yo'q):
-// ekranga 200px qolganda yuklanib ijro etiladi, ekrandan chiqqanda pauza qilinadi.
-let lazyVideoObserver = null;
-
-function initLazyVideos() {
-  lazyVideoObserver?.disconnect();
-  const videos = document.querySelectorAll('video.lazy-video');
-  if (!videos.length) return;
-
-  if (!('IntersectionObserver' in window)) {
-    videos.forEach(v => v.play().catch(() => {}));
-    return;
-  }
-
-  lazyVideoObserver = new IntersectionObserver((entries) => {
-    entries.forEach(({ target: video, isIntersecting }) => {
-      if (isIntersecting) {
-        if (!video.dataset.loaded) {
-          video.dataset.loaded = '1';
-          video.load();
-        }
-        video.play().catch(() => {});
-      } else if (video.dataset.loaded) {
-        video.pause();
-      }
-    });
-  }, { rootMargin: '200px 0px' });
-
-  videos.forEach(v => lazyVideoObserver.observe(v));
-}
-
 export function initHomeAnimations() {
-  initLazyVideos();
-
   // Animated Stat Counters
-  const counters = document.querySelectorAll('.stat-number[data-count], .vero-stat-value[data-count]');
+  const counters = document.querySelectorAll('.stat-number[data-count], .vero-stat-value[data-count], .vero-metric-val[data-count]');
   if (counters.length > 0 && 'IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries, obs) => {
       entries.forEach(entry => {
@@ -829,39 +802,8 @@ export function initHomeAnimations() {
     }
   }
 
-  // Video Modal Handlers
-  window.__openVideoModal = (src, title) => {
-    const modal = document.getElementById('video-modal-backdrop');
-    const vid = document.getElementById('modal-video-element');
-    const source = document.getElementById('modal-video-source');
-    const titleEl = document.getElementById('modal-video-title');
-    if (modal) {
-      modal.classList.add('open');
-      if (src && source && vid) {
-        source.src = src;
-        vid.load();
-      }
-      if (title && titleEl) {
-        titleEl.textContent = title;
-      }
-      if (vid) {
-        vid.currentTime = 0;
-        vid.play().catch(() => {});
-      }
-    }
-  };
-
-  window.__closeVideoModal = () => {
-    const modal = document.getElementById('video-modal-backdrop');
-    const vid = document.getElementById('modal-video-element');
-    if (modal) {
-      modal.classList.remove('open');
-      if (vid) vid.pause();
-    }
-  };
-
   // 3D Card Hover Perspective Tilt
-  const tiltCards = document.querySelectorAll('.hero-img-card, .product-card, .benefit-card, .worker-card, .video-showcase-card, .project-card');
+  const tiltCards = document.querySelectorAll('.hero-img-card, .product-card, .benefit-card, .worker-card, .project-card, .vero-cat-card');
   tiltCards.forEach(card => {
     card.addEventListener('mousemove', (e) => {
       const rect = card.getBoundingClientRect();
