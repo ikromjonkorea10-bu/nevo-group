@@ -264,47 +264,73 @@ function renderProjectsCarousel() {
 function renderVeroCorporateAbout(catalog) {
   const productCount = catalog.status === 'ready' && catalog.products.length ? catalog.products.length : 1000;
   return `
-    <!-- VERO STYLE CORPORATE ABOUT & METRICS (Screenshot 2) -->
-    <section class="vero-about-section" id="stats-anchor">
+    <!-- EXACT IMAGE 3 CORPORATE ABOUT & METRICS (media_1791561900743.jpg) -->
+    <section class="nevo-corp-about-section" id="stats-anchor">
       <div class="shell">
-        <div class="vero-about-header">
-          <div class="vero-about-brand nevo-about-brand">
-            <img src="/brand/nevo-logo.png" alt="NEVO GROUP" class="nevo-about-gold-emblem" width="56" height="56" />
-            <div class="vero-about-brand-text">
-              <span class="brand-big brand-gold-word">NEVO</span>
-              <span class="brand-sub">GROUP</span>
+        <div class="nevo-corp-about-header">
+          <div class="nevo-corp-brand-box">
+            <img src="/brand/nevo-logo.png" alt="NEVO GROUP" class="nevo-corp-emblem-img" width="68" height="68" />
+            <div class="nevo-corp-brand-text">
+              <span class="corp-brand-nevo text-gradient-sky">nevo<sup class="corp-brand-r">®</sup></span>
+              <span class="corp-brand-group">GROUP</span>
             </div>
           </div>
-          <div class="vero-about-text">
+          <div class="nevo-corp-intro-text">
             <p>
-              O'zbekiston va Markaziy Osiyo bozorida suv ta'minoti, isitish va kanalizatsiya tizimlari uchun polimer quvurlar hamda fitinglar yetkazib beruvchi eng yirik korxonalardan biri. Assortimentimiz 1 000 dan ortiq sertifikatlangan qurilish materiallari va muhandislik mahsulotlarini birlashtiradi hamda to'g'ridan-to'g'ri birinchi qo'l kafolati bilan xizmat ko'rsatadi.
+              O'zbekiston va Markaziy Osiyo bozorida suv ta'minoti va isitish tizimlari uchun polimer quvurlar hamda fitinglar ishlab chiqaruvchi eng yirik korxonalardan biri. Guruhimiz jami <strong class="corp-highlight">12 ta</strong> qurilish materiallari ishlab chiqaruvchi zavodlarni birlashtiradi va yillik aylanmasi <strong class="corp-highlight">80 million AQSh dollaridan</strong> oshadi.
             </p>
           </div>
         </div>
 
-        <div class="vero-metrics-grid">
-          <div class="vero-metric-card">
-            <div class="vero-metric-icon-wrap">🏭</div>
-            <div class="vero-metric-val" data-count="10" data-suffix="+">10+</div>
-            <div class="vero-metric-lbl">YIL TAJRIBA</div>
+        <!-- 4 Minimalist Line-Art Metrics (Exact Image 3 Layout) -->
+        <div class="nevo-corp-metrics-grid">
+          <div class="nevo-metric-stat-item">
+            <div class="nevo-metric-icon-wrap">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+                <path d="M17 18h1"></path>
+                <path d="M12 18h1"></path>
+                <path d="M7 18h1"></path>
+              </svg>
+            </div>
+            <div class="nevo-metric-big-num" data-count="12" data-suffix=" ta">12 ta</div>
+            <div class="nevo-metric-tag-label">ZAVOD</div>
           </div>
 
-          <div class="vero-metric-card">
-            <div class="vero-metric-icon-wrap">📦</div>
-            <div class="vero-metric-val" data-count="${productCount}" data-suffix="+">${productCount}+</div>
-            <div class="vero-metric-lbl">MAHSULOT TURI</div>
+          <div class="nevo-metric-stat-item">
+            <div class="nevo-metric-icon-wrap">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="2" x2="12" y2="22"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+            </div>
+            <div class="nevo-metric-big-num" data-count="80" data-suffix="M+">80M+</div>
+            <div class="nevo-metric-tag-label">YILLIK AYLANMA</div>
           </div>
 
-          <div class="vero-metric-card">
-            <div class="vero-metric-icon-wrap">🚚</div>
-            <div class="vero-metric-val" data-count="100" data-suffix="%">100%</div>
-            <div class="vero-metric-lbl">RESPUBLIKA BO'YLAB YETKAZISH</div>
+          <div class="nevo-metric-stat-item">
+            <div class="nevo-metric-icon-wrap">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m21.12 6.4-6-3.87a3 3 0 0 0-3.24 0l-6 3.87a3 3 0 0 0-1.88 2.6v7.74a3 3 0 0 0 1.88 2.6l6 3.87a3 3 0 0 0 3.24 0l6-3.87a3 3 0 0 0 1.88-2.6V9a3 3 0 0 0-1.88-2.6z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+            </div>
+            <div class="nevo-metric-big-num" data-count="${productCount}" data-suffix="+">${productCount}+</div>
+            <div class="nevo-metric-tag-label">MAHSULOT TURI</div>
           </div>
 
-          <div class="vero-metric-card">
-            <div class="vero-metric-icon-wrap">👥</div>
-            <div class="vero-metric-val" data-count="5000" data-suffix="+">5 000+</div>
-            <div class="vero-metric-lbl">HAMKORLAR VA USTA-MUTAXASSISLAR</div>
+          <div class="nevo-metric-stat-item">
+            <div class="nevo-metric-icon-wrap">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div class="nevo-metric-big-num" data-count="25000" data-suffix="+">25 000+</div>
+            <div class="nevo-metric-tag-label">HAMKORLAR VA USTA-MUTAXASSISLAR</div>
           </div>
         </div>
       </div>
@@ -549,7 +575,7 @@ export function initHomeAnimations() {
     }
   }
   // Animated Stat Counters
-  const counters = document.querySelectorAll('.stat-number[data-count], .vero-stat-value[data-count], .vero-metric-val[data-count]');
+  const counters = document.querySelectorAll('.stat-number[data-count], .vero-stat-value[data-count], .vero-metric-val[data-count], .nevo-metric-big-num[data-count]');
   if (counters.length > 0 && 'IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries, obs) => {
       entries.forEach(entry => {
