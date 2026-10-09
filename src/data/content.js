@@ -5,6 +5,7 @@
 // aloqa sahifasi) ko'rinmaydi.
 export const CONTACTS = {
   phones: [
+    { tel: '+998915823434', label: '+998 91 582 34 34' },
     { tel: '+998952601100', label: '+998 95 260 11 00' },
     { tel: '+998998631100', label: '+998 99 863 11 00' },
   ],
