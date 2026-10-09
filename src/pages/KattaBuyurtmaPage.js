@@ -233,7 +233,13 @@ export function initKattaBuyurtmaEvents(rerenderCallback) {
       comment: buildComment(),
       orderType: 'bulk',
       companyName: form.company_name,
-      items: cartItems.map((i) => ({ productId: i.productId, quantity: i.quantity })),
+      items: cartItems.map((i) => ({
+        productId: i.productId,
+        quantity: i.quantity,
+        name: i.product?.name,
+        unit: i.product?.unit,
+        price: i.product?.price,
+      })),
     });
 
     isSubmitting = false;

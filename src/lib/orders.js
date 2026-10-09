@@ -60,7 +60,36 @@ export async function submitOrder({ customerName, phone, address, comment, order
     };
   }
 
-  return { ok: true, order: { id: Number(data.id), total_amount: Number(data.total_amount) } };
+  const orderInfo = { id: Number(data.id), total_amount: Number(data.total_amount) };
+
+  // Telegram botga xabarnoma yuborish
+  try {
+    fetch('/api/notify-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId: orderInfo.id,
+        totalAmount: orderInfo.total_amount,
+        customerName: payload.p_customer_name,
+        phone: payload.p_phone,
+        address: payload.p_address,
+        comment: payload.p_comment,
+        orderType: payload.p_order_type,
+        companyName: payload.p_company_name,
+        items: items.map((it) => ({
+          productId: it.productId,
+          name: it.name || it.product?.name,
+          quantity: it.quantity,
+          unit: it.unit || it.product?.unit || 'dona',
+          price: it.price || it.product?.price || 0,
+        })),
+      }),
+    }).catch((e) => console.warn('Telegram bildirishnoma xatosi:', e));
+  } catch (e) {
+    console.warn('Telegram bildirishnoma chaqirilmadi:', e);
+  }
+
+  return { ok: true, order: orderInfo };
 }
 
 function networkMessage(error) {

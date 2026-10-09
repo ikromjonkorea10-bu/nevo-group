@@ -349,7 +349,13 @@ export function initCartEvents(rerenderCallback) {
       comment: form.comment,
       orderType: 'retail',
       companyName: null,
-      items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
+      items: items.map((i) => ({
+        productId: i.productId,
+        quantity: i.quantity,
+        name: i.product?.name,
+        unit: i.product?.unit,
+        price: i.product?.price,
+      })),
     });
 
     isSubmitting = false;
