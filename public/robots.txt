@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://nevo-group.vercel.app/sitemap.xml
+Sitemap: https://nevogroup.uz/sitemap.xml
