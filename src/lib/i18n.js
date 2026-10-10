@@ -1,5 +1,5 @@
-// NEVO GROUP — Ko'p tillilik tizimi (UZ / RU)
-// VERO.uz kabi foydalanuvchi tilni oson o'zgartirishi mumkin.
+// NEVO GROUP — Ko'p tillilik tizimi (UZ / RU / EN)
+// Foydalanuvchi tilni oson o'zgartirishi mumkin.
 
 const STORAGE_KEY = 'nevo_lang';
 

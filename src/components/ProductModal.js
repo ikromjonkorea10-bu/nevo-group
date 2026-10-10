@@ -1,5 +1,5 @@
 // NEVO GROUP — Luxury ProductModal & 3D Interactive Lightbox
-// Replicates the interaction patterns of vero.uz with custom NEVO engineering styling
+// High-performance engineering turntable with custom NEVO design
 
 import { icon } from '../icons.js';
 import { esc } from '../lib/format.js';
@@ -205,7 +205,7 @@ function renderModalDOM() {
             </div>
           </div>
 
-          <!-- Specifications Table (Exact Vero Table Layout) -->
+          <!-- Specifications Table (NEVO Technical Table Layout) -->
           <div class="modal-specs-section">
             <div class="modal-specs-header">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-sky">

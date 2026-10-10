@@ -1,4 +1,4 @@
-// NEVO GROUP — Luxury Minimalist Product Card (Vero Pattern Rebuilt)
+// NEVO GROUP — Luxury Minimalist Product Card
 import { icon } from '../icons.js';
 import { esc } from '../lib/format.js';
 import { t } from '../lib/i18n.js';
@@ -33,7 +33,7 @@ export function renderProductCard(product) {
 
   return `
     <article
-      class="product-card vero-style-card"
+      class="product-card nevo-style-card"
       id="card-${product.id}"
       data-product-id="${product.id}"
       onclick="window.__openProductModal(${product.id}, event)"

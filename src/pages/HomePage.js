@@ -184,7 +184,7 @@ function renderProjectsCarousel() {
   `;
 }
 
-function renderVeroCorporateAbout(catalog) {
+function renderNevoCorporateAbout(catalog) {
   const productCount = catalog.status === 'ready' && catalog.products.length ? catalog.products.length : 1000;
   return `
     <!-- NEVO CORPORATE ABOUT & METRICS (REALISTIC & AUTHENTIC) -->
@@ -259,7 +259,7 @@ function renderVeroCorporateAbout(catalog) {
   `;
 }
 
-function renderVeroCatalogShowcase() {
+function renderNevoCatalogShowcase() {
   const categories = [
     {
       slug: 'truba-va-fitinglar',
@@ -296,47 +296,47 @@ function renderVeroCatalogShowcase() {
   ];
 
   return `
-    <!-- VERO STYLE LUXURY CATALOG SHOWCASE (Screenshot 2 & 5) -->
-    <section class="home-section vero-catalog-showcase-section" id="catalog-anchor">
-      <div class="section-head vero-catalog-section-head">
+    <!-- NEVO GROUP LUXURY CATALOG SHOWCASE -->
+    <section class="home-section nevo-catalog-showcase-section" id="catalog-anchor">
+      <div class="section-head nevo-catalog-section-head">
         <div>
           <div class="section-pill-tag">ASOSIY YO'NALISHLAR</div>
           <h2 class="section-title">Mahsulotlar va Katalog</h2>
           <div class="section-subtitle">Isitish, suv ta'minoti va muhandislik tizimlari uchun sanoat jihozlari, komplektovchi qismlar va materiallarning keng assortimenti.</div>
         </div>
-        <a href="#catalog" class="section-link vero-catalog-head-link">
+        <a href="#catalog" class="section-link nevo-catalog-head-link">
           <span>Katalogni ko'rish</span>
           ${icon('arrow-right', '', 16)}
         </a>
       </div>
 
-      <!-- Quick Search Bar (Matching Screenshot 2) -->
-      <div class="vero-catalog-search-strip">
-        <span class="vero-search-label">KATALOGDAN QIDIRISH</span>
-        <div class="vero-search-box-wrap" onclick="window.location.hash='#catalog';">
+      <!-- Quick Search Bar -->
+      <div class="nevo-catalog-search-strip">
+        <span class="nevo-search-label">KATALOGDAN QIDIRISH</span>
+        <div class="nevo-search-box-wrap" onclick="window.location.hash='#catalog';">
           ${icon('search', '', 18)}
-          <input type="text" placeholder="Mahsulot qidirish — masalan: PN20, fiting, kran..." readonly class="vero-search-input-fake" />
+          <input type="text" placeholder="Mahsulot qidirish — masalan: PN20, fiting, kran..." readonly class="nevo-search-input-fake" />
           <span class="search-kbd-badge">⌘K</span>
         </div>
       </div>
 
       <!-- Cards Grid -->
-      <div class="vero-catalog-grid">
+      <div class="nevo-catalog-grid">
         ${categories.map(c => `
-          <a href="#bolim/${esc(c.slug)}" class="vero-cat-card">
-            <div class="vero-cat-card-bg" style="background-image: url('${c.img}');"></div>
-            <div class="vero-cat-card-overlay"></div>
-            <div class="vero-cat-card-inner">
-              <div class="vero-cat-icon-pill">
+          <a href="#bolim/${esc(c.slug)}" class="nevo-cat-card">
+            <div class="nevo-cat-card-bg" style="background-image: url('${c.img}');"></div>
+            <div class="nevo-cat-card-overlay"></div>
+            <div class="nevo-cat-card-inner">
+              <div class="nevo-cat-icon-pill">
                 ${c.iconHtml}
                 <span>${esc(c.badge)}</span>
               </div>
-              <div class="vero-cat-footer">
+              <div class="nevo-cat-footer">
                 <div>
-                  <h3 class="vero-cat-heading">${esc(c.title)}</h3>
-                  <p class="vero-cat-subtext">${esc(c.sub)}</p>
+                  <h3 class="nevo-cat-heading">${esc(c.title)}</h3>
+                  <p class="nevo-cat-subtext">${esc(c.sub)}</p>
                 </div>
-                <span class="vero-cat-btn">
+                <span class="nevo-cat-btn">
                   <span>Ko'rish</span>
                   ${icon('arrow-right', '', 16)}
                 </span>
@@ -347,11 +347,11 @@ function renderVeroCatalogShowcase() {
       </div>
 
       <!-- Slider Dots Pagination -->
-      <div class="vero-catalog-dots">
-        <span class="vero-dot active"></span>
-        <span class="vero-dot"></span>
-        <span class="vero-dot"></span>
-        <span class="vero-dot"></span>
+      <div class="nevo-catalog-dots">
+        <span class="nevo-dot active"></span>
+        <span class="nevo-dot"></span>
+        <span class="nevo-dot"></span>
+        <span class="nevo-dot"></span>
       </div>
     </section>
   `;
@@ -431,12 +431,12 @@ export function renderHomePage() {
         </a>
       </section>
 
-      <!-- VERO STYLE CORPORATE ABOUT & 4 METRICS (Screenshot 2) -->
-      ${renderVeroCorporateAbout(catalog)}
+      <!-- NEVO CORPORATE ABOUT & 4 METRICS -->
+      ${renderNevoCorporateAbout(catalog)}
 
       <div class="shell">
-        <!-- VERO STYLE LUXURY CATALOG SHOWCASE (Screenshot 5) -->
-        ${renderVeroCatalogShowcase()}
+        <!-- NEVO GROUP LUXURY CATALOG SHOWCASE -->
+        ${renderNevoCatalogShowcase()}
 
         <!-- YIRIK LOYIHALARDA (MAJOR PROJECTS IN UZBEKISTAN) CAROUSEL -->
         ${renderProjectsCarousel()}
@@ -496,7 +496,7 @@ export function initHomeAnimations() {
     }
   }
   // Animated Stat Counters
-  const counters = document.querySelectorAll('.stat-number[data-count], .vero-stat-value[data-count], .vero-metric-val[data-count], .nevo-metric-big-num[data-count]');
+  const counters = document.querySelectorAll('.stat-number[data-count], .nevo-metric-big-num[data-count]');
   if (counters.length > 0 && 'IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries, obs) => {
       entries.forEach(entry => {
@@ -543,7 +543,7 @@ export function initHomeAnimations() {
   }
 
   // 3D Card Hover Perspective Tilt
-  const tiltCards = document.querySelectorAll('.hero-img-card, .product-card, .benefit-card, .worker-card, .project-card, .vero-cat-card');
+  const tiltCards = document.querySelectorAll('.hero-img-card, .product-card, .benefit-card, .worker-card, .project-card, .nevo-cat-card');
   tiltCards.forEach(card => {
     card.addEventListener('mousemove', (e) => {
       const rect = card.getBoundingClientRect();

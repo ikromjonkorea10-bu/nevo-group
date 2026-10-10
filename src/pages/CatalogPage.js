@@ -1,5 +1,5 @@
 // NEVO GROUP — Luxury Catalog Architecture (Index & Category Pages)
-// Rebuilt according to vero.uz interaction & structure patterns with custom NEVO design
+// Bespoke high-performance industrial engineering catalog with custom NEVO design
 
 import { icon } from '../icons.js';
 import { getCatalog, getCategoryBySlug, getProductBySlug } from '../lib/catalog.js';
@@ -230,7 +230,7 @@ function renderCatalogIndexPage(categories, _products) {
         </div>
       </section>
 
-      <!-- 3. Stacking Cards Scroll Experience (Vero Signature Pattern) -->
+      <!-- 3. Stacking Cards Scroll Experience (NEVO Signature Pattern) -->
       <section class="catalog-stacking-section" id="stacking-cards-section">
         <div class="shell">
           <div class="stacking-section-header">

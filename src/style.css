@@ -4725,12 +4725,14 @@ input, textarea, select {
   margin-top: auto;
 }
 
-/* 3. VERO Style Luxury Product Catalog Showcase (Screenshot 5) */
+/* 3. NEVO GROUP Luxury Product Catalog Showcase */
+.nevo-catalog-showcase-section,
 .vero-catalog-showcase-section {
   margin-top: 52px;
   margin-bottom: 48px;
 }
 
+.nevo-catalog-grid,
 .vero-catalog-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -4739,12 +4741,14 @@ input, textarea, select {
 }
 
 @media (max-width: 820px) {
+  .nevo-catalog-grid,
   .vero-catalog-grid {
     grid-template-columns: 1fr;
     gap: 18px;
   }
 }
 
+.nevo-cat-card,
 .vero-cat-card {
   position: relative;
   min-height: 320px;
@@ -4759,12 +4763,14 @@ input, textarea, select {
   transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
+.nevo-cat-card:hover,
 .vero-cat-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
   border-color: rgba(56, 189, 248, 0.5);
 }
 
+.nevo-cat-card-bg,
 .vero-cat-card-bg {
   position: absolute;
   inset: 0;
@@ -4774,10 +4780,12 @@ input, textarea, select {
   z-index: 1;
 }
 
+.nevo-cat-card:hover .nevo-cat-card-bg,
 .vero-cat-card:hover .vero-cat-card-bg {
   transform: scale(1.08);
 }
 
+.nevo-cat-card-overlay,
 .vero-cat-card-overlay {
   position: absolute;
   inset: 0;
@@ -4791,6 +4799,7 @@ input, textarea, select {
   transition: background 0.3s ease;
 }
 
+.nevo-cat-card:hover .nevo-cat-card-overlay,
 .vero-cat-card:hover .vero-cat-card-overlay {
   background: linear-gradient(
     180deg,
@@ -4800,6 +4809,7 @@ input, textarea, select {
   );
 }
 
+.nevo-cat-card-inner,
 .vero-cat-card-inner {
   position: relative;
   z-index: 3;
@@ -4810,6 +4820,7 @@ input, textarea, select {
   height: 100%;
 }
 
+.nevo-cat-icon-pill,
 .vero-cat-icon-pill {
   align-self: flex-start;
   display: inline-flex;
@@ -4826,10 +4837,12 @@ input, textarea, select {
   letter-spacing: 0.02em;
 }
 
+.nevo-cat-icon-pill svg,
 .vero-cat-icon-pill svg {
   color: #38BDF8;
 }
 
+.nevo-cat-footer,
 .vero-cat-footer {
   display: flex;
   align-items: flex-end;
@@ -4838,6 +4851,7 @@ input, textarea, select {
   margin-top: 50px;
 }
 
+.nevo-cat-heading,
 .vero-cat-heading {
   font-size: clamp(20px, 2.2vw, 24px);
   font-weight: 800;
@@ -4846,6 +4860,7 @@ input, textarea, select {
   line-height: 1.25;
 }
 
+.nevo-cat-subtext,
 .vero-cat-subtext {
   font-size: 13.5px;
   color: #CBD5E1;
@@ -4854,6 +4869,7 @@ input, textarea, select {
   max-width: 440px;
 }
 
+.nevo-cat-btn,
 .vero-cat-btn {
   display: inline-flex;
   align-items: center;
@@ -4870,6 +4886,7 @@ input, textarea, select {
   transition: transform 0.25s ease, background 0.25s ease;
 }
 
+.nevo-cat-card:hover .nevo-cat-btn,
 .vero-cat-card:hover .vero-cat-btn {
   transform: translateX(4px);
   background: linear-gradient(135deg, #38BDF8 0%, #0EA5E9 100%);
@@ -6025,11 +6042,13 @@ input, textarea, select {
   transform: translateY(-1px);
 }
 
-/* Vero Catalog Search Strip on Homepage */
+/* NEVO Catalog Search Strip on Homepage */
+.nevo-catalog-search-strip,
 .vero-catalog-search-strip {
   margin: 20px 0 28px;
 }
 
+.nevo-search-label,
 .vero-search-label {
   font-size: 11px;
   font-weight: 800;
@@ -6040,6 +6059,7 @@ input, textarea, select {
   text-transform: uppercase;
 }
 
+.nevo-search-box-wrap,
 .vero-search-box-wrap {
   display: flex;
   align-items: center;
@@ -6052,15 +6072,18 @@ input, textarea, select {
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
+.nevo-search-box-wrap:hover,
 .vero-search-box-wrap:hover {
   background: rgba(255, 255, 255, 0.07);
   border-color: rgba(56, 189, 248, 0.5);
 }
 
+.nevo-search-box-wrap svg,
 .vero-search-box-wrap svg {
   color: #64748B;
 }
 
+.nevo-search-input-fake,
 .vero-search-input-fake {
   flex: 1;
   background: transparent;
@@ -6071,6 +6094,7 @@ input, textarea, select {
   cursor: pointer;
 }
 
+.nevo-catalog-dots,
 .vero-catalog-dots {
   display: flex;
   align-items: center;
@@ -6079,6 +6103,7 @@ input, textarea, select {
   margin-top: 24px;
 }
 
+.nevo-dot,
 .vero-dot {
   width: 8px;
   height: 8px;
@@ -6087,6 +6112,7 @@ input, textarea, select {
   transition: all 0.3s ease;
 }
 
+.nevo-dot.active,
 .vero-dot.active {
   width: 28px;
   background: linear-gradient(90deg, #38BDF8, #0284C7);
@@ -6127,7 +6153,7 @@ input, textarea, select {
 }
 
 /* ==========================================================================
-   NEVO GROUP — LUXURY CATALOG & VERO ARCHITECTURE REBUILD (2026)
+   NEVO GROUP — LUXURY INDUSTRIAL CATALOG ARCHITECTURE (2026)
    Includes: CatalogHero, CategorySlideshow (Swiper), Stacking Cards, PDF Downloads,
    Category Page (Sticky Scroll-Spy), ProductCard, ProductModal (3D Turntable),
    and QuickSearch (⌘K Command Palette).
@@ -6607,7 +6633,7 @@ input, textarea, select {
 }
 
 /* --------------------------------------------------------------------------
-   4. Stacking Cards Scroll Section (Vero Pattern)
+   4. Stacking Cards Scroll Section (Signature Architecture)
    -------------------------------------------------------------------------- */
 .catalog-stacking-section {
   padding: 84px 0 100px;
@@ -7300,8 +7326,9 @@ input, textarea, select {
 }
 
 /* --------------------------------------------------------------------------
-   7. ProductCard (Vero Clean Interaction Style)
+   7. ProductCard (NEVO Clean Minimalist Style)
    -------------------------------------------------------------------------- */
+.product-card.nevo-style-card,
 .product-card.vero-style-card {
   position: relative;
   background: #FFFFFF;
@@ -7314,6 +7341,7 @@ input, textarea, select {
   cursor: pointer;
 }
 
+.product-card.nevo-style-card:hover,
 .product-card.vero-style-card:hover {
   transform: translateY(-4px);
   border-color: rgba(14, 165, 233, 0.5);
@@ -7361,6 +7389,7 @@ input, textarea, select {
   backdrop-filter: blur(4px);
 }
 
+.product-card.nevo-style-card .product-img-wrap,
 .product-card.vero-style-card .product-img-wrap {
   position: relative;
   width: 100%;
@@ -7379,6 +7408,7 @@ input, textarea, select {
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.product-card.nevo-style-card:hover .product-card-img,
 .product-card.vero-style-card:hover .product-card-img {
   transform: scale(1.06);
 }
@@ -7395,6 +7425,7 @@ input, textarea, select {
   pointer-events: none;
 }
 
+.product-card.nevo-style-card:hover .card-hover-prompt,
 .product-card.vero-style-card:hover .card-hover-prompt {
   opacity: 1;
 }
@@ -7414,10 +7445,12 @@ input, textarea, select {
   transition: transform 0.25s ease;
 }
 
+.product-card.nevo-style-card:hover .hover-prompt-pill,
 .product-card.vero-style-card:hover .hover-prompt-pill {
   transform: translateY(0);
 }
 
+.product-card.nevo-style-card .product-card-body,
 .product-card.vero-style-card .product-card-body {
   padding: 16px;
   display: flex;
@@ -7426,6 +7459,7 @@ input, textarea, select {
   background: #FFFFFF;
 }
 
+.product-card.nevo-style-card .product-title,
 .product-card.vero-style-card .product-title {
   font-size: 14px;
   font-weight: 750;
@@ -7468,6 +7502,7 @@ input, textarea, select {
   color: #64748B;
 }
 
+.product-card.nevo-style-card .product-add-btn,
 .product-card.vero-style-card .product-add-btn {
   width: 100%;
   display: flex;
@@ -7485,6 +7520,7 @@ input, textarea, select {
   transition: all 0.2s ease;
 }
 
+.product-card.nevo-style-card .product-add-btn:hover,
 .product-card.vero-style-card .product-add-btn:hover {
   background: #0EA5E9;
   border-color: #0284C7;
