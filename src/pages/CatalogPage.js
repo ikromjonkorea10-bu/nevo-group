@@ -306,7 +306,7 @@ function renderCatalogIndexPage(categories, _products) {
                 <div class="download-pdf-card">
                   <div class="pdf-card-cover-wrap">
                     <img src="${esc(pdf.cover)}" alt="${esc(title)}" class="pdf-cover-img" loading="lazy" />
-                    <span class="pdf-badge">PDF · ${esc(pdf.size)}</span>
+                    <span class="pdf-badge">${esc(pdf.badge || 'PDF')}</span>
                   </div>
                   
                   <div class="pdf-card-body">

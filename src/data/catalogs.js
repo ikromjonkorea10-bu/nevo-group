@@ -17,8 +17,7 @@ export const PDF_CATALOGS = [
     },
     cover: '/images/catalog-slides/slide-pipes.jpg',
     file: '/catalogs/nevo-polimer-quvurlar.pdf',
-    size: '4.8 MB',
-    pages: 44,
+    badge: 'PDF',
     categorySlug: 'truba-va-fitinglar',
   },
   {
@@ -36,8 +35,7 @@ export const PDF_CATALOGS = [
     },
     cover: '/images/catalog-slides/slide-valves.jpg',
     file: '/catalogs/nevo-zapor-armatura.pdf',
-    size: '6.2 MB',
-    pages: 58,
+    badge: 'PDF',
     categorySlug: 'zapor-armatura',
   },
   {
@@ -55,8 +53,7 @@ export const PDF_CATALOGS = [
     },
     cover: '/images/catalog-slides/slide-sewer.jpg',
     file: '/catalogs/nevo-kanalizatsiya.pdf',
-    size: '3.9 MB',
-    pages: 36,
+    badge: 'PDF',
     categorySlug: 'truba-va-fitinglar',
   },
   {
@@ -74,8 +71,7 @@ export const PDF_CATALOGS = [
     },
     cover: '/images/categories/valves-fittings.webp',
     file: '/catalogs/nevo-isitish.pdf',
-    size: '5.1 MB',
-    pages: 48,
+    badge: 'PDF',
     categorySlug: 'isitish-tizimi',
   },
   {
@@ -93,8 +89,7 @@ export const PDF_CATALOGS = [
     },
     cover: '/images/categories/hdpe-pipes.webp',
     file: '/catalogs/nevo-yongin.pdf',
-    size: '3.4 MB',
-    pages: 28,
+    badge: 'PDF',
     categorySlug: 'yongin-jihozlari',
   },
 ];

@@ -29,7 +29,7 @@ export function renderProductCard(product) {
   const materialSpec = (product.specs && product.specs['Materiali']) || '';
   const specLine = [sizeSpec, materialSpec].filter(Boolean).join(' · ');
 
-  const has3D = product.badge === '3D' || product.has3d || product.id % 4 === 0; // 3D badge on sample engineering positions
+  const has3D = Boolean(product.has3d || (Array.isArray(product.images) && product.images.length >= 8));
 
   return `
     <article
@@ -50,7 +50,7 @@ export function renderProductCard(product) {
         ${
           sku
             ? `
-          <span class="card-sku-chip" title="Mahsulot kodi: ${esc(sku)}">
+          <span class="card-sku-chip" title="${esc(t('skuLabel'))}: ${esc(sku)}">
             ${esc(sku)}
           </span>
         `
@@ -68,7 +68,7 @@ export function renderProductCard(product) {
                 <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
                 <line x1="12" y1="22.08" x2="12" y2="12"></line>
               </svg>
-              <span>Фото 3D</span>
+              <span>${t('badge3D')}</span>
             </span>
           `
               : ''
@@ -78,7 +78,7 @@ export function renderProductCard(product) {
               ? `
             <span class="badge-stock-pulse" title="${t('inStock')}">
               <span class="stock-pulse-dot"></span>
-              <span>Omborda</span>
+              <span>${t('inStock')}</span>
             </span>
           `
               : `

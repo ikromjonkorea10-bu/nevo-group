@@ -35,10 +35,78 @@ export function onCatalogChange(fn) {
   return () => listeners.delete(fn);
 }
 
+import { getLang } from './i18n.js';
+
+export const GROUP_TRANSLATIONS = {
+  'Врезной хомут': { uz: 'Vrezka xomuti', ru: 'Врезной хомут', en: 'Saddle Clamp' },
+  'Втулка под фланец (Адаптер)': { uz: 'Flanets vtulka (Adapter)', ru: 'Втулка под фланец (Адаптер)', en: 'Flange Adapter' },
+  'Задвижка из литейного чугуна 30ч6бр': { uz: "Cho'yan zadvijka 30ch6br", ru: 'Задвижка чугунная 30ч6бр', en: 'Cast Iron Gate Valve 30ch6br' },
+  'Задвижка стальная 30ч41нж': { uz: "Po'lat zadvijka 30ch41nj", ru: 'Задвижка стальная 30ч41нж', en: 'Steel Gate Valve 30ch41nj' },
+  'Задвижка чугунная 30ч39р': { uz: "Cho'yan zadvijka 30ch39r", ru: 'Задвижка чугунная 30ч39р', en: 'Resilient Gate Valve 30ch39r' },
+  'Задвижка чугунная 30ч39р ECO': { uz: "Cho'yan zadvijka 30ch39r ECO", ru: 'Задвижка чугунная 30ч39р ECO', en: 'Gate Valve 30ch39r ECO' },
+  'Задвижка чугунная 30ч39р Латунь': { uz: "Cho'yan zadvijka 30ch39r (Latun)", ru: 'Задвижка чугунная 30ч39р Латунь', en: 'Gate Valve 30ch39r (Brass)' },
+  'Затвор дисковый D71X-10/16': { uz: 'Diskli zatvor D71X-10/16', ru: 'Затвор дисковый D71X-10/16', en: 'Butterfly Valve D71X-10/16' },
+  'Затвор дисковый ECO': { uz: 'Diskli zatvor ECO', ru: 'Затвор дисковый ECO', en: 'Butterfly Valve ECO' },
+  'Вантуз чугунный фланцевый': { uz: "Cho'yan flanetsli vantuz", ru: 'Вантуз чугунный фланцевый', en: 'Air Release Valve (Flanged)' },
+  'Демонтажная вставка': { uz: 'Demontaj ulamasi (vstavka)', ru: 'Демонтажная вставка', en: 'Dismantling Joint' },
+  'Заглушка': { uz: 'Zaglushka', ru: 'Заглушка', en: 'End Cap / Plug' },
+  'Крестовина': { uz: 'Krestovina', ru: 'Крестовина', en: 'Cross Fitting' },
+  'Муфта': { uz: 'Mufta', ru: 'Муфта', en: 'Coupling / Sleeve' },
+  'Обратный клапан чугунный (ТАБ)': { uz: "Cho'yan qaytarma klapan (TAB)", ru: 'Обратный клапан чугунный (ТАБ)', en: 'Check Valve (Wafer/Flanged)' },
+  'Отвод': { uz: 'Tirsak (otvod)', ru: 'Отвод', en: 'Elbow Bend' },
+  'Отвод полиэтиленовый': { uz: 'Polietilen tirsak', ru: 'Отвод полиэтиленовый', en: 'HDPE Elbow' },
+  'Пол отвод': { uz: 'Yarim tirsak (pol-otvod)', ru: 'Полуотвод', en: '45° Elbow' },
+  'Переходник': { uz: 'Perexodnik (reduktor)', ru: 'Переходник', en: 'Reducer' },
+  'Пожарный кран': { uz: "Yong'in krani", ru: 'Пожарный кран', en: 'Fire Hydrant Valve' },
+  'Прокладка для задвижек': { uz: 'Zadvijka prokladkasi', ru: 'Прокладка для задвижек', en: 'Gasket for Gate Valves' },
+  'Тройник': { uz: 'Troynik', ru: 'Тройник', en: 'Tee Fitting' },
+  'Тройник переходник': { uz: "O'tish troynigi", ru: 'Тройник переходник', en: 'Reducing Tee' },
+  'Хомут сантехнический': { uz: 'Santexnika xomuti', ru: 'Хомут сантехнический', en: 'Pipe Clamp' },
+  'Чугунный фильтр': { uz: "Cho'yan filtr", ru: 'Чугунный фильтр', en: 'Cast Iron Strainer' },
+  'Шаровой кран': { uz: 'Sharli kran', ru: 'Шаровой кран', en: 'Ball Valve' },
+  'PP-R труба PN10 ХВС': { uz: 'PP-R quvur PN10 (sovuq suv)', ru: 'PP-R труба PN10 ХВС', en: 'PP-R Pipe PN10 Cold Water' },
+  'PP-R труба PN16 ХВС': { uz: 'PP-R quvur PN16 (sovuq suv)', ru: 'PP-R труба PN16 ХВС', en: 'PP-R Pipe PN16 Cold Water' },
+  'PP-R труба композит PN20 ГВС': { uz: 'PP-R kompozit quvur PN20 (issiq suv)', ru: 'PP-R труба композит PN20 ГВС', en: 'PP-R Composite Pipe PN20 Hot Water' },
+  'ППР труба PN-10 ХВС': { uz: 'PP-R quvur PN10 (sovuq suv)', ru: 'ППР труба PN-10 ХВС', en: 'PP-R Pipe PN10 Cold Water' },
+  'ППР труба PN-16 ХВС': { uz: 'PP-R quvur PN16 (sovuq suv)', ru: 'ППР труба PN-16 ХВС', en: 'PP-R Pipe PN16 Cold Water' },
+  'ППР труба PN-20 ГВС': { uz: 'PP-R quvur PN20 (issiq suv)', ru: 'ППР труба PN-20 ГВС', en: 'PP-R Pipe PN20 Hot Water' },
+  '4 kV"': { uz: 'Transformator 4 kV', ru: 'Трансформатор 4 кВ', en: 'Transformer 4 kV' },
+  '4 кВ"': { uz: 'Transformator 4 kV', ru: 'Трансформатор 4 кВ', en: 'Transformer 4 kV' }
+};
+
+export const SUBCAT_TRANSLATIONS = {
+  'PP-R труба': { uz: 'PP-R quvurlar', ru: 'Трубы PP-R', en: 'PP-R Pipes' },
+  'Врезные хомуты': { uz: 'Vrezka xomutlari', ru: 'Врезные хомуты', en: 'Saddle Clamps' },
+  'Запорная арматура': { uz: 'Zapor armatura', ru: 'Запорная арматура', en: 'Valves & Controls' },
+  'Крепёжные хомуты': { uz: 'Mahkamlash xomutlari', ru: 'Крепёжные хомуты', en: 'Mounting Clamps' },
+  'ППР труба и фитинги': { uz: 'PP-R quvur va fitinglar', ru: 'Трубы и фитинги PP-R', en: 'PP-R Pipes & Fittings' },
+  'Пожарное оборудование': { uz: "Yong'in jihozlari", ru: 'Пожарное оборудование', en: 'Fire Safety Hardware' },
+  'Фитинг компрессионный': { uz: 'Kompression fitinglar', ru: 'Компрессионные фитинги', en: 'Compression Fittings' },
+  'Фитинг полиэтиленовый': { uz: 'Polietilen fitinglar', ru: 'Полиэтиленовые фитинги', en: 'HDPE Fittings' }
+};
+
+export function getLocalizedGroup(rawGroup, lang = getLang()) {
+  if (!rawGroup) return '';
+  const match = GROUP_TRANSLATIONS[rawGroup];
+  return match ? (match[lang] || match.uz) : rawGroup;
+}
+
+export function getLocalizedSubcategory(rawSub, lang = getLang()) {
+  if (!rawSub) return '';
+  const match = SUBCAT_TRANSLATIONS[rawSub];
+  return match ? (match[lang] || match.uz) : rawSub;
+}
+
 export function mapProduct(row, categoriesById) {
   const category = categoriesById.get(row.category_id);
   const price = Number(row.price) || 0;
   const oldPrice = row.old_price === null || row.old_price === undefined ? null : Number(row.old_price);
+  const lang = getLang();
+  const rawGroup = row.group_name || '';
+  const rawSubcat = row.subcategory_uz || '';
+  const groupName = getLocalizedGroup(rawGroup, lang);
+  const subcategory = getLocalizedSubcategory(rawSubcat, lang);
+
   return {
     id: Number(row.id),
     slug: row.slug,
@@ -48,14 +116,16 @@ export function mapProduct(row, categoriesById) {
     description: row.description_uz || '',
     category: category ? category.name : '',
     categorySlug: category ? category.slug : '',
-    subcategory: row.subcategory_uz || '',
+    subcategory,
+    subcategoryRaw: rawSubcat,
     brand: row.brand || '',
     price,
     priceFormatted: formatPrice(price),
     oldPrice,
     oldPriceFormatted: oldPrice ? formatPrice(oldPrice) : '',
     unit: row.unit || '1 dona',
-    groupName: row.group_name || '',
+    groupName,
+    groupNameRaw: rawGroup,
     size: row.size || '',
     sizeLabel: row.size_label || '',
     packQty: row.pack_qty || '',
