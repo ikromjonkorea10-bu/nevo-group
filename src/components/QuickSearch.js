@@ -100,7 +100,7 @@ function renderQuickSearchDOM() {
   root.className = 'quicksearch-modal-root active';
   root.innerHTML = `
     <div class="quicksearch-backdrop" id="quicksearch-backdrop" aria-hidden="true"></div>
-    <div class="quicksearch-dialog" role="dialog" aria-modal="true" aria-label="Mahsulot qidirish">
+    <div class="quicksearch-dialog" role="dialog" aria-modal="true" aria-label="${t('catalogSearchLabel')}">
       
       <!-- Input bar with colorful beam edge animation -->
       <div class="quicksearch-input-wrap beam-search">
@@ -117,12 +117,12 @@ function renderQuickSearchDOM() {
             value="${esc(currentQuery)}"
             autocomplete="off"
             spellcheck="false"
-            aria-label="Mahsulot qidirish"
+            aria-label="${t('catalogSearchLabel')}"
           />
           ${
             currentQuery
               ? `
-            <button type="button" class="quicksearch-clear-btn" id="quicksearch-clear" aria-label="Tozalash">
+            <button type="button" class="quicksearch-clear-btn" id="quicksearch-clear" aria-label="${t('escToClose')}">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
           `
@@ -130,7 +130,7 @@ function renderQuickSearchDOM() {
             <kbd class="quicksearch-kbd-badge">${kbdSymbol}</kbd>
           `
           }
-          <button type="button" class="quicksearch-close-x" id="quicksearch-close-btn" aria-label="Yopish">
+          <button type="button" class="quicksearch-close-x" id="quicksearch-close-btn" aria-label="${t('escToClose')}">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
@@ -173,8 +173,8 @@ function renderQuickSearchDOM() {
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               <line x1="8" y1="11" x2="14" y2="11"></line>
             </svg>
-            <p class="empty-title">"${esc(currentQuery)}" bo'yicha mahsulot topilmadi</p>
-            <p class="empty-sub">Boshqa so'z bilan qidiring yoki katalog bo'limlaridan tanlang.</p>
+            <p class="empty-title">"${esc(currentQuery)}" ${t('searchNoResultsQuery')}</p>
+            <p class="empty-sub">${t('searchTryAnother')}</p>
           </div>
         `
               : `
@@ -183,7 +183,7 @@ function renderQuickSearchDOM() {
             categories.length > 0
               ? `
             <div class="results-group-block">
-              <div class="results-group-label">Kategoriyalar (${categories.length})</div>
+              <div class="results-group-label">${t('searchCategoriesGroup')} (${categories.length})</div>
               <div class="results-cat-list">
                 ${categories
                   .map(
@@ -219,7 +219,7 @@ function renderQuickSearchDOM() {
             products.length > 0
               ? `
             <div class="results-group-block">
-              <div class="results-group-label">Mahsulotlar (${products.length})</div>
+              <div class="results-group-label">${t('searchProductsGroup')} (${products.length})</div>
               <div class="results-prod-list">
                 ${products
                   .map((p, idx) => {
@@ -263,11 +263,11 @@ function renderQuickSearchDOM() {
       <div class="quicksearch-footer">
         <div class="nav-hints">
           <span class="hint-key">↑↓</span>
-          <span class="hint-label">tanlash</span>
+          <span class="hint-label">${t('quickSearchHintSelect')}</span>
           <span class="hint-key">↵</span>
-          <span class="hint-label">ochish</span>
+          <span class="hint-label">${t('quickSearchHintOpen')}</span>
           <span class="hint-key">ESC</span>
-          <span class="hint-label">yopish</span>
+          <span class="hint-label">${t('quickSearchHintClose')}</span>
         </div>
       </div>
 

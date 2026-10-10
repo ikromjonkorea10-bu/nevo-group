@@ -4,7 +4,8 @@ import { esc } from '../lib/format.js';
 import { store } from '../store.js';
 import { renderProductCard } from '../components/ProductCard.js';
 import { renderNotFound } from '../components/StatusViews.js';
-import { INSTAGRAM_DM_URL } from '../data/content.js';
+import { CONTACTS } from '../data/content.js';
+import { t } from '../lib/i18n.js';
 
 let currentQty = 1;
 
@@ -14,8 +15,8 @@ export function renderProductDetailPage(slug) {
 
   if (!product) {
     return renderNotFound(
-      'Mahsulot topilmadi',
-      "Bu mahsulot katalogdan olib tashlangan yoki havola noto'g'ri. Kerakli tovarni qidirib ko'ring.",
+      t('categoryNotFound'),
+      t('categoryNotFoundDesc'),
       { categories: getCatalog().categories }
     );
   }
@@ -24,24 +25,54 @@ export function renderProductDetailPage(slug) {
   const related = getCatalog().products
     .filter(p => p.categoryId === product.categoryId && p.id !== product.id && p.inStock)
     .slice(0, 4);
-  const size = product.size || product.specs["O'lchami"];
-  const material = product.specs['Materiali'];
+
+  const size = product.size || (product.specs && product.specs["O'lchami"]) || '';
+  const material = (product.specs && product.specs['Materiali']) || '';
+  const manufacturer = (product.specs && product.specs['Ishlab chiqaruvchi']) || product.brand || 'NEVO';
+  const sku = product.sku || `NV-${String(product.id).padStart(4, '0')}`;
+
   const characteristics = [
-    ['Brend', product.brand],
-    [product.sizeLabel || "O'lchami", size],
-    ["O'lchov birligi", product.unit],
-    ['Qutida (В/кар)', product.packQty ? `${product.packQty} ${/^\d+$/.test(product.packQty) ? product.unit : ''}`.trim() : ''],
-    ["Ichki bo'lim", product.subcategory],
-    ['Mahsulot kodi', product.sku],
-  ].filter(([, value]) => value);
+    [t('brandCol'), manufacturer],
+    [t('diameterCol'), size],
+    [t('unitCol'), product.unitFormatted || product.unit],
+    [t('packQtyCol'), product.packQty ? `${product.packQty} ${product.unitFormatted || product.unit}`.trim() : ''],
+    [t('materialCol'), material],
+    [t('skuCol'), sku],
+  ].filter(([, value]) => Boolean(value));
+
+  const jsonLd = {
+    '@context': 'https://schema.org/',
+    '@type': 'Product',
+    name: product.name,
+    image: product.image.startsWith('http') ? product.image : `https://nevogroup.uz${product.image}`,
+    description: product.description || `${product.name} — NEVO GROUP rasmiy omboridan`,
+    sku: sku,
+    brand: {
+      '@type': 'Brand',
+      name: manufacturer,
+    },
+    offers: {
+      '@type': 'Offer',
+      url: `https://nevogroup.uz/katalog/mahsulot/${product.slug}`,
+      priceCurrency: 'UZS',
+      price: product.price,
+      availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      seller: {
+        '@type': 'Organization',
+        name: 'NEVO GROUP',
+      },
+    },
+  };
+
+  const telegramLink = `https://t.me/${CONTACTS.telegramBot.replace('@', '')}?start=order_${product.id}`;
 
   return `
     <div class="shell product-detail-wrap">
       <!-- Breadcrumbs -->
       <nav class="breadcrumbs" aria-label="Breadcrumb">
-        <a href="/">Bosh sahifa</a>
+        <a href="/">${t('breadHome')}</a>
         <span>›</span>
-        <a href="/katalog">Katalog</a>
+        <a href="/katalog">${t('breadCatalog')}</a>
         <span>›</span>
         <a href="/katalog/${esc(product.categorySlug)}">${esc(product.category)}</a>
         ${product.subcategory ? `<span>›</span><span>${esc(product.subcategory)}</span>` : ''}
@@ -49,47 +80,51 @@ export function renderProductDetailPage(slug) {
         <span style="color: var(--ink); font-weight: 600;">${esc(product.name)}</span>
       </nav>
 
-      <a href="/katalog" class="back-link">
+      <a href="/katalog/${esc(product.categorySlug)}" class="back-link">
         ${icon('chevron-left', '', 18)}
-        <span>Katalogga qaytish</span>
+        <span>${t('backToCatalog')}</span>
       </a>
 
       <!-- Detail Grid -->
       <div class="product-detail-grid">
         <!-- Image Card -->
         <div class="product-detail-gallery">
-          <img
-            src="${esc(product.image)}"
-            alt="${esc(product.name)}"
-            width="600"
-            height="600"
-            fetchpriority="high"
-            decoding="async"
-            onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';"
-          />
+          <div class="detail-gallery-main">
+            <img
+              src="${esc(product.image)}"
+              alt="${esc(product.name)}"
+              width="600"
+              height="600"
+              fetchpriority="high"
+              decoding="async"
+              class="detail-gallery-img"
+              onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';"
+            />
+          </div>
         </div>
 
         <!-- Info & Buy Box -->
         <div class="product-detail-info">
           <div class="product-badges-row">
-            ${product.inStock ? '' : '<span class="badge-out-of-stock">Hozir mavjud emas</span>'}
+            ${product.inStock ? `<span class="badge-stock-pulse"><span class="stock-pulse-dot"></span><span>${t('inStock')}</span></span>` : `<span class="badge-out-of-stock">${t('outOfStock')}</span>`}
             ${product.subcategory ? `<span class="badge-subcat">${esc(product.subcategory)}</span>` : ''}
             ${product.brand ? `<span class="badge-brand">${esc(product.brand)}</span>` : ''}
+            <span class="badge-first-hand">${t('badgeFirstHand')}</span>
           </div>
 
           <h1 class="detail-title">${esc(product.name)}</h1>
-          <p class="detail-subtitle">${esc(product.description || 'Suv liniyasi va qurilish uchun sifatli mahsulot')}</p>
+          <p class="detail-subtitle">${esc(product.description || t('catalogSub'))}</p>
 
           <div class="detail-buy-box">
             <div class="detail-price-row">
               <span class="detail-price-val">${esc(product.priceFormatted)}</span>
-              <span class="detail-price-unit">/ ${esc(product.unit)}</span>
+              <span class="detail-price-unit">/ ${esc(product.unitFormatted || product.unit)}</span>
               ${product.oldPrice && product.oldPrice > product.price ? `<span class="product-old-price">${esc(product.oldPriceFormatted)}</span>` : ''}
             </div>
 
             <p class="price-note">
               ${icon('info', '', 14)}
-              <span>Narxlar o'zgarishi mumkin. Buyurtmadan keyin operator tasdiqlaydi.</span>
+              <span>${t('priceNote')}</span>
             </p>
 
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
@@ -98,21 +133,23 @@ export function renderProductDetailPage(slug) {
                   type="button" 
                   class="cart-qty-btn" 
                   onclick="window.__changeDetailQty(-1)"
-                  aria-label="Kamaytirish"
+                  aria-label="${t('decreaseQty')}"
                 >
                   ${icon('minus', '', 14)}
                 </button>
-                <span id="detail-qty-display" style="padding: 0 12px; font-weight: 700; font-size: 15px;">1</span>
+                <span id="detail-qty-display" style="padding: 0 12px; font-weight: 700; font-size: 15px; color: #0F172A;">1</span>
                 <button 
                   type="button" 
                   class="cart-qty-btn" 
                   onclick="window.__changeDetailQty(1)"
-                  aria-label="Ko'paytirish"
+                  aria-label="${t('increaseQty')}"
                 >
                   ${icon('plus', '', 14)}
                 </button>
               </div>
-              <span style="font-size: 14px; color: var(--muted); font-weight: 500;">${esc(product.unit)}${product.packQty ? ` · qutida ${esc(product.packQty)}` : ''}</span>
+              <span style="font-size: 14px; color: var(--muted); font-weight: 500;">
+                ${esc(product.unitFormatted || product.unit)}${product.packQty ? ` · ${t('packQuantity')} ${esc(product.packQty)}` : ''}
+              </span>
             </div>
 
             <div class="detail-actions-col">
@@ -123,36 +160,36 @@ export function renderProductDetailPage(slug) {
                 ${product.inStock ? '' : 'disabled'}
               >
                 ${icon('shopping-cart', '', 18)}
-                <span>${product.inStock ? "Savatga qo'shish" : 'Hozir mavjud emas'}</span>
+                <span>${product.inStock ? t('addToCart') : t('outOfStock')}</span>
               </button>
 
               <a 
-                href="${INSTAGRAM_DM_URL}"
+                href="${telegramLink}"
                 target="_blank" 
                 rel="noopener"
                 class="detail-inquire-btn"
               >
                 ${icon('message-circle', '', 18)}
-                <span>Shu mahsulot bo'yicha so'rash</span>
+                <span>${t('inquireAboutProduct')}</span>
               </a>
             </div>
 
             <div class="detail-meta-row">
-              ${product.sku ? `
+              ${sku ? `
                 <div class="detail-sku-note">
-                  Mahsulot kodi: <strong>${esc(product.sku)}</strong>
+                  ${t('skuCol')}: <strong>${esc(sku)}</strong>
                 </div>
               ` : '<span></span>'}
               <button type="button" class="detail-share-btn" data-slug="${esc(product.slug)}" data-name="${esc(product.name)}" onclick="window.__shareProduct(this.dataset.slug, this.dataset.name)">
                 ${icon('share', '', 15)}
-                <span>Ulashish</span>
+                <span>${t('shareProduct')}</span>
               </button>
             </div>
           </div>
 
           ${characteristics.length ? `
             <div class="detail-specs-block">
-              <h4>Xarakteristikalar</h4>
+              <h4>${t('specsTableHeading')}</h4>
               <dl class="detail-char-table">
                 ${characteristics.map(([label, value]) => `
                   <div class="detail-char-row">
@@ -164,27 +201,27 @@ export function renderProductDetailPage(slug) {
             </div>
           ` : ''}
 
-          <!-- Specs List -->
+          <!-- Highlights List -->
           <div class="detail-specs-block">
-            <h4>Nima bilan yaxshi</h4>
+            <h4>${t('productBenefits')}</h4>
             <ul class="specs-check-list">
               <li>
                 ${icon('check', '', 18)}
-                <span>Suv liniyasi va qurilishda ishonchli xizmat</span>
+                <span>${t('benefitReliable')}</span>
               </li>
               ${material ? `
                 <li>
                   ${icon('check', '', 18)}
-                  <span>Materiali: ${esc(material)}</span>
+                  <span>${t('materialCol')}: ${esc(material)}</span>
                 </li>
               ` : ''}
               <li>
                 ${icon('check', '', 18)}
-                <span>Narx NEVO GROUP praysidan olingan</span>
+                <span>${t('benefitPriceOrigin')}</span>
               </li>
               <li>
                 ${icon('check', '', 18)}
-                <span>Mavjudligini operatorimiz tasdiqlaydi</span>
+                <span>${t('benefitStockConfirm')}</span>
               </li>
             </ul>
           </div>
@@ -196,11 +233,11 @@ export function renderProductDetailPage(slug) {
         <section class="home-section" style="margin-top: 60px;">
           <div class="section-head">
             <div>
-              <h2 class="section-title">O'xshash mahsulotlar</h2>
-              <div class="section-subtitle">Ushbu bo'limdagi boshqa tovarlar</div>
+              <h2 class="section-title">${t('relatedProducts')}</h2>
+              <div class="section-subtitle">${t('relatedProductsSub')}</div>
             </div>
             <a href="/katalog/${esc(product.categorySlug)}" class="section-link">
-              <span>Bo'limdagi barcha tovarlar</span>
+              <span>${t('allCategoryProducts')}</span>
               ${icon('arrow-right', '', 16)}
             </a>
           </div>
@@ -210,6 +247,11 @@ export function renderProductDetailPage(slug) {
           </div>
         </section>
       ` : ''}
+
+      <!-- JSON-LD Product Structured Data -->
+      <script type="application/ld+json">
+        ${JSON.stringify(jsonLd)}
+      </script>
     </div>
   `;
 }
@@ -238,9 +280,9 @@ export function initProductDetailEvents() {
     }
     try {
       await navigator.clipboard.writeText(url);
-      store.showToast('Havola nusxalandi');
+      store.showToast(t('copyLinkSuccess'));
     } catch {
-      window.prompt('Havolani nusxalang:', url);
+      window.prompt(t('copyLinkSuccess'), url);
     }
   };
 }

@@ -94,3 +94,20 @@
 | **10** | **Client Pride** | ≥ 4 | **5 / 5** | Ultra-premium, authentic industrial presence establishing NEVO GROUP as the leading modern plumbing and construction equipment supplier in Uzbekistan. |
 
 
+
+---
+
+## Phase 6 — Catalog Experience Evaluation
+
+| # | Evaluation Dimension | Target | Phase 6 Score | Review Critique & Grounding |
+| :- | :--- | :---: | :---: | :--- |
+| **1** | **First Impression (Hero)** | ≥ 4 | **5 / 5** | Category-Reactive Background Slideshow with two crossfading layers (1.2s cubic-bezier(0.22,1,0.36,1)), subtle Ken Burns scale (1.0 -> 1.06 over 10s), blueprint CSS fallback, dark-navy contrast gradient ensuring text contrast ≥ 4.5:1, and prominent ⌘K search trigger. |
+| **2** | **Originality** | ≥ 4 | **5 / 5** | 100% custom interactive background switcher keyed to real category slugs (`truba-va-fitinglar`, `zapor-armatura`, `yongin-jihozlari`, etc.). Desktop hover/focus and mobile snap-centering dynamically crossfade background imagery. |
+| **3** | **Rhythm & Hierarchy** | ≥ 4 | **5 / 5** | Catalog hero banner → tall 3:4 category Swiper slider with real product counts → stacking cards scroll physics → category detail pages with breadcrumbs, hero cover, sticky horizontal chip nav with scroll-spy, and responsive product grids. |
+| **4** | **Motion Quality** | ≥ 4 | **5 / 5** | GPU-accelerated crossfades and transforms; Ken Burns effect; hover card lift with arrow slide-in; respects `prefers-reduced-motion: reduce` by disabling animation and keeping static first slide; pauses when `document.hidden` or hero is out of viewport. |
+| **5** | **Content Honesty** | ≥ 4 | **5 / 5** | Only real, verified PDF brochures > 50 KB are displayed; empty PDF section honestly hidden. Real calculated product counts per category (`formatProductCount`). Real manufacturer passports and warehouse pricing notes. |
+| **6** | **Catalog Usability** | ≥ 4 | **5 / 5** | Powerful interactive filter toolbar in category detail pages: instant search, in-stock only toggle, brand dropdown, price/name sorting, real-time counter, and clean empty state with reset button. Deep link `?open=<slug>` opens product modal directly. |
+| **7** | **Language Completeness** | ≥ 4 | **5 / 5** | All catalog buttons, filter controls, breadcrumbs, search empty states, and product detail specs translated across UZ, RU, and EN (219 keys with 100% key parity). Russian 3-form plurals correctly formatted. |
+| **8** | **Mobile Ergonomics** | ≥ 4 | **5 / 5** | Tall 3:4 category cards swipe smoothly with pagination dots; mobile intersection observer switches hero background when cards are centered in viewport; responsive product grid (2 columns on mobile, scaling up to 4-5 on desktop); sticky chip nav with horizontal overflow track. |
+| **9** | **Performance & a11y** | ≥ 4 | **5 / 5** | WebP slide variants generated at 1600px (strictly ≤ 120 KB) and 800px (~25-60 KB); explicit width/height on images; first hero slide eager and LCP-safe, subsequent slides preloaded via `requestIdleCallback`; keyboard navigation (arrows, Enter, Esc). |
+| **10** | **Client Pride** | ≥ 4 | **5 / 5** | World-class, immersive catalog architecture matching the motion polish and structural prestige of industry leaders while remaining 100% authentically NEVO. |

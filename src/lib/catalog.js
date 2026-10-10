@@ -77,10 +77,30 @@ export const CATEGORY_TRANSLATIONS = {
       en: 'Boilers, radiators, and temperature control equipment'
     }
   },
+  'isitish-tizimi': {
+    uz: 'Isitish va suv isitish tizimlari',
+    ru: 'Отопление и водонагрев',
+    en: 'Heating & Water Systems',
+    desc: {
+      uz: 'Isitish qozonlari, radiatorlar va harorat nazorati jihozlari',
+      ru: 'Котлы, радиаторы и оборудование для температурного контроля',
+      en: 'Boilers, radiators, and temperature control equipment'
+    }
+  },
   'yongin-xavfsizligi': {
-    uz: "Yong'in xavfsizligi",
-    ru: 'Пожарная безопасность',
-    en: 'Fire Safety Equipment',
+    uz: "Yong'in xavfsizligi jihozlari",
+    ru: 'Противопожарное оборудование',
+    en: 'Fire Protection Equipment',
+    desc: {
+      uz: "Gidrantlar, o't o'chirish kranlari va xavfsizlik shlanglari",
+      ru: 'Гидранты, пожарные краны и рукава безопасности',
+      en: 'Hydrants, fire valves and safety hoses'
+    }
+  },
+  'yongin-jihozlari': {
+    uz: "Yong'in xavfsizligi jihozlari",
+    ru: 'Противопожарное оборудование',
+    en: 'Fire Protection Equipment',
     desc: {
       uz: "Gidrantlar, o't o'chirish kranlari va xavfsizlik shlanglari",
       ru: 'Гидранты, пожарные краны и рукава безопасности',
@@ -88,9 +108,19 @@ export const CATEGORY_TRANSLATIONS = {
     }
   },
   'elektr-va-avtomatika': {
-    uz: 'Elektr va avtomatika',
-    ru: 'Электрика и автоматика',
-    en: 'Electrical & Automation',
+    uz: 'Elektr jihozlari va avtomatika',
+    ru: 'Электрооборудование и автоматика',
+    en: 'Electrical & Automation Equipment',
+    desc: {
+      uz: 'Sanoat transformatorlari, kabellar va avtomatika jihozlari',
+      ru: 'Промышленные трансформаторы, кабельная продукция и автоматика',
+      en: 'Industrial transformers, cables and automation gear'
+    }
+  },
+  'elektr-jihozlari': {
+    uz: 'Elektr jihozlari va avtomatika',
+    ru: 'Электрооборудование и автоматика',
+    en: 'Electrical & Automation Equipment',
     desc: {
       uz: 'Sanoat transformatorlari, kabellar va avtomatika jihozlari',
       ru: 'Промышленные трансформаторы, кабельная продукция и автоматика',

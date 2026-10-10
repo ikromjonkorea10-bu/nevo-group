@@ -2,9 +2,9 @@
 // Bespoke high-performance industrial engineering catalog with custom NEVO design
 
 import { icon } from '../icons.js';
-import { getCatalog, getCategoryBySlug, getProductBySlug } from '../lib/catalog.js';
+import { getCatalog, getCategoryBySlug, getProductBySlug, matchesSearch } from '../lib/catalog.js';
 import { esc, slugify } from '../lib/format.js';
-import { t, getLang } from '../lib/i18n.js';
+import { t, getLang, formatProductCount } from '../lib/i18n.js';
 import { renderProductCard } from '../components/ProductCard.js';
 import { openProductModal } from '../components/ProductModal.js';
 import { renderQuickSearchTrigger } from '../components/QuickSearch.js';
@@ -12,13 +12,41 @@ import { PDF_CATALOGS } from '../data/catalogs.js';
 import Swiper from 'swiper';
 import { Navigation, Pagination, Keyboard, FreeMode } from 'swiper/modules';
 
-// Category High-Res Industrial Cover Mappings
+// Category High-Res Industrial Cover Mappings (Optimized WebP, <= 120KB)
+export const CATEGORY_HERO_SLIDES = {
+  'truba-va-fitinglar': {
+    src1600: '/images/catalog-slides/pipes-1600.webp',
+    src800: '/images/catalog-slides/pipes-800.webp',
+    alt: 'Polimer quvurlar va fitinglar assortimenti',
+  },
+  'zapor-armatura': {
+    src1600: '/images/catalog-slides/valves-1600.webp',
+    src800: '/images/catalog-slides/valves-800.webp',
+    alt: 'Sanoat zapor armaturasi va zadvijkalar',
+  },
+  'yongin-jihozlari': {
+    src1600: '/images/catalog-slides/factory-1600.webp',
+    src800: '/images/catalog-slides/factory-800.webp',
+    alt: "Yong'in xavfsizligi uskunalari",
+  },
+  'isitish-tizimi': {
+    src1600: '/images/catalog-slides/plant-1600.webp',
+    src800: '/images/catalog-slides/plant-800.webp',
+    alt: 'Isitish va suv isitish tizimlari',
+  },
+  'elektr-jihozlari': {
+    src1600: '/images/catalog-slides/sewer-1600.webp',
+    src800: '/images/catalog-slides/sewer-800.webp',
+    alt: 'Elektr transformatorlar va avtomatika',
+  },
+};
+
 const CATEGORY_COVERS = {
-  'truba-va-fitinglar': '/images/catalog-slides/slide-pipes.jpg',
-  'zapor-armatura': '/images/catalog-slides/slide-valves.jpg',
-  'yongin-jihozlari': '/images/categories/hdpe-pipes.webp',
-  'isitish-tizimi': '/images/categories/valves-fittings.webp',
-  'elektr-jihozlari': '/mahsulot/ktp-ktps.webp',
+  'truba-va-fitinglar': '/images/catalog-slides/pipes-1600.webp',
+  'zapor-armatura': '/images/catalog-slides/valves-1600.webp',
+  'yongin-jihozlari': '/images/catalog-slides/factory-1600.webp',
+  'isitish-tizimi': '/images/catalog-slides/plant-1600.webp',
+  'elektr-jihozlari': '/images/catalog-slides/sewer-1600.webp',
 };
 
 // Line-art Icon SVGs per category
@@ -41,6 +69,7 @@ function getCategoryIconSvg(slug) {
         </svg>
       `;
     case 'yongin-jihozlari':
+    case 'yongin-xavfsizligi':
       return `
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
@@ -48,12 +77,14 @@ function getCategoryIconSvg(slug) {
         </svg>
       `;
     case 'isitish-tizimi':
+    case 'isitish-tizimlari':
       return `
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"></path>
         </svg>
       `;
     case 'elektr-jihozlari':
+    case 'elektr-va-avtomatika':
       return `
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
@@ -71,8 +102,8 @@ function getCategoryIconSvg(slug) {
 /**
  * Main Catalog Renderer
  * Supports:
- * - /catalog (Index page with Hero Video, Main Slideshow, Stacking Cards, PDF Catalogs)
- * - /catalog/<slug> (Category detail page with Hero, Sticky Chip Nav, Groups H2, Subgroups H3, Product Grid)
+ * - /katalog (Index page with Category-Reactive Background Slideshow, Tall Cards Swiper, Stacking Cards)
+ * - /katalog/<slug> (Category detail page with Hero, Filter Bar, Sticky Chip Nav, Groups H2, Subgroups H3, Product Grid)
  */
 export function renderCatalogPage(params = {}, _routeKey = '') {
   const { categories, products } = getCatalog();
@@ -95,24 +126,41 @@ export function renderCatalogPage(params = {}, _routeKey = '') {
  */
 function renderCatalogIndexPage(categories, _products) {
   const lang = getLang();
+  const firstCatSlug = categories[0]?.slug || 'truba-va-fitinglar';
+  const firstSlide = CATEGORY_HERO_SLIDES[firstCatSlug] || CATEGORY_HERO_SLIDES['truba-va-fitinglar'];
+
+  // Honest content: only render PDF section if real verified PDF files > 50 KB exist
+  const realPdfs = (PDF_CATALOGS || []).filter((p) => p.verified && (p.fileSizeBytes || 0) > 50000);
 
   return `
     <div class="catalog-index-wrapper">
       
-      <!-- 1. CatalogHero: Full-width background video with dark overlay -->
+      <!-- 1. CatalogHero: CATEGORY-REACTIVE BACKGROUND SLIDESHOW -->
       <section class="catalog-hero-fullscreen" id="catalog-hero">
-        <div class="catalog-hero-video-bg">
-          <video
-            src="/videos/pipeline-showcase.webm"
-            poster="/images/catalog-slides/slide-pipes.jpg"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="metadata"
-            aria-hidden="true"
-            class="catalog-hero-video"
-          ></video>
+        <div class="catalog-hero-bg" id="catalog-hero-bg" aria-hidden="true">
+          <div class="catalog-bg-layer catalog-bg-layer-a active" id="catalog-bg-layer-a">
+            <img
+              src="${firstSlide.src1600}"
+              srcset="${firstSlide.src800} 800w, ${firstSlide.src1600} 1600w"
+              sizes="100vw"
+              alt="${esc(firstSlide.alt)}"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+              class="catalog-bg-img"
+              id="catalog-hero-img-a"
+            />
+          </div>
+          <div class="catalog-bg-layer catalog-bg-layer-b" id="catalog-bg-layer-b">
+            <img
+              src=""
+              alt=""
+              loading="lazy"
+              decoding="async"
+              class="catalog-bg-img"
+              id="catalog-hero-img-b"
+            />
+          </div>
           <div class="catalog-hero-dark-overlay"></div>
           <div class="catalog-hero-radial-glow"></div>
         </div>
@@ -145,7 +193,7 @@ function renderCatalogIndexPage(categories, _products) {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                   <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
-                <span>Qidirish</span>
+                <span>${t('searchAction')}</span>
                 <kbd class="hero-kbd-badge">⌘K</kbd>
               </button>
             </div>
@@ -183,18 +231,25 @@ function renderCatalogIndexPage(categories, _products) {
             <div class="swiper-wrapper">
               ${categories
                 .map((cat) => {
-                  const cover = CATEGORY_COVERS[cat.slug] || cat.image || '/images/catalog-slides/slide-pipes.jpg';
-                  const countText = `${cat.count} ${t('productsWord')}`;
+                  const cover = CATEGORY_COVERS[cat.slug] || cat.image || '/images/catalog-slides/pipes-1600.webp';
+                  const countText = formatProductCount(cat.count, lang);
                   return `
                   <div class="swiper-slide category-tall-slide">
-                    <a href="/katalog/${esc(cat.slug)}" class="category-cover-card" data-slug="${esc(cat.slug)}">
+                    <a
+                      href="/katalog/${esc(cat.slug)}"
+                      class="category-cover-card"
+                      data-slug="${esc(cat.slug)}"
+                      tabindex="0"
+                    >
                       <div class="cat-card-bg-wrap">
                         <img
                           src="${esc(cover)}"
                           alt="${esc(cat.name)}"
                           loading="lazy"
+                          width="600"
+                          height="800"
                           class="cat-card-bg-img"
-                          onerror="this.src='/images/catalog-slides/slide-pipes.jpg';"
+                          onerror="this.src='/images/catalog-slides/pipes-1600.webp';"
                         />
                         <div class="cat-card-dark-gradient"></div>
                       </div>
@@ -234,14 +289,14 @@ function renderCatalogIndexPage(categories, _products) {
       <section class="catalog-stacking-section" id="stacking-cards-section">
         <div class="shell">
           <div class="stacking-section-header">
-            <h2 class="stacking-title">Muhandislik Tizimlari Katalogi</h2>
-            <p class="stacking-sub">Har bir bo'lim bo'yicha to'liq tovar assortimenti va texnik xarakteristikalari</p>
+            <h2 class="stacking-title">${t('catalogStackTitle')}</h2>
+            <p class="stacking-sub">${t('catalogStackSub')}</p>
           </div>
 
           <div class="stacking-cards-track" id="stacking-track">
             ${categories
               .map((cat, idx) => {
-                const cover = CATEGORY_COVERS[cat.slug] || cat.image || '/images/catalog-slides/slide-pipes.jpg';
+                const cover = CATEGORY_COVERS[cat.slug] || cat.image || '/images/catalog-slides/pipes-1600.webp';
                 return `
                 <div
                   class="stacking-card-item"
@@ -249,7 +304,7 @@ function renderCatalogIndexPage(categories, _products) {
                   style="top: ${96 + 22 * idx}px;"
                 >
                   <div class="stacking-card-bg">
-                    <img src="${esc(cover)}" alt="${esc(cat.name)}" class="stacking-card-img" loading="lazy" />
+                    <img src="${esc(cover)}" alt="${esc(cat.name)}" class="stacking-card-img" loading="lazy" width="800" height="400" />
                     <div class="stacking-card-overlay"></div>
                   </div>
 
@@ -257,7 +312,7 @@ function renderCatalogIndexPage(categories, _products) {
                     <div class="stacking-icon-box">
                       ${getCategoryIconSvg(cat.slug)}
                     </div>
-                    <span class="stacking-count-pill">${cat.count} ${t('productsWord')}</span>
+                    <span class="stacking-count-pill">${formatProductCount(cat.count, lang)}</span>
                   </div>
 
                   <div class="stacking-card-footer">
@@ -283,59 +338,67 @@ function renderCatalogIndexPage(categories, _products) {
         </div>
       </section>
 
-      <!-- 4. CatalogDownloads: Official PDF Catalogs Grid -->
-      <section class="catalog-downloads-section" id="catalog-downloads">
-        <div class="shell">
-          <div class="downloads-head">
-            <div class="head-icon-circle">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sky">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
+      <!-- 4. CatalogDownloads: Render only if real verified PDFs > 50KB exist -->
+      ${
+        realPdfs.length > 0
+          ? `
+        <section class="catalog-downloads-section" id="catalog-downloads">
+          <div class="shell">
+            <div class="downloads-head">
+              <div class="head-icon-circle">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sky">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+              </div>
+              <h2 class="downloads-title">${t('downloadCatalogs')}</h2>
+              <p class="downloads-sub">Texnik pasportlar va mahsulot parametrlari jamlangan rasmiy PDF broshyuralar</p>
             </div>
-            <h2 class="downloads-title">${t('downloadCatalogs')}</h2>
-            <p class="downloads-sub">Texnik pasportlar, mahsulot parametrlari va to'liq montaj chizmalari jamlangan rasmiy PDF broshyuralar</p>
-          </div>
 
-          <div class="downloads-grid">
-            ${PDF_CATALOGS.map((pdf) => {
-              const title = pdf.title[lang] || pdf.title.uz;
-              const desc = pdf.desc[lang] || pdf.desc.uz;
-              return `
-                <div class="download-pdf-card">
-                  <div class="pdf-card-cover-wrap">
-                    <img src="${esc(pdf.cover)}" alt="${esc(title)}" class="pdf-cover-img" loading="lazy" />
-                    <span class="pdf-badge">${esc(pdf.badge || 'PDF')}</span>
-                  </div>
-                  
-                  <div class="pdf-card-body">
-                    <h3 class="pdf-card-title">${esc(title)}</h3>
-                    <p class="pdf-card-desc">${esc(desc)}</p>
+            <div class="downloads-grid">
+              ${realPdfs
+                .map((pdf) => {
+                  const title = pdf.title[lang] || pdf.title.uz;
+                  const desc = pdf.desc[lang] || pdf.desc.uz;
+                  return `
+                  <div class="download-pdf-card">
+                    <div class="pdf-card-cover-wrap">
+                      <img src="${esc(pdf.cover)}" alt="${esc(title)}" class="pdf-cover-img" loading="lazy" />
+                      <span class="pdf-badge">${esc(pdf.badge || 'PDF')}</span>
+                    </div>
                     
-                    <div class="pdf-card-footer">
-                      <a href="${esc(pdf.file)}" target="_blank" rel="noopener" class="btn-pdf-view" title="${t('viewPdf')}">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                        <span>${t('viewPdf')}</span>
-                      </a>
-                      <a href="${esc(pdf.file)}" download class="btn-pdf-download" title="${t('downloadPdf')}">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                          <polyline points="7 10 12 15 17 10"></polyline>
-                          <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                      </a>
+                    <div class="pdf-card-body">
+                      <h3 class="pdf-card-title">${esc(title)}</h3>
+                      <p class="pdf-card-desc">${esc(desc)}</p>
+                      
+                      <div class="pdf-card-footer">
+                        <a href="${esc(pdf.file)}" target="_blank" rel="noopener" class="btn-pdf-view" title="${t('viewPdf')}">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                          </svg>
+                          <span>${t('viewPdf')}</span>
+                        </a>
+                        <a href="${esc(pdf.file)}" download class="btn-pdf-download" title="${t('downloadPdf')}">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                          </svg>
+                        </a>
+                      </div>
                     </div>
                   </div>
-                </div>
-              `;
-            }).join('')}
+                `;
+                })
+                .join('')}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      `
+          : ''
+      }
 
     </div>
   `;
@@ -345,8 +408,12 @@ function renderCatalogIndexPage(categories, _products) {
  * CATEGORY DETAIL PAGE: /catalog/<slug>
  */
 function renderCategoryDetailPage(category, products, _params) {
-  const cover = CATEGORY_COVERS[category.slug] || category.image || '/images/catalog-slides/slide-pipes.jpg';
-  const productCountText = `${products.length} ${t('productsWord')}`;
+  const lang = getLang();
+  const cover = CATEGORY_COVERS[category.slug] || category.image || '/images/catalog-slides/pipes-1600.webp';
+  const productCountText = formatProductCount(products.length, lang);
+
+  // Collect unique brands present in this category
+  const brands = Array.from(new Set(products.map((p) => p.brand).filter(Boolean))).sort();
 
   // Group products hierarchically:
   // Level 1: H2 Groups (by groupName or category)
@@ -378,7 +445,7 @@ function renderCategoryDetailPage(category, products, _params) {
   const groups = Array.from(groupMap.values());
 
   return `
-    <div class="category-page-wrapper">
+    <div class="category-page-wrapper" data-category-slug="${esc(category.slug)}">
       
       <!-- 1. CategoryHero: High-res cover image with dark gradient & counts -->
       <section class="category-hero-section">
@@ -388,7 +455,10 @@ function renderCategoryDetailPage(category, products, _params) {
             alt="${esc(category.name)}"
             class="cat-hero-bg-img"
             loading="eager"
-            onerror="this.src='/images/catalog-slides/slide-pipes.jpg';"
+            width="1600"
+            height="500"
+            fetchpriority="high"
+            onerror="this.src='/images/catalog-slides/pipes-1600.webp';"
           />
           <div class="cat-hero-gradient-overlay"></div>
         </div>
@@ -410,10 +480,10 @@ function renderCategoryDetailPage(category, products, _params) {
               <h1 class="category-hero-h1">${esc(category.name)}</h1>
             </div>
             
-            <p class="category-hero-desc">${esc(category.shortDesc || 'Sanoat va fuqarolik qurilishi uchun sertifikatlangan tizimlar')}</p>
+            <p class="category-hero-desc">${esc(category.shortDesc || t('catalogSub'))}</p>
 
             <div class="cat-hero-meta-row">
-              <span class="cat-count-pill">
+              <span class="cat-count-pill" id="cat-header-count">
                 <span class="pulse-dot"></span>
                 <strong>${productCountText}</strong>
               </span>
@@ -457,79 +527,143 @@ function renderCategoryDetailPage(category, products, _params) {
           : ''
       }
 
-      <!-- 3. Section Groups & Product Grids -->
+      <!-- 3. Category Filter & Sort Toolbar -->
       <section class="category-products-body">
         <div class="shell">
-          ${
-            products.length === 0
-              ? `
-            <div class="empty-category-box">
-              <div class="empty-icon-wrap">
-                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-sky">
-                  <path d="m21.12 6.4-6-3.87a3 3 0 0 0-3.24 0l-6 3.87a3 3 0 0 0-1.88 2.6v7.74a3 3 0 0 0 1.88 2.6l6 3.87a3 3 0 0 0 3.24 0l6-3.87a3 3 0 0 0 1.88-2.6V9a3 3 0 0 0-1.88-2.6z"></path>
-                </svg>
+          
+          <div class="category-filter-toolbar" id="cat-filter-toolbar">
+            <div class="cat-filter-search-box">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="cat-filter-search-icon">
+                <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input
+                type="search"
+                id="cat-filter-search"
+                class="cat-filter-input"
+                placeholder="${t('searchCategoryProducts')}"
+                aria-label="${t('searchCategoryProducts')}"
+                autocomplete="off"
+              />
+            </div>
+
+            <div class="cat-filter-controls">
+              <label class="cat-filter-checkbox-label">
+                <input type="checkbox" id="cat-filter-instock" class="cat-filter-checkbox" />
+                <span>${t('filterInStockOnly')}</span>
+              </label>
+
+              ${
+                brands.length > 1
+                  ? `
+                <select id="cat-filter-brand" class="cat-filter-select" aria-label="${t('filterBrand')}">
+                  <option value="">${t('filterAllBrands')}</option>
+                  ${brands.map((b) => `<option value="${esc(b)}">${esc(b)}</option>`).join('')}
+                </select>
+              `
+                  : ''
+              }
+
+              <select id="cat-filter-sort" class="cat-filter-select" aria-label="${t('sortBy')}">
+                <option value="default">${t('sortDefault')}</option>
+                <option value="price-asc">${t('sortPriceAsc')}</option>
+                <option value="price-desc">${t('sortPriceDesc')}</option>
+                <option value="name-asc">${t('sortName')}</option>
+              </select>
+            </div>
+
+            <div class="cat-filter-status-row">
+              <span id="cat-filter-count-status">${productCountText}</span>
+              <button type="button" id="btn-clear-filters" class="btn-clear-filters" style="display: none;">
+                ${t('clearFilters')}
+              </button>
+            </div>
+          </div>
+
+          <!-- Product Groups Container -->
+          <div id="category-groups-container">
+            ${
+              products.length === 0
+                ? `
+              <div class="empty-category-box">
+                <div class="empty-icon-wrap">
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-sky">
+                    <path d="m21.12 6.4-6-3.87a3 3 0 0 0-3.24 0l-6 3.87a3 3 0 0 0-1.88 2.6v7.74a3 3 0 0 0 1.88 2.6l6 3.87a3 3 0 0 0 3.24 0l6-3.87a3 3 0 0 0 1.88-2.6V9a3 3 0 0 0-1.88-2.6z"></path>
+                  </svg>
+                </div>
+                <h2 class="empty-title">Mahsulotlar tez orada qo'shiladi</h2>
+                <p class="empty-desc">${t('emptyCategoryNotice')}</p>
+                <a href="/katalog" class="btn-primary-sky">${t('backToCatalog')}</a>
               </div>
-              <h2 class="empty-title">Mahsulotlar tez orada qo'shiladi</h2>
-              <p class="empty-desc">Ushbu bo'lim uchun yangi tovarlar omborga qabul qilinmoqda. Narx va buyurtma uchun biz bilan bog'laning.</p>
-              <a href="/katalog" class="btn-primary-sky">Katalogga qaytish</a>
-            </div>
-          `
-              : `
-            <div class="category-groups-stack">
-              ${groups
-                .map((group) => {
-                  const subEntries = Array.from(group.subgroups.entries());
-                  return `
-                  <div class="category-group-block" id="${group.anchorId}" data-spy-group="${group.anchorId}">
-                    
-                    <!-- H2 Group Title with Indicator and Count -->
-                    <div class="group-header-row">
-                      <div class="group-title-wrap">
-                        <span class="group-indicator-bar"></span>
-                        <h2 class="group-title-h2">${esc(group.name)}</h2>
+            `
+                : `
+              <div class="category-groups-stack">
+                ${groups
+                  .map((group) => {
+                    const subEntries = Array.from(group.subgroups.entries());
+                    return `
+                    <div class="category-group-block" id="${group.anchorId}" data-spy-group="${group.anchorId}">
+                      
+                      <!-- H2 Group Title with Indicator and Count -->
+                      <div class="group-header-row">
+                        <div class="group-title-wrap">
+                          <span class="group-indicator-bar"></span>
+                          <h2 class="group-title-h2">${esc(group.name)}</h2>
+                        </div>
+                        <span class="group-items-count">${formatProductCount(group.items.length, lang)}</span>
                       </div>
-                      <span class="group-items-count">${group.items.length} ${t('productsWord')}</span>
+
+                      <!-- Subgroups or Standard Grid -->
+                      ${
+                        subEntries.length > 0
+                          ? `
+                        <div class="subgroups-wrapper">
+                          ${subEntries
+                            .map(
+                              ([subName, subItems]) => `
+                            <div class="subgroup-block" data-subgroup="${esc(subName)}">
+                              <div class="subgroup-header">
+                                <span class="subgroup-dot"></span>
+                                <h3 class="subgroup-title-h3">${esc(subName)}</h3>
+                                <span class="subgroup-count">(${subItems.length})</span>
+                              </div>
+
+                              <div class="product-grid-responsive">
+                                ${subItems.map((p) => renderProductCard(p)).join('')}
+                              </div>
+                            </div>
+                          `
+                            )
+                            .join('')}
+                        </div>
+                      `
+                          : `
+                        <div class="product-grid-responsive">
+                          ${group.items.map((p) => renderProductCard(p)).join('')}
+                        </div>
+                      `
+                      }
+
                     </div>
+                  `;
+                  })
+                  .join('')}
+              </div>
+            `
+            }
+          </div>
 
-                    <!-- If group has distinct subcategories (H3) -->
-                    ${
-                      subEntries.length > 0
-                        ? `
-                      <div class="subgroups-wrapper">
-                        ${subEntries
-                          .map(
-                            ([subName, subItems]) => `
-                          <div class="subgroup-block">
-                            <div class="subgroup-header">
-                              <span class="subgroup-dot"></span>
-                              <h3 class="subgroup-title-h3">${esc(subName)}</h3>
-                              <span class="subgroup-count">(${subItems.length})</span>
-                            </div>
-
-                            <div class="product-grid-responsive">
-                              ${subItems.map((p) => renderProductCard(p)).join('')}
-                            </div>
-                          </div>
-                        `
-                          )
-                          .join('')}
-                      </div>
-                    `
-                        : `
-                      <!-- Standard Product Grid under H2 -->
-                      <div class="product-grid-responsive">
-                        ${group.items.map((p) => renderProductCard(p)).join('')}
-                      </div>
-                    `
-                    }
-
-                  </div>
-                `;
-                })
-                .join('')}
+          <!-- Empty Search/Filter State (initially hidden) -->
+          <div id="filter-empty-state" class="empty-category-box" style="display: none;">
+            <div class="empty-icon-wrap">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-sky">
+                <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
             </div>
-          `
-          }
+            <h2 class="empty-title">${t('noProductsMatchingFilters')}</h2>
+            <p class="empty-desc">${t('tryResettingFilters')}</p>
+            <button type="button" class="btn-primary-sky" onclick="window.__resetCategoryFilters()">${t('clearFilters')}</button>
+          </div>
+
         </div>
       </section>
 
@@ -540,18 +674,23 @@ function renderCategoryDetailPage(category, products, _params) {
 function renderCategoryNotFound() {
   return `
     <div class="shell" style="padding: 120px 0; text-align: center;">
-      <h1 style="font-size: 32px; font-weight: 800; color: #FFFFFF; margin-bottom: 12px;">Bo'lim topilmadi</h1>
-      <p style="color: #94A3B8; font-size: 16px; margin-bottom: 24px;">Ushbu kategoriya mavjud emas yoki nomi o'zgartirilgan.</p>
-      <a href="/katalog" class="btn-primary-sky">Katalogga qaytish</a>
+      <h1 style="font-size: 32px; font-weight: 800; color: #FFFFFF; margin-bottom: 12px;">${t('categoryNotFound')}</h1>
+      <p style="color: #94A3B8; font-size: 16px; margin-bottom: 24px;">${t('categoryNotFoundDesc')}</p>
+      <a href="/katalog" class="btn-primary-sky">${t('backToCatalog')}</a>
     </div>
   `;
 }
 
 /**
- * Event Controller & Scroll-Spy Initializer
+ * Event Controller: Slideshows, Background Switcher, Filters, Scroll-Spy
  */
 export function initCatalogEvents(_router) {
-  // 1. Initialize Swiper for Category Slideshow (Index mode)
+  const { categories, products } = getCatalog();
+
+  // 1. Initialize Category-Reactive Background Slideshow (Index mode)
+  initCategoryReactiveHeroBg(categories);
+
+  // 2. Initialize Swiper for Category Slideshow (Index mode)
   const swiperEl = document.getElementById('category-swiper-slider');
   if (swiperEl) {
     try {
@@ -580,7 +719,7 @@ export function initCatalogEvents(_router) {
     }
   }
 
-  // 2. Stacking Cards Scroll Physics Engine (rAF scroll listener)
+  // 3. Stacking Cards Scroll Physics Engine (rAF scroll listener)
   const stackingCards = Array.from(document.querySelectorAll('[data-card="true"]'));
   if (stackingCards.length > 0) {
     let animActive = true;
@@ -616,7 +755,7 @@ export function initCatalogEvents(_router) {
     };
   }
 
-  // 3. Smooth scroll to categories button
+  // 4. Smooth scroll to categories button
   const scrollBtn = document.getElementById('scroll-to-categories');
   if (scrollBtn) {
     scrollBtn.addEventListener('click', (e) => {
@@ -628,7 +767,10 @@ export function initCatalogEvents(_router) {
     });
   }
 
-  // 4. Sticky Horizontal Chip Nav & Scroll-Spy (Category mode)
+  // 5. Category Detail Page: Interactive Filter & Sort Engine
+  initCategoryFilterEngine(products);
+
+  // 6. Sticky Horizontal Chip Nav & Scroll-Spy (Category mode)
   const chipNav = document.getElementById('cat-chip-nav');
   const groupBlocks = Array.from(document.querySelectorAll('[data-spy-group]'));
 
@@ -676,7 +818,7 @@ export function initCatalogEvents(_router) {
     }
   }
 
-  // 5. Open ProductModal if ?open=<slug> query parameter exists
+  // 7. Open ProductModal if ?open=<slug> query parameter exists
   try {
     const url = new URL(window.location.href);
     const openSlug = url.searchParams.get('open');
@@ -688,5 +830,257 @@ export function initCatalogEvents(_router) {
     }
   } catch (e) {
     void e;
+  }
+}
+
+/**
+ * Category-Reactive Background Controller for CatalogHero
+ */
+function initCategoryReactiveHeroBg(_categories) {
+  const heroEl = document.getElementById('catalog-hero');
+  const layerA = document.getElementById('catalog-bg-layer-a');
+  const layerB = document.getElementById('catalog-bg-layer-b');
+  const imgA = document.getElementById('catalog-hero-img-a');
+  const imgB = document.getElementById('catalog-hero-img-b');
+
+  if (!heroEl || !layerA || !layerB || !imgA || !imgB) return;
+
+  const availableSlugs = Object.keys(CATEGORY_HERO_SLIDES);
+  if (availableSlugs.length === 0) return;
+
+  let activeIndex = 0;
+  let activeLayer = 'a'; // 'a' | 'b'
+  let autoTimer = null;
+  let isPaused = false;
+  let isReducedMotion = false;
+
+  // Check prefers-reduced-motion
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  // Preload other slide images via requestIdleCallback
+  const preloadSlides = () => {
+    const loadNext = (idx) => {
+      if (idx >= availableSlugs.length) return;
+      const slug = availableSlugs[idx];
+      const slide = CATEGORY_HERO_SLIDES[slug];
+      if (slide) {
+        const link = new Image();
+        link.src = slide.src1600;
+      }
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(() => loadNext(idx + 1));
+      } else {
+        setTimeout(() => loadNext(idx + 1), 300);
+      }
+    };
+    loadNext(1);
+  };
+  preloadSlides();
+
+  // Crossfade to target slide
+  const switchToSlug = (slug) => {
+    const slide = CATEGORY_HERO_SLIDES[slug];
+    if (!slide) return;
+
+    if (activeLayer === 'a') {
+      imgB.src = slide.src1600;
+      imgB.srcset = `${slide.src800} 800w, ${slide.src1600} 1600w`;
+      imgB.alt = slide.alt;
+      layerB.classList.add('active');
+      layerA.classList.remove('active');
+      activeLayer = 'b';
+    } else {
+      imgA.src = slide.src1600;
+      imgA.srcset = `${slide.src800} 800w, ${slide.src1600} 1600w`;
+      imgA.alt = slide.alt;
+      layerA.classList.add('active');
+      layerB.classList.remove('active');
+      activeLayer = 'a';
+    }
+  };
+
+  const nextAutoSlide = () => {
+    if (isPaused || isReducedMotion || document.hidden) return;
+    activeIndex = (activeIndex + 1) % availableSlugs.length;
+    switchToSlug(availableSlugs[activeIndex]);
+  };
+
+  if (!isReducedMotion) {
+    autoTimer = setInterval(nextAutoSlide, 6000);
+  }
+
+  // Pause when hero is out of view
+  if ('IntersectionObserver' in window) {
+    const heroObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          isPaused = !e.isIntersecting;
+        });
+      },
+      { threshold: 0.1 }
+    );
+    heroObserver.observe(heroEl);
+  }
+
+  // Pause on document hidden
+  document.addEventListener('visibilitychange', () => {
+    isPaused = document.hidden;
+  });
+
+  // Desktop: Hover / Focus on category cards switches slide immediately and pauses autoplay 4s
+  const categoryCards = Array.from(document.querySelectorAll('.category-cover-card'));
+  categoryCards.forEach((card) => {
+    const slug = card.getAttribute('data-slug');
+    if (!slug) return;
+
+    const handleInteraction = () => {
+      isPaused = true;
+      switchToSlug(slug);
+      activeIndex = availableSlugs.indexOf(slug);
+      if (activeIndex === -1) activeIndex = 0;
+
+      // Resume after 4 seconds
+      clearTimeout(card.__pauseTimeout);
+      card.__pauseTimeout = setTimeout(() => {
+        isPaused = false;
+      }, 4000);
+    };
+
+    card.addEventListener('mouseenter', handleInteraction);
+    card.addEventListener('focus', handleInteraction);
+  });
+
+  // Mobile: IntersectionObserver centered in scroll-snap row switches slide
+  if ('IntersectionObserver' in window && categoryCards.length > 0) {
+    const cardCenterObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+            const slug = entry.target.getAttribute('data-slug');
+            if (slug && CATEGORY_HERO_SLIDES[slug]) {
+              switchToSlug(slug);
+            }
+          }
+        });
+      },
+      { threshold: 0.6 }
+    );
+
+    categoryCards.forEach((card) => cardCenterObserver.observe(card));
+  }
+
+  window.__cleanupCatalogHeroBg = () => {
+    if (autoTimer) clearInterval(autoTimer);
+  };
+}
+
+/**
+ * Category Filter & Sort Engine
+ */
+function initCategoryFilterEngine(allProducts) {
+  const container = document.getElementById('category-groups-container');
+  const emptyState = document.getElementById('filter-empty-state');
+  const searchInput = document.getElementById('cat-filter-search');
+  const inStockCheckbox = document.getElementById('cat-filter-instock');
+  const brandSelect = document.getElementById('cat-filter-brand');
+  const sortSelect = document.getElementById('cat-filter-sort');
+  const countStatus = document.getElementById('cat-filter-count-status');
+  const headerCount = document.getElementById('cat-header-count');
+  const clearBtn = document.getElementById('btn-clear-filters');
+
+  if (!container || !searchInput) return;
+
+  const lang = getLang();
+
+  const applyFilters = () => {
+    const q = (searchInput.value || '').trim().toLowerCase();
+    const onlyInStock = Boolean(inStockCheckbox && inStockCheckbox.checked);
+    const selectedBrand = (brandSelect && brandSelect.value) || '';
+    const sortVal = (sortSelect && sortSelect.value) || 'default';
+
+    const isFiltered = Boolean(q || onlyInStock || selectedBrand || sortVal !== 'default');
+    if (clearBtn) clearBtn.style.display = isFiltered ? 'inline-block' : 'none';
+
+    let totalVisible = 0;
+
+    // Filter each group block
+    const groupBlocks = Array.from(container.querySelectorAll('.category-group-block'));
+    groupBlocks.forEach((groupBlock) => {
+      const cards = Array.from(groupBlock.querySelectorAll('.product-card'));
+      let groupVisible = 0;
+
+      cards.forEach((card) => {
+        const pid = Number(card.getAttribute('data-product-id'));
+        const product = allProducts.find((p) => p.id === pid);
+
+        if (!product) {
+          card.style.display = 'none';
+          return;
+        }
+
+        let match = true;
+
+        if (q && !matchesSearch(product, q)) {
+          match = false;
+        }
+
+        if (onlyInStock && !product.inStock) {
+          match = false;
+        }
+
+        if (selectedBrand && product.brand !== selectedBrand) {
+          match = false;
+        }
+
+        if (match) {
+          card.style.display = '';
+          groupVisible++;
+          totalVisible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Show/hide group block based on visible items
+      groupBlock.style.display = groupVisible > 0 ? '' : 'none';
+
+      // Update group item count display if present
+      const groupCountEl = groupBlock.querySelector('.group-items-count');
+      if (groupCountEl) {
+        groupCountEl.textContent = formatProductCount(groupVisible, lang);
+      }
+    });
+
+    // Update count labels
+    const countFormatted = formatProductCount(totalVisible, lang);
+    if (countStatus) countStatus.textContent = countFormatted;
+    if (headerCount) {
+      const strongEl = headerCount.querySelector('strong');
+      if (strongEl) strongEl.textContent = countFormatted;
+    }
+
+    // Toggle overall empty state
+    if (emptyState) {
+      emptyState.style.display = totalVisible === 0 ? 'block' : 'none';
+    }
+  };
+
+  searchInput.addEventListener('input', applyFilters);
+  if (inStockCheckbox) inStockCheckbox.addEventListener('change', applyFilters);
+  if (brandSelect) brandSelect.addEventListener('change', applyFilters);
+  if (sortSelect) sortSelect.addEventListener('change', applyFilters);
+
+  window.__resetCategoryFilters = () => {
+    if (searchInput) searchInput.value = '';
+    if (inStockCheckbox) inStockCheckbox.checked = false;
+    if (brandSelect) brandSelect.value = '';
+    if (sortSelect) sortSelect.value = 'default';
+    applyFilters();
+  };
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', window.__resetCategoryFilters);
   }
 }
