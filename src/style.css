@@ -4686,18 +4686,19 @@ input, textarea, select {
 /* 4 Minimalist Line-Art Metrics (Exact Image 3 Layout) */
 .nevo-corp-metrics-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 36px;
-  max-width: 1140px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  justify-content: center;
+  gap: 48px;
+  max-width: 720px;
   margin: 64px auto 0;
   padding-top: 54px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-@media (max-width: 960px) {
+@media (max-width: 768px) {
   .nevo-corp-metrics-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 32px 24px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 32px;
     margin-top: 48px;
     padding-top: 40px;
   }
@@ -6703,6 +6704,23 @@ input, textarea, select {
   color: #FFFFFF;
   padding: 4px 10px;
   border-radius: 99px;
+}
+
+.cat-card-count-badge.coming-soon-badge,
+.stacking-count-pill.coming-soon-pill,
+.cat-count-pill.coming-soon-pill {
+  background: rgba(56, 189, 248, 0.16) !important;
+  color: #38BDF8 !important;
+  border: 1px solid rgba(56, 189, 248, 0.45) !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.category-cover-card.is-coming-soon .cat-open-btn,
+.stacking-card-item.is-coming-soon .stacking-open-btn {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.35);
+  color: #38BDF8;
 }
 
 .cat-card-bottom {

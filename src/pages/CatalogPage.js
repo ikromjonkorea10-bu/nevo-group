@@ -44,9 +44,13 @@ export const CATEGORY_HERO_SLIDES = {
 const CATEGORY_COVERS = {
   'truba-va-fitinglar': '/images/catalog-slides/pipes-1600.webp',
   'zapor-armatura': '/images/catalog-slides/valves-1600.webp',
+  'kanalizatsiya': '/images/catalog-slides/sewer-1600.webp',
   'yongin-jihozlari': '/images/catalog-slides/factory-1600.webp',
+  'yongin-xavfsizligi': '/images/catalog-slides/factory-1600.webp',
   'isitish-tizimi': '/images/catalog-slides/plant-1600.webp',
+  'isitish-tizimlari': '/images/catalog-slides/plant-1600.webp',
   'elektr-jihozlari': '/images/catalog-slides/sewer-1600.webp',
+  'elektr-va-avtomatika': '/images/catalog-slides/sewer-1600.webp',
 };
 
 // Line-art Icon SVGs per category
@@ -128,6 +132,8 @@ function renderCatalogIndexPage(categories, _products) {
   const lang = getLang();
   const firstCatSlug = categories[0]?.slug || 'truba-va-fitinglar';
   const firstSlide = CATEGORY_HERO_SLIDES[firstCatSlug] || CATEGORY_HERO_SLIDES['truba-va-fitinglar'];
+  const secondCatSlug = categories[1]?.slug || 'zapor-armatura';
+  const secondSlide = CATEGORY_HERO_SLIDES[secondCatSlug] || CATEGORY_HERO_SLIDES['zapor-armatura'];
 
   // Honest content: only render PDF section if real verified PDF files > 50 KB exist
   const realPdfs = (PDF_CATALOGS || []).filter((p) => p.verified && (p.fileSizeBytes || 0) > 50000);
@@ -153,8 +159,10 @@ function renderCatalogIndexPage(categories, _products) {
           </div>
           <div class="catalog-bg-layer catalog-bg-layer-b" id="catalog-bg-layer-b">
             <img
-              src=""
-              alt=""
+              src="${secondSlide.src1600}"
+              srcset="${secondSlide.src800} 800w, ${secondSlide.src1600} 1600w"
+              sizes="100vw"
+              alt="${esc(secondSlide.alt)}"
               loading="lazy"
               decoding="async"
               class="catalog-bg-img"
@@ -232,12 +240,13 @@ function renderCatalogIndexPage(categories, _products) {
               ${categories
                 .map((cat) => {
                   const cover = CATEGORY_COVERS[cat.slug] || cat.image || '/images/catalog-slides/pipes-1600.webp';
-                  const countText = formatProductCount(cat.count, lang);
+                  const isComingSoon = (cat.count || 0) < 5;
+                  const countText = isComingSoon ? t('comingSoon') : formatProductCount(cat.count, lang);
                   return `
                   <div class="swiper-slide category-tall-slide">
                     <a
                       href="/katalog/${esc(cat.slug)}"
-                      class="category-cover-card"
+                      class="category-cover-card ${isComingSoon ? 'is-coming-soon' : ''}"
                       data-slug="${esc(cat.slug)}"
                       tabindex="0"
                     >
@@ -258,7 +267,7 @@ function renderCatalogIndexPage(categories, _products) {
                         <div class="cat-card-icon-pill">
                           ${getCategoryIconSvg(cat.slug)}
                         </div>
-                        <span class="cat-card-count-badge">${countText}</span>
+                        <span class="cat-card-count-badge ${isComingSoon ? 'coming-soon-badge' : ''}">${countText}</span>
                       </div>
 
                       <div class="cat-card-bottom">
@@ -266,8 +275,8 @@ function renderCatalogIndexPage(categories, _products) {
                         <p class="cat-card-sub">${esc(cat.shortDesc)}</p>
                         
                         <div class="cat-card-cta-row">
-                          <span class="cat-open-btn">
-                            <span>${t('openCategory')}</span>
+                          <span class="cat-open-btn ${isComingSoon ? 'coming-soon-cta' : ''}">
+                            <span>${isComingSoon ? t('comingSoon') : t('openCategory')}</span>
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
                               <path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path>
                             </svg>
@@ -297,9 +306,11 @@ function renderCatalogIndexPage(categories, _products) {
             ${categories
               .map((cat, idx) => {
                 const cover = CATEGORY_COVERS[cat.slug] || cat.image || '/images/catalog-slides/pipes-1600.webp';
+                const isComingSoon = (cat.count || 0) < 5;
+                const countText = isComingSoon ? t('comingSoon') : formatProductCount(cat.count, lang);
                 return `
                 <div
-                  class="stacking-card-item"
+                  class="stacking-card-item ${isComingSoon ? 'is-coming-soon' : ''}"
                   data-card="true"
                   style="top: ${96 + 22 * idx}px;"
                 >
@@ -312,7 +323,7 @@ function renderCatalogIndexPage(categories, _products) {
                     <div class="stacking-icon-box">
                       ${getCategoryIconSvg(cat.slug)}
                     </div>
-                    <span class="stacking-count-pill">${formatProductCount(cat.count, lang)}</span>
+                    <span class="stacking-count-pill ${isComingSoon ? 'coming-soon-pill' : ''}">${countText}</span>
                   </div>
 
                   <div class="stacking-card-footer">
@@ -321,8 +332,8 @@ function renderCatalogIndexPage(categories, _products) {
                       <p class="stacking-cat-desc">${esc(cat.shortDesc)}</p>
                     </div>
 
-                    <a href="/katalog/${esc(cat.slug)}" class="stacking-open-btn">
-                      <span>${t('openCategory')}</span>
+                    <a href="/katalog/${esc(cat.slug)}" class="stacking-open-btn ${isComingSoon ? 'coming-soon-open' : ''}">
+                      <span>${isComingSoon ? t('comingSoon') : t('openCategory')}</span>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path>
                       </svg>
@@ -487,6 +498,11 @@ function renderCategoryDetailPage(category, products, _params) {
                 <span class="pulse-dot"></span>
                 <strong>${productCountText}</strong>
               </span>
+              ${products.length < 5 ? `
+                <span class="cat-count-pill coming-soon-pill">
+                  <strong>${t('comingSoon')}</strong>
+                </span>
+              ` : ''}
 
               <a href="/katalog" class="btn-return-catalog">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -495,6 +511,12 @@ function renderCategoryDetailPage(category, products, _params) {
                 <span>${t('backToCatalog')}</span>
               </a>
             </div>
+            ${products.length < 5 ? `
+              <div class="category-notice-banner" style="margin-top: 16px; padding: 10px 16px; border-radius: 10px; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.28); color: #E2E8F0; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 8px;">
+                <span class="pulse-dot" style="background: #38BDF8;"></span>
+                <span><strong>${t('comingSoon')}:</strong> Ushbu bo'lim tovarlar bilan to'ldirilmoqda. Tez orada to'liq assortiment taqdim etiladi.</span>
+              </div>
+            ` : ''}
           </div>
         </div>
       </section>

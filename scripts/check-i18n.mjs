@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseCsv } from './lib/catalog-csv.mjs';
+import { getLocalizedProductName, getLocalizedProductDescription } from '../src/lib/catalog.js';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const LOCALES_DIR = path.join(ROOT, 'src', 'locales');
@@ -91,6 +93,36 @@ for (const [k, v] of Object.entries(en)) {
       console.error(`❌ Untranslated Uzbek marker "${marker}" detected in en.json for key "${k}": "${v}"`);
       errors++;
     }
+  }
+}
+
+// 4. Uzbek Catalog Products & Descriptions Cyrillic Audit
+const csvPath = path.join(ROOT, 'scripts', 'seed-data', 'nevo-katalog.csv');
+if (fs.existsSync(csvPath)) {
+  const csvText = fs.readFileSync(csvPath, 'utf-8').replace(/^\uFEFF/, '');
+  const [, ...rows] = parseCsv(csvText);
+  let cyrillicProducts = 0;
+
+  for (const r of rows) {
+    const rawName = r[2] || '';
+    const rawGroup = r[3] || '';
+    const uzName = getLocalizedProductName(rawName, rawGroup, 'uz');
+    const uzDesc = getLocalizedProductDescription(uzName, '', 'uz');
+
+    if (/[\u0400-\u04FF]/.test(uzName)) {
+      console.error(`❌ Cyrillic character detected in Uzbek product name: "${uzName}" (raw: "${rawName}")`);
+      cyrillicProducts++;
+      errors++;
+    }
+    if (/[\u0400-\u04FF]/.test(uzDesc)) {
+      console.error(`❌ Cyrillic character detected in Uzbek product description: "${uzDesc}"`);
+      cyrillicProducts++;
+      errors++;
+    }
+  }
+
+  if (cyrillicProducts === 0) {
+    console.log(`✅ Product i18n Guard passed: ${rows.length} products validated with 0 Cyrillic characters in Uzbek.`);
   }
 }
 

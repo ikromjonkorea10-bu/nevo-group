@@ -9,6 +9,9 @@ import { inject, pageview } from '@vercel/analytics';
 const PARAM_ROUTES = new Set(['bolim', 'product']);
 
 export function initAnalytics() {
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return;
+  }
   inject({ disableAutoTrack: true });
 }
 

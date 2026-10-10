@@ -217,5 +217,7 @@
   "searchCategoriesGroup": "Categories",
   "searchProductsGroup": "Products",
   "searchNoResultsQuery": "no products found",
-  "searchTryAnother": "Try another search term or browse catalog categories."
+  "searchTryAnother": "Try another search term or browse catalog categories.",
+  "brandsTitle": "Brands We Supply",
+  "comingSoon": "Coming Soon"
 }

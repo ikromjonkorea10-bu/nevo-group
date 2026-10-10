@@ -30,7 +30,7 @@ import { initIntroSplash } from './components/IntroSplash.js';
 import { renderMaintenanceScreen, initMaintenanceUnlock } from './components/MaintenanceScreen.js';
 import { initProductModalGlobal } from './components/ProductModal.js';
 import { initQuickSearchGlobal } from './components/QuickSearch.js';
-import { t } from './lib/i18n.js';
+import { t, onLangChange } from './lib/i18n.js';
 
 window.__getCatalog = getCatalog;
 
@@ -387,6 +387,12 @@ window.__retryCatalog = () => {
 // Katalog holati o'zgarganda (yuklandi / xatolik) sahifani qayta chizish
 onCatalogChange((state) => {
   if (state.status === 'ready') store.syncWithCatalog();
+  router();
+});
+
+// Til o'zgarganda sahifa meta teglari va matnlarini yangilash
+onLangChange((newLang) => {
+  document.documentElement.lang = newLang;
   router();
 });
 

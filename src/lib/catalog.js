@@ -177,7 +177,9 @@ export const GROUP_TRANSLATIONS = {
   'ППР труба PN-16 ХВС': { uz: 'PP-R quvur PN16 (sovuq suv)', ru: 'ППР труба PN-16 ХВС', en: 'PP-R Pipe PN16 Cold Water' },
   'ППР труба PN-20 ГВС': { uz: 'PP-R quvur PN20 (issiq suv)', ru: 'ППР труба PN-20 ГВС', en: 'PP-R Pipe PN20 Hot Water' },
   '4 kV"': { uz: 'Transformator 4 kV', ru: 'Трансформатор 4 кВ', en: 'Transformer 4 kV' },
-  '4 кВ"': { uz: 'Transformator 4 kV', ru: 'Трансформатор 4 кВ', en: 'Transformer 4 kV' }
+  '4 кВ"': { uz: 'Transformator 4 kV', ru: 'Трансформатор 4 кВ', en: 'Transformer 4 kV' },
+  'КТПС с АСКУЭ': { uz: 'KTPS ASKUE bilan', ru: 'КТПС с АСКУЭ', en: 'KTPS with ASCUE' },
+  'ГКТП с АСКУЭ': { uz: 'GKTP ASKUE bilan', ru: 'ГКТП с АСКУЭ', en: 'GKTP with ASCUE' }
 };
 
 export const SUBCAT_TRANSLATIONS = {
@@ -191,16 +193,103 @@ export const SUBCAT_TRANSLATIONS = {
   'Фитинг полиэтиленовый': { uz: 'Polietilen fitinglar', ru: 'Полиэтиленовые фитинги', en: 'HDPE Fittings' }
 };
 
+const CYRILLIC_TO_LATIN = {
+  'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'Yo', 'Ж': 'J',
+  'З': 'Z', 'И': 'I', 'Й': 'Y', 'К': 'K', 'Л': 'L', 'М': 'M', 'Н': 'N', 'О': 'O',
+  'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U', 'Ф': 'F', 'Х': 'X', 'Ц': 'Ts',
+  'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sh', 'Ъ': '', 'Ы': 'I', 'Ь': '', 'Э': 'E', 'Ю': 'Yu',
+  'Я': 'Ya',
+  'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'j',
+  'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
+  'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'x', 'ц': 'ts',
+  'ч': 'ch', 'ш': 'sh', 'щ': 'sh', 'ъ': '', 'ы': 'i', 'ь': '', 'э': 'e', 'ю': 'yu',
+  'я': 'ya'
+};
+
+export function transliterateCyrillic(str) {
+  if (!str) return '';
+  return str.split('').map(c => CYRILLIC_TO_LATIN[c] || c).join('');
+}
+
+const UZ_TECH_TERMS = [
+  ['КТПС с АСКУЭ', 'KTPS ASKUE bilan'],
+  ['ГКТП с АСКУЭ', 'GKTP ASKUE bilan'],
+  ['Врезной хомут', 'Vrezka xomuti'],
+  ['Втулка под фланец (Адаптер)', 'Flanets vtulka (Adapter)'],
+  ['Втулка под фланец', 'Flanets vtulka'],
+  ['Задвижка из литейного чугуна 30ч6бр', "Cho'yan zadvijka 30ch6br"],
+  ['Задвижка стальная 30ч41нж', "Po'lat zadvijka 30ch41nj"],
+  ['Задвижка чугунная 30ч39р ECO', "Cho'yan zadvijka 30ch39r ECO"],
+  ['Задвижка чугунная 30ч39р Латунь', "Cho'yan zadvijka 30ch39r (Latun)"],
+  ['Задвижка чугунная 30ч39р', "Cho'yan zadvijka 30ch39r"],
+  ['Затвор дисковый D71X-10/16', 'Diskli zatvor D71X-10/16'],
+  ['Затвор дисковый ECO', 'Diskli zatvor ECO'],
+  ['Вантуз чугунный фланцевый', "Cho'yan flanetsli vantuz"],
+  ['Демонтажная вставка', 'Demontaj ulamasi (vstavka)'],
+  ['Заглушка', 'Zaglushka'],
+  ['Крестовина', 'Krestovina'],
+  ['Муфта', 'Mufta'],
+  ['Обратный клапан чугунный (ТАБ)', "Cho'yan qaytarma klapan (TAB)"],
+  ['Отвод полиэтиленовый', 'Polietilen tirsak'],
+  ['Пол отвод', 'Yarim tirsak (pol-otvod)'],
+  ['Отвод', 'Tirsak (otvod)'],
+  ['Переходник', 'Perexodnik (reduktor)'],
+  ['Пожарный кран', "Yong'in krani"],
+  ['Прокладка для задвижек', 'Zadvijka prokladkasi'],
+  ['Тройник переходник', "O'tish troynigi"],
+  ['Тройник', 'Troynik'],
+  ['Хомут сантехнический', 'Santexnika xomuti'],
+  ['Чугунный фильтр', "Cho'yan filtr"],
+  ['Шаровой кран', 'Sharli kran'],
+  ['PP-R труба композит PN20 ГВС', 'PP-R kompozit quvur PN20 (issiq suv)'],
+  ['PP-R труба PN10 ХВС', 'PP-R quvur PN10 (sovuq suv)'],
+  ['PP-R труба PN16 ХВС', 'PP-R quvur PN16 (sovuq suv)'],
+  ['ППР труба PN-10 ХВС', 'PP-R quvur PN10 (sovuq suv)'],
+  ['ППР труба PN-16 ХВС', 'PP-R quvur PN16 (sovuq suv)'],
+  ['ППР труба PN-20 ГВС', 'PP-R quvur PN20 (issiq suv)'],
+  ['(электропривод)', '(elektr yuritmali)'],
+  ['электропривод', 'elektr yuritmali'],
+  ['ХВС', '(sovuq suv)'],
+  ['ГВС', '(issiq suv)'],
+  ['кВ', 'kV'],
+  ['кВА', 'kVA']
+];
+
 export function getLocalizedGroup(rawGroup, lang = getLang()) {
   if (!rawGroup) return '';
   const match = GROUP_TRANSLATIONS[rawGroup];
-  return match ? (match[lang] || match.uz) : rawGroup;
+  if (match) return match[lang] || match.uz;
+  if (lang === 'uz' && /[\u0400-\u04FF]/.test(rawGroup)) {
+    return transliterateCyrillic(rawGroup);
+  }
+  return rawGroup;
 }
 
 export function getLocalizedSubcategory(rawSub, lang = getLang()) {
   if (!rawSub) return '';
   const match = SUBCAT_TRANSLATIONS[rawSub];
-  return match ? (match[lang] || match.uz) : rawSub;
+  if (match) return match[lang] || match.uz;
+  if (lang === 'uz' && /[\u0400-\u04FF]/.test(rawSub)) {
+    return transliterateCyrillic(rawSub);
+  }
+  return rawSub;
+}
+
+export function getLocalizedSizeLabel(raw, lang = getLang()) {
+  if (!raw) return '';
+  if (lang === 'uz') {
+    if (raw.includes('Диаметр')) return 'Diametr';
+    if (raw.includes('Размер')) return "O'lcham";
+    if (raw.includes('Мощность')) return 'Quvvat, kVA';
+    return transliterateCyrillic(raw);
+  }
+  if (lang === 'en') {
+    if (raw.includes('Диаметр')) return 'Diameter';
+    if (raw.includes('Размер')) return 'Size';
+    if (raw.includes('Мощность')) return 'Power, kVA';
+    return raw;
+  }
+  return raw;
 }
 
 export function getLocalizedProductName(productOrName, rawGroup = '', lang = getLang()) {
@@ -210,12 +299,21 @@ export function getLocalizedProductName(productOrName, rawGroup = '', lang = get
   if (!rawName) return '';
 
   if (lang === 'uz') {
+    let uzName = rawName;
     if (rawGroup && GROUP_TRANSLATIONS[rawGroup]?.uz) {
-      if (rawName.startsWith(rawGroup)) {
-        return rawName.replace(rawGroup, GROUP_TRANSLATIONS[rawGroup].uz);
+      if (uzName.startsWith(rawGroup)) {
+        uzName = uzName.replace(rawGroup, GROUP_TRANSLATIONS[rawGroup].uz);
       }
     }
-    return rawName;
+    for (const [from, to] of UZ_TECH_TERMS) {
+      if (uzName.includes(from)) {
+        uzName = uzName.replaceAll(from, to);
+      }
+    }
+    if (/[\u0400-\u04FF]/.test(uzName)) {
+      uzName = transliterateCyrillic(uzName);
+    }
+    return uzName.replace(/\s+/g, ' ').trim();
   }
 
   if (lang === 'ru') {
@@ -244,14 +342,43 @@ export function getLocalizedProductName(productOrName, rawGroup = '', lang = get
       }
     }
     enName = enName
+      .replace(/\(электропривод\)/gi, '(Electric Actuator)')
       .replace(/\bДу\s*/g, 'DN ')
       .replace(/\bРу\s*/g, 'PN ')
       .replace(/\bХВС\b/g, 'Cold Water')
-      .replace(/\bГВС\b/g, 'Hot Water');
-    return enName;
+      .replace(/\bГВС\b/g, 'Hot Water')
+      .replace(/\bкВ\b/g, 'kV')
+      .replace(/\bкВА\b/g, 'kVA');
+    if (/[\u0400-\u04FF]/.test(enName)) {
+      enName = transliterateCyrillic(enName);
+    }
+    return enName.replace(/\s+/g, ' ').trim();
   }
 
   return rawName;
+}
+
+export function getLocalizedProductDescription(product, rawDesc = '', lang = getLang()) {
+  const name = typeof product === 'string' ? product : product?.name || '';
+  if (lang === 'uz') {
+    if (!rawDesc || /[\u0400-\u04FF]/.test(rawDesc)) {
+      return `${name} — NEVO GROUP rasmiy omboridan sertifikatlangan zavod kafolati bilan.`;
+    }
+    return rawDesc;
+  }
+  if (lang === 'ru') {
+    if (!rawDesc) {
+      return `${name} — официальные поставки со склада NEVO GROUP с заводской гарантией.`;
+    }
+    return rawDesc;
+  }
+  if (lang === 'en') {
+    if (!rawDesc) {
+      return `${name} — official supplies directly from NEVO GROUP warehouse with quality guarantee.`;
+    }
+    return rawDesc;
+  }
+  return rawDesc || '';
 }
 
 export function mapProduct(row, categoriesById) {
@@ -269,7 +396,7 @@ export function mapProduct(row, categoriesById) {
     categoryId: Number(row.category_id),
     rawNameUz,
     sku: row.sku || '',
-    description: row.description_uz || '',
+    rawDescriptionUz: row.description_uz || '',
     categorySlug,
     subcategoryRaw: rawSubcat,
     brand: row.brand || '',
@@ -278,7 +405,7 @@ export function mapProduct(row, categoriesById) {
     unit: row.unit || '1 dona',
     groupNameRaw: rawGroup,
     size: row.size || '',
-    sizeLabel: row.size_label || '',
+    sizeLabelRaw: row.size_label || '',
     packQty: row.pack_qty || '',
     supplier: row.supplier || '',
     priceDate: row.price_date || '',
@@ -291,6 +418,12 @@ export function mapProduct(row, categoriesById) {
     sortOrder: row.sort_order ?? 0,
     get name() {
       return getLocalizedProductName(this, this.groupNameRaw, getLang());
+    },
+    get description() {
+      return getLocalizedProductDescription(this, this.rawDescriptionUz, getLang());
+    },
+    get sizeLabel() {
+      return getLocalizedSizeLabel(this.sizeLabelRaw, getLang());
     },
     get groupName() {
       return getLocalizedGroup(this.groupNameRaw, getLang());

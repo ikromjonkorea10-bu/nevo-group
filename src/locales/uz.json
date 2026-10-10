@@ -217,5 +217,7 @@
   "searchCategoriesGroup": "Kategoriyalar",
   "searchProductsGroup": "Mahsulotlar",
   "searchNoResultsQuery": "bo'yicha mahsulot topilmadi",
-  "searchTryAnother": "Boshqa so'z bilan qidiring yoki katalog bo'limlaridan tanlang."
+  "searchTryAnother": "Boshqa so'z bilan qidiring yoki katalog bo'limlaridan tanlang.",
+  "brandsTitle": "Biz sotadigan brendlar",
+  "comingSoon": "Tez orada"
 }

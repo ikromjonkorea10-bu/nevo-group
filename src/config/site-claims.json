@@ -12,6 +12,21 @@
     "fakeClaim1000PlusAllowed": false
   },
   "metrics": {
+    "warehouses": {
+      "value": 1,
+      "verified": true,
+      "note": "Toshkent markaziy ombori"
+    },
+    "catalogProducts": {
+      "value": "db_actual",
+      "verified": true,
+      "note": "Haqiqiy mahsulotlar soni bazadan avtomatik olinadi"
+    },
+    "mainCategories": {
+      "value": 5,
+      "verified": true,
+      "note": "5 ta asosiy muhandislik toifasi"
+    },
     "yearsInBusiness": {
       "value": null,
       "verified": false,
@@ -23,14 +38,14 @@
       "note": "Awaiting verified partner invoice count from owner"
     },
     "qualityGuarantee": {
-      "value": "100% sertifikatlangan mahsulotlar",
-      "verified": true,
-      "note": "Barcha tovarlar zavod texnik pasporti va sertifikatlariga ega"
+      "value": null,
+      "verified": false,
+      "note": "Tasdiqlanmagan 100% kafolat da'vosi olib tashlandi"
     },
     "deliveryRegions": {
-      "value": "Barcha viloyatlar",
-      "verified": true,
-      "note": "Toshkent shahri va O'zbekiston viloyatlariga kuryerlik yetkazish xizmati"
+      "value": null,
+      "verified": false,
+      "note": "Tasdiqlanmagan 12+ viloyat da'vosi olib tashlandi"
     }
   },
   "projects": {

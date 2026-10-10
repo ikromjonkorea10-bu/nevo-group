@@ -1,5 +1,5 @@
 // NEVO GROUP — Dynamic Page Metadata, Canonical & Hreflang SEO Engine
-import { getCatalog, getProductBySlug, getCategoryBySlug } from './catalog.js';
+import { getCatalog, getProductBySlug, getCategoryBySlug, getLocalizedCategoryName, getLocalizedCategoryDesc } from './catalog.js';
 import { getLang, formatProductCount } from './i18n.js';
 
 const SITE_ORIGIN = 'https://nevogroup.uz';
@@ -74,33 +74,37 @@ export function updatePageMeta(route, param = '') {
   let title = titles[route] || titles.home;
   let description = DESCRIPTIONS[lang] || DESCRIPTIONS.uz;
 
-  if (route === 'product' && ready) {
-    const product = getProductBySlug(param);
-    if (product) {
-      title = `${product.name} — NEVO GROUP`;
-      const unit = product.unitFormatted || product.unit;
-      if (lang === 'ru') {
-        description = `${product.name}: ${product.priceFormatted} / ${unit}. ${product.category}. Сертифицированная продукция со склада с быстрой доставкой по Узбекистану.`;
-      } else if (lang === 'en') {
-        description = `${product.name}: ${product.priceFormatted} / ${unit}. ${product.category}. Certified industrial quality directly from warehouse across Uzbekistan.`;
+  if (route === 'product') {
+    if (ready) {
+      const product = getProductBySlug(param);
+      if (product) {
+        title = `${product.name} — NEVO GROUP`;
+        const unit = product.unitFormatted || product.unit;
+        if (lang === 'ru') {
+          description = `${product.name}: ${product.priceFormatted} / ${unit}. ${product.category}. Сертифицированная продукция со склада с быстрой доставкой по Узбекистану.`;
+        } else if (lang === 'en') {
+          description = `${product.name}: ${product.priceFormatted} / ${unit}. ${product.category}. Certified industrial quality directly from warehouse across Uzbekistan.`;
+        } else {
+          description = `${product.name}: ${product.priceFormatted} / ${unit}. ${product.category}. Sertifikatlangan sifat va ombordan tezkor yetkazib berish.`;
+        }
       } else {
-        description = `${product.name}: ${product.priceFormatted} / ${unit}. ${product.category}. Sertifikatlangan kafolat va ombordan tezkor yetkazib berish.`;
+        title = lang === 'ru' ? `Товар не найден — NEVO GROUP` : lang === 'en' ? `Product Not Found — NEVO GROUP` : `Mahsulot topilmadi — NEVO GROUP`;
       }
     } else {
-      title = lang === 'ru' ? `Товар не найден — NEVO GROUP` : lang === 'en' ? `Product Not Found — NEVO GROUP` : `Mahsulot topilmadi — NEVO GROUP`;
+      title = lang === 'ru' ? `Товар — NEVO GROUP` : lang === 'en' ? `Product — NEVO GROUP` : `Mahsulot — NEVO GROUP`;
     }
-  } else if ((route === 'bolim' || route === 'catalog') && param && ready) {
-    const category = getCategoryBySlug(param);
-    if (category) {
-      title = `${category.name} — NEVO GROUP`;
-      const countStr = formatProductCount(category.count, lang);
-      if (lang === 'ru') {
-        description = `${category.name}: ${countStr} в наличии на складе. Актуальные оптовые и розничные цены, технические характеристики.`;
-      } else if (lang === 'en') {
-        description = `${category.name}: ${countStr} available in stock. Wholesale & retail prices and technical specifications.`;
-      } else {
-        description = `${category.name}: ${countStr} omborda mavjud. To'liq narxlar va texnik xarakteristikalar.`;
-      }
+  } else if ((route === 'bolim' || route === 'catalog') && param) {
+    const category = ready ? getCategoryBySlug(param) : null;
+    const catName = category ? category.name : getLocalizedCategoryName(param, lang, param);
+    const catDesc = category ? category.shortDesc : getLocalizedCategoryDesc(param, lang, '');
+    title = `${catName} — NEVO GROUP`;
+    const countStr = category && category.count ? formatProductCount(category.count, lang) : '';
+    if (lang === 'ru') {
+      description = `${catName}${countStr ? `: ${countStr} в наличии на складе` : ''}. ${catDesc}. Актуальные оптовые и розничные цены, технические характеристики.`;
+    } else if (lang === 'en') {
+      description = `${catName}${countStr ? `: ${countStr} available in stock` : ''}. ${catDesc}. Wholesale & retail prices and technical specifications.`;
+    } else {
+      description = `${catName}${countStr ? `: ${countStr} omborda mavjud` : ''}. ${catDesc}. To'liq narxlar va texnik xarakteristikalar.`;
     }
   }
 

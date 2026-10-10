@@ -217,5 +217,7 @@
   "searchCategoriesGroup": "Категории",
   "searchProductsGroup": "Товары",
   "searchNoResultsQuery": "ничего не найдено",
-  "searchTryAnother": "Попробуйте другой запрос или выберите раздел каталога."
+  "searchTryAnother": "Попробуйте другой запрос или выберите раздел каталога.",
+  "brandsTitle": "Бренды в продаже",
+  "comingSoon": "Скоро в наличии"
 }

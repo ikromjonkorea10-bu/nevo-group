@@ -4,8 +4,9 @@
 // @supabase/supabase-js boshlang'ich bundle'ga kirmaydi: u faqat buyurtma
 // yuborishda va admin panelda import() orqali yuklanadi. Ochiq saytning
 // katalogi kutubxonasiz, to'g'ridan-to'g'ri PostgREST'dan o'qiladi (selectRows).
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const env = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env : (typeof globalThis !== 'undefined' && globalThis.process ? globalThis.process.env : {});
+const SUPABASE_URL = env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = env.VITE_SUPABASE_ANON_KEY;
 
 export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 

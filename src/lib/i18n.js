@@ -1,7 +1,7 @@
 // NEVO GROUP — Ko'p tillilik tizimi (UZ / RU / EN)
-import uz from '../locales/uz.json';
-import ru from '../locales/ru.json';
-import en from '../locales/en.json';
+import uz from '../locales/uz.json' with { type: 'json' };
+import ru from '../locales/ru.json' with { type: 'json' };
+import en from '../locales/en.json' with { type: 'json' };
 
 const STORAGE_KEY = 'nevo_lang';
 

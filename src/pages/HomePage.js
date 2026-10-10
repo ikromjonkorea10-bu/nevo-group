@@ -201,25 +201,9 @@ function renderNevoCorporateAbout(catalog) {
       id: 'g2',
       target: productCount,
       suffix: '+',
-      percent: 85,
+      percent: 90,
       title: t('statProducts'),
       sub: t('statProductsLabel'),
-    },
-    {
-      id: 'g3',
-      target: 100,
-      suffix: '%',
-      percent: 100,
-      title: t('statPartners'),
-      sub: t('statPartnersLabel'),
-    },
-    {
-      id: 'g4',
-      target: 12,
-      suffix: '+',
-      percent: 92,
-      title: t('statDelivery'),
-      sub: t('statDeliveryLabel'),
     },
   ];
 
@@ -479,10 +463,10 @@ function renderBrandsMarquee() {
   ];
 
   return `
-    <!-- SCENE 7: BRANDS & PARTNERS MARQUEE -->
-    <section class="brands-marquee-section" aria-label="Hamkor brendlar">
+    <!-- SCENE 7: BRANDS WE SUPPLY MARQUEE -->
+    <section class="brands-marquee-section" aria-label="${t('brandsTitle')}">
       <div class="shell">
-        <div class="brands-marquee-label">ISHLAB CHIQARUVCHILAR VA ISHONCHLI HAMKORLAR</div>
+        <div class="brands-marquee-label">${t('brandsTitle')}</div>
       </div>
       <div class="brands-marquee-strip">
         <div class="brands-marquee-track">
@@ -506,7 +490,7 @@ function renderFaqSection() {
     },
     {
       q: "Viloyatlarga yetkazib berish qanday amalga oshiriladi?",
-      a: "Toshkent shahri va O'zbekistonning barcha 12 viloyatiga ishonchli yuk tashish xizmatlari orqali buyurtma qilingan kunning o'zida yuklab jo'natiladi."
+      a: "Toshkent shahri va O'zbekiston viloyatlariga yuk tashish xizmatlari orqali buyurtma qilingan kunning o'zida yuklab jo'natiladi."
     },
     {
       q: "To'lov qanday usullarda qabul qilinadi?",
