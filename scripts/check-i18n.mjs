@@ -74,7 +74,7 @@ for (const [k, v] of Object.entries(en)) {
 // 3. Uzbek markers in Russian/English values
 // Allowed technical abbreviations/words or keys can be exempt (like brandName)
 const EXEMPT_KEYS = new Set(['brandName', 'aboutCorpBrand', 'skuLabel']);
-const UZ_MARKERS = ["o'", "g'", 'ta ', ' va ', ' uchun ', "bo'ylab"];
+const UZ_MARKERS = ["o'", "g'", ' ta ', ' va ', ' uchun ', "bo'ylab"];
 
 for (const [k, v] of Object.entries(ru)) {
   if (EXEMPT_KEYS.has(k)) continue;
@@ -126,9 +126,62 @@ if (fs.existsSync(csvPath)) {
   }
 }
 
+// 5. Hardcoded Uzbek text guard in home and core components
+const CORE_FILES = [
+  'src/pages/HomePage.js',
+  'src/components/MobileBottomNav.js',
+  'src/components/Header.js',
+  'src/components/Footer.js'
+];
+
+const FORBIDDEN_WORDS = [
+  'Mahsulot', 'Ombor', 'Katalog', 'Savat', 'Narx',
+  'Yetkazib', 'Qanday', 'Tezkor', 'Ommabop', 'Nega', 'Savol'
+];
+
+let hardcodedFound = 0;
+
+for (const relPath of CORE_FILES) {
+  const fullPath = path.join(ROOT, relPath);
+  if (!fs.existsSync(fullPath)) continue;
+
+  const rawCode = fs.readFileSync(fullPath, 'utf-8');
+  // Strip comments
+  const strippedCode = rawCode
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*$/gm, '');
+
+  const lines = strippedCode.split('\n');
+  lines.forEach((line, lineIdx) => {
+    // Ignore import lines, routing paths, and URL literals
+    const cleanLine = line
+      .replace(/import\s+[^;]+;/g, '')
+      .replace(/href=["'][^"']*["']/g, '')
+      .replace(/startsWith\([^)]*\)/g, '')
+      .replace(/\/katalog[^\s"'\`]*/g, '')
+      .replace(/\/savat[^\s"'\`]*/g, '')
+      .replace(/\/aloqa[^\s"'\`]*/g, '')
+      .replace(/['"]\.\.?\/[a-zA-Z0-9_\-\.\/]+['"]/g, '');
+
+    for (const word of FORBIDDEN_WORDS) {
+      const regex = new RegExp(`\\b${word}\\b`, 'i');
+      if (regex.test(cleanLine)) {
+        console.error(`❌ Hardcoded Uzbek term "${word}" found in ${relPath}:${lineIdx + 1}: ${line.trim()}`);
+        hardcodedFound++;
+        errors++;
+      }
+    }
+  });
+}
+
+if (hardcodedFound === 0) {
+  console.log(`✅ Hardcoded Text Guard passed: 0 untranslated Uzbek terms in core home files.`);
+}
+
 if (errors > 0) {
   console.error(`\n❌ i18n Guard failed with ${errors} error(s).`);
   process.exit(1);
 }
 
 console.log(`✅ i18n Guard passed: ${uzKeys.length} keys with 100% parity across UZ, RU, and EN.`);
+

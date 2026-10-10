@@ -1,5 +1,6 @@
 import { icon } from '../icons.js';
 import { store } from '../store.js';
+import { t } from '../lib/i18n.js';
 
 export function renderMobileBottomNav(currentRoute = '') {
   const count = store.getCartCount();
@@ -13,12 +14,12 @@ export function renderMobileBottomNav(currentRoute = '') {
       <div class="bottom-nav-grid">
         <a href="/" class="bottom-nav-item ${isHome ? 'active' : ''}">
           ${icon('home', '', 20)}
-          <span>Bosh sahifa</span>
+          <span>${t('navHome')}</span>
         </a>
 
         <a href="/katalog" class="bottom-nav-item ${isCatalog ? 'active' : ''}">
           ${icon('layout-grid', '', 20)}
-          <span>Katalog</span>
+          <span>${t('catalogBtn')}</span>
         </a>
 
         <a href="/savat" class="bottom-nav-item ${isCart ? 'active' : ''}">
@@ -26,12 +27,12 @@ export function renderMobileBottomNav(currentRoute = '') {
           <span class="bottom-nav-badge" id="mobile-cart-badge" style="${count > 0 ? '' : 'display:none;'}">
             ${count}
           </span>
-          <span>Savat</span>
+          <span>${t('navCart')}</span>
         </a>
 
         <a href="/aloqa" class="bottom-nav-item ${isContact ? 'active' : ''}">
           ${icon('phone', '', 20)}
-          <span>Aloqa</span>
+          <span>${t('navContact')}</span>
         </a>
       </div>
     </nav>

@@ -105,42 +105,42 @@ function renderProjectsCarousel() {
       title: t('project1Title'),
       type: t('project1Type'),
       desc: t('project1Desc'),
-      tags: ['#Ombor', '#Logistika', '#TezkorYuklash'],
+      tags: [t('tagWarehouse'), t('tagLogistics'), t('tagFastLoading')],
     },
     {
       img: '/images/catalog-slides/slide-valves.jpg',
       title: t('project2Title'),
       type: t('project2Type'),
       desc: t('project2Desc'),
-      tags: ['#ZaporArmatura', '#Zadvijkalar', '#Flaneslar'],
+      tags: [t('tagValves'), t('tagGateValves'), t('tagFlanges')],
     },
     {
       img: '/images/catalog-slides/slide-pipes.jpg',
       title: t('project3Title'),
       type: t('project3Type'),
       desc: t('project3Desc'),
-      tags: ['#PolimerQuvurlar', '#PPR', '#Fitinglar'],
+      tags: [t('tagPolymerPipes'), t('tagPpr'), t('tagFittings')],
     },
     {
       img: '/images/catalog-slides/slide-sewer.jpg',
       title: t('project4Title'),
       type: t('project4Type'),
       desc: t('project4Desc'),
-      tags: ['#YonginXavfsizligi', '#Gidrantlar', '#Shlanglar'],
+      tags: [t('tagFireSafety'), t('tagHydrants'), t('tagHoses')],
     },
     {
       img: '/workers/worker-delivery.webp',
       title: t('project5Title'),
       type: t('project5Type'),
       desc: t('project5Desc'),
-      tags: ['#OptomYetkazish', '#Smeta', '#BarchaViloyatlar'],
+      tags: [t('tagWholesaleDelivery'), t('tagEstimate'), t('tagAllRegions')],
     },
     {
       img: '/workers/worker-consultant.webp',
       title: t('project6Title'),
       type: t('project6Type'),
       desc: t('project6Desc'),
-      tags: ['#TexnikMaslahat', '#Muhandislik', '#Tanlash'],
+      tags: [t('tagTechConsult'), t('tagEngineering'), t('tagSelection')],
     },
   ];
 
@@ -153,10 +153,10 @@ function renderProjectsCarousel() {
           <div class="section-subtitle">${t('projectsSub')}</div>
         </div>
         <div class="projects-carousel-nav-arrows">
-          <button type="button" class="carousel-arrow-btn" id="proj-prev-btn" aria-label="Oldingi ta'minot yo'nalishi">
+          <button type="button" class="carousel-arrow-btn" id="proj-prev-btn" aria-label="${t('projPrevAria')}">
             ${icon('chevron-left', '', 20)}
           </button>
-          <button type="button" class="carousel-arrow-btn" id="proj-next-btn" aria-label="Keyingi ta'minot yo'nalishi">
+          <button type="button" class="carousel-arrow-btn" id="proj-next-btn" aria-label="${t('projNextAria')}">
             ${icon('chevron-right', '', 20)}
           </button>
         </div>
@@ -200,7 +200,7 @@ function renderNevoCorporateAbout(catalog) {
     {
       id: 'g2',
       target: productCount,
-      suffix: '+',
+      suffix: '',
       percent: 90,
       title: t('statProducts'),
       sub: t('statProductsLabel'),
@@ -259,32 +259,32 @@ function renderNevoCatalogShowcase() {
   const categories = [
     {
       slug: 'truba-va-fitinglar',
-      title: 'Polipropilen (PP-R) va Kompozit Quvurlar',
-      sub: "Suv ta'minoti va isitish tizimlari uchun polimer quvurlar",
+      title: t('catShowcase1Title'),
+      sub: t('catShowcase1Sub'),
       img: '/images/categories/ppr-pipes.webp',
       badge: 'PP-R / PN20 / PN25',
       iconHtml: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>',
     },
     {
       slug: 'truba-va-fitinglar',
-      title: 'Kanalizatsiya tizimlari',
-      sub: "Ichki va tashqi oqova tarmoqlari uchun PVX va polipropilen quvurlar",
+      title: t('catShowcase2Title'),
+      sub: t('catShowcase2Sub'),
       img: '/images/categories/sewer-pipes.webp',
       badge: 'PVX / SN4 / SN8',
       iconHtml: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M2 6h20M2 18h20"></path></svg>',
     },
     {
       slug: 'zapor-armatura',
-      title: 'Zapor armatura va metall fitinglar',
-      sub: "Zadvijkalar, sharli kranlar, teskari klapanlar va demontaj vstavkalari",
+      title: t('catShowcase3Title'),
+      sub: t('catShowcase3Sub'),
       img: '/images/categories/valves-fittings.webp',
-      badge: "Latun / Cho'yan / Po'lat",
+      badge: t('catShowcase3Badge'),
       iconHtml: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>',
     },
     {
       slug: 'truba-va-fitinglar',
-      title: 'Polietilen (HDPE PE-100) bosimli quvurlar',
-      sub: "Ichimlik suvi va gaz tarmoqlari uchun yuqori bosimli polietilen quvurlar",
+      title: t('catShowcase4Title'),
+      sub: t('catShowcase4Sub'),
       img: '/images/categories/hdpe-pipes.webp',
       badge: 'PE 100 / SDR 11 / SDR 17',
       iconHtml: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
@@ -352,15 +352,15 @@ function renderBestsellersSlider(products) {
     <section class="home-section bestsellers-section">
       <div class="section-head bestsellers-head">
         <div>
-          <div class="section-pill-tag">OMBORDAN HOZIROQ</div>
-          <h2 class="section-title">Ommabop Mahsulotlar</h2>
-          <div class="section-subtitle">Toshkent markaziy omborimizda doimiy tayyor zaxiradagi xaridorgir pozitsiyalar</div>
+          <div class="section-pill-tag">${t('bestsellersTag')}</div>
+          <h2 class="section-title">${t('bestsellersTitle')}</h2>
+          <div class="section-subtitle">${t('bestsellersSub')}</div>
         </div>
         <div class="bestsellers-nav-arrows">
-          <button type="button" class="carousel-arrow-btn" id="bestseller-prev-btn" aria-label="Oldingi mahsulotlar">
+          <button type="button" class="carousel-arrow-btn" id="bestseller-prev-btn" aria-label="${t('bestsellerPrevAria')}">
             ${icon('chevron-left', '', 20)}
           </button>
-          <button type="button" class="carousel-arrow-btn" id="bestseller-next-btn" aria-label="Keyingi mahsulotlar">
+          <button type="button" class="carousel-arrow-btn" id="bestseller-next-btn" aria-label="${t('bestsellerNextAria')}">
             ${icon('chevron-right', '', 20)}
           </button>
         </div>
@@ -380,23 +380,23 @@ function renderWhyNevo() {
   const benefits = [
     {
       icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`,
-      title: "Doimiy Ombor Zaxirasi",
-      desc: "Katalogdagi barcha asosiy mahsulotlar Toshkent markaziy omborimizda tayyor holda saqlanadi."
+      title: t('benefit1Title'),
+      desc: t('benefit1Desc')
     },
     {
       icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>`,
-      title: "Zavod Texnik Pasporti",
-      desc: "Har bir partiya mahsulot uchun rasmiy ishlab chiqaruvchi sertifikati va texnik pasporti beriladi."
+      title: t('benefit2Title'),
+      desc: t('benefit2Desc')
     },
     {
       icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
-      title: "Shaffof Ulgurji Narxlar",
-      desc: "To'g'ridan-to'g'ri birinchi qo'l narxlar, qulay to'lov shakllari va rasmiy shartnoma kafolati."
+      title: t('benefit3Title'),
+      desc: t('benefit3Desc')
     },
     {
       icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`,
-      title: "Muhandislik Maslahati",
-      desc: "Smeta, loyiha va chizmalaringiz bo'yicha to'g'ri quvur va zapor armaturalarni tanlashda muhandis ko'magi."
+      title: t('benefit4Title'),
+      desc: t('benefit4Desc')
     }
   ];
 
@@ -404,9 +404,9 @@ function renderWhyNevo() {
     <!-- SCENE 5: WHY NEVO (4 HONEST BENEFITS) -->
     <section class="home-section why-nevo-section">
       <div class="section-head text-center">
-        <div class="section-pill-tag">NEGA AYNAN NEVO?</div>
-        <h2 class="section-title">Ishonchli va Professional Ta'minot</h2>
-        <div class="section-subtitle">Sanoat va fuqarolik qurilishi uchun sertifikatlangan santexnika mahsulotlari</div>
+        <div class="section-pill-tag">${t('whyNevoTag')}</div>
+        <h2 class="section-title">${t('whyNevoTitle')}</h2>
+        <div class="section-subtitle">${t('whyNevoSub')}</div>
       </div>
       <div class="why-nevo-grid">
         ${benefits.map(b => `
@@ -423,19 +423,19 @@ function renderWhyNevo() {
 
 function renderHowToOrder() {
   const steps = [
-    { num: '01', title: "Mahsulotni tanlang", desc: "Katalog bo'limlaridan yoki ⌘K tezkor qidiruv orqali kerakli tovarlarni toping." },
-    { num: '02', title: "Savatga qo'shing", desc: "Miqdorni belgilab savatga kiriting yoki to'g'ridan-to'g'ri narx so'rovini yuboring." },
-    { num: '03', title: "Smetani tasdiqlang", desc: "Operatorimiz qisqa vaqtda bog'lanib, zaxirani va aniq narxni tasdiqlaydi." },
-    { num: '04', title: "Tezkor qabul qiling", desc: "Ombordan o'zingiz olib keting yoki O'zbekistonning istalgan hududiga yetkazib beramiz." }
+    { num: '01', title: t('step1Title'), desc: t('step1Desc') },
+    { num: '02', title: t('step2Title'), desc: t('step2Desc') },
+    { num: '03', title: t('step3Title'), desc: t('step3Desc') },
+    { num: '04', title: t('step4Title'), desc: t('step4Desc') }
   ];
 
   return `
     <!-- SCENE 6: HOW TO ORDER (4 ANIMATED STEPS) -->
     <section class="home-section how-to-order-section">
       <div class="section-head text-center">
-        <div class="section-pill-tag">4 ODDIY QADAM</div>
+        <div class="section-pill-tag">${t('howOrderTag')}</div>
         <h2 class="section-title">${t('howToOrder')}</h2>
-        <div class="section-subtitle">Ombordan tovarlarni tez va oson xarid qilish jarayoni</div>
+        <div class="section-subtitle">${t('howOrderSub')}</div>
       </div>
       <div class="how-to-order-steps-grid">
         ${steps.map(s => `
@@ -485,20 +485,20 @@ function renderBrandsMarquee() {
 function renderFaqSection() {
   const faqs = [
     {
-      q: "Mahsulotlar sifat sertifikatiga egami?",
-      a: "Ha, barcha quvurlar, zapor armaturalar va elektrotexnika mahsulotlari zavod texnik pasporti hamda tegishli GOST va ISO sertifikatlariga ega."
+      q: t('faq1Q'),
+      a: t('faq1A')
     },
     {
-      q: "Viloyatlarga yetkazib berish qanday amalga oshiriladi?",
-      a: "Toshkent shahri va O'zbekiston viloyatlariga yuk tashish xizmatlari orqali buyurtma qilingan kunning o'zida yuklab jo'natiladi."
+      q: t('faq2Q'),
+      a: t('faq2A')
     },
     {
-      q: "To'lov qanday usullarda qabul qilinadi?",
-      a: "To'lovlar korxonalar uchun hisob-raqam orqali (pul o'tkazish, QQS bilan rasmiy shartnoma) hamda jismoniy shaxslar uchun naqd yoki bank kartasi orqali amalga oshiriladi."
+      q: t('faq3Q'),
+      a: t('faq3A')
     },
     {
-      q: "Katta qurilish obyektlari uchun maxsus optom chegirmalar bormi?",
-      a: "Ha, yirik pudratchilar va qurilish kompaniyalari uchun smeta bo'yicha maxsus ulgurji narxlar va bosqichma-bosqich ta'minot shartnomalari taqdim etiladi."
+      q: t('faq4Q'),
+      a: t('faq4A')
     }
   ];
 
@@ -506,9 +506,9 @@ function renderFaqSection() {
     <!-- SCENE 9: ACCESSIBLE FAQ ACCORDION -->
     <section class="home-section faq-section">
       <div class="section-head text-center">
-        <div class="section-pill-tag">SAVOL-JAVOBLAR</div>
-        <h2 class="section-title">Ko'p Beriladigan Savollar</h2>
-        <div class="section-subtitle">Xarid, yetkazib berish va to'lov shartlari haqida muhim ma'lumotlar</div>
+        <div class="section-pill-tag">${t('faqTag')}</div>
+        <h2 class="section-title">${t('faqTitle')}</h2>
+        <div class="section-subtitle">${t('faqSub')}</div>
       </div>
       <div class="faq-accordion-wrap">
         ${faqs.map((f, i) => `
@@ -538,13 +538,13 @@ export function renderHomePage() {
       <section class="hero-section hero-section-nevo">
         <div class="hero-slideshow-backdrop" id="nevo-hero-slideshow">
           <div class="hero-slide-item active" data-slide="0">
-            <img src="/images/hero/hero-plant-1.jpg" alt="NEVO Zamonaviy Muhandislik Korxonasi" class="hero-slide-img" fetchpriority="high" />
+            <img src="/images/hero/hero-plant-1.jpg" alt="${t('slide1Alt')}" class="hero-slide-img" fetchpriority="high" />
           </div>
           <div class="hero-slide-item" data-slide="1">
-            <img src="/images/hero/hero-valves-2.jpg" alt="NEVO Sanoat Zapor Armaturalari va Zadvijkalar" class="hero-slide-img" loading="lazy" />
+            <img src="/images/hero/hero-valves-2.jpg" alt="${t('slide2Alt')}" class="hero-slide-img" loading="lazy" />
           </div>
           <div class="hero-slide-item" data-slide="2">
-            <img src="/images/hero/hero-factory-3.jpg" alt="NEVO Polimer Quvur Ishlab Chiqarish Liniyasi" class="hero-slide-img" loading="lazy" />
+            <img src="/images/hero/hero-factory-3.jpg" alt="${t('slide3Alt')}" class="hero-slide-img" loading="lazy" />
           </div>
           <div class="hero-slide-gradient-overlay"></div>
           <div class="hero-slide-ambient-glow"></div>
@@ -581,17 +581,17 @@ export function renderHomePage() {
 
         <!-- Slide Switcher Dots on Hero Bottom Center/Right -->
         <div class="hero-slides-nav" id="hero-slides-dots">
-          <button type="button" class="hero-slide-dot active" data-slide="0" onclick="window.__switchHeroSlide(0)" aria-label="1-slayd: Sanoat Muhandisligi">
+          <button type="button" class="hero-slide-dot active" data-slide="0" onclick="window.__switchHeroSlide(0)" aria-label="${t('slide1Aria')}">
             <span class="hero-dot-fill"></span>
-            <span class="hero-dot-tooltip">Sanoat Korxonasi</span>
+            <span class="hero-dot-tooltip">${t('slide1Tip')}</span>
           </button>
-          <button type="button" class="hero-slide-dot" data-slide="1" onclick="window.__switchHeroSlide(1)" aria-label="2-slayd: Zapor Armatura">
+          <button type="button" class="hero-slide-dot" data-slide="1" onclick="window.__switchHeroSlide(1)" aria-label="${t('slide2Aria')}">
             <span class="hero-dot-fill"></span>
-            <span class="hero-dot-tooltip">Zapor Armatura</span>
+            <span class="hero-dot-tooltip">${t('slide2Tip')}</span>
           </button>
-          <button type="button" class="hero-slide-dot" data-slide="2" onclick="window.__switchHeroSlide(2)" aria-label="3-slayd: Ishlab Chiqarish">
+          <button type="button" class="hero-slide-dot" data-slide="2" onclick="window.__switchHeroSlide(2)" aria-label="${t('slide3Aria')}">
             <span class="hero-dot-fill"></span>
-            <span class="hero-dot-tooltip">Ishlab Chiqarish</span>
+            <span class="hero-dot-tooltip">${t('slide3Tip')}</span>
           </button>
         </div>
 

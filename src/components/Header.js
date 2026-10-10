@@ -100,7 +100,7 @@ export function renderHeader() {
 
           <div class="header-search-wrap">
             <div class="header-search-form" id="header-search-form" role="search" onclick="window.__openQuickSearch();">
-              <label for="header-search-input" class="visually-hidden">Mahsulot qidirish</label>
+              <label for="header-search-input" class="visually-hidden">${t('searchPlaceholder')}</label>
               <input
                 type="text" 
                 class="header-search-input" 
@@ -110,7 +110,7 @@ export function renderHeader() {
                 readonly
               />
               <kbd class="header-search-kbd">⌘K</kbd>
-              <button type="button" class="header-search-btn" aria-label="Qidirish">
+              <button type="button" class="header-search-btn" aria-label="${t('search')}">
                 ${icon('search', '', 18)}
               </button>
             </div>
@@ -167,7 +167,7 @@ export function initHeaderEvents() {
         if (catalog.status !== 'ready') {
           dropdown.innerHTML = `
             <div style="padding: 16px; text-align: center; color: var(--muted); font-size: 14px;">
-              ${catalog.status === 'error' ? "Katalog yuklanmadi, qayta urinib ko'ring." : 'Katalog yuklanmoqda…'}
+              ${catalog.status === 'error' ? t('catalogLoadError') : t('catalogLoading')}
             </div>
           `;
           dropdown.classList.add('active');
@@ -180,7 +180,7 @@ export function initHeaderEvents() {
         if (matches.length === 0) {
           dropdown.innerHTML = `
             <div style="padding: 16px; text-align: center; color: var(--muted); font-size: 14px;">
-              "${esc(query)}" bo'yicha mahsulot topilmadi.
+              "${esc(query)}" ${t('searchNotFound')}
             </div>
           `;
         } else {
@@ -199,7 +199,7 @@ export function initHeaderEvents() {
             </a>
           `).join('') + `
             <a href="/katalog?search=${encodeURIComponent(query)}" style="display: block; padding: 10px; text-align: center; background: #f8fafc; font-size: 13.5px; font-weight: 600; color: var(--nevo-blue); border-top: 1px solid var(--border);">
-              Barcha natijalarni ko'rish (${allMatches.length}) →
+              ${t('viewAllResults')} (${allMatches.length}) →
             </a>
           `;
         }
