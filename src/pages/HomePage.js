@@ -2,10 +2,10 @@ import { icon } from '../icons.js';
 import { getCatalog } from '../lib/catalog.js';
 import { esc } from '../lib/format.js';
 import { renderTestimonials } from '../components/Testimonials.js';
+import { renderProductCard } from '../components/ProductCard.js';
 import { t } from '../lib/i18n.js';
 
 // Hero kartalari bazadagi mahsulotlardan qoida bo'yicha tanlanadi — ID yozilmaydi.
-// Mahsulot o'chsa, tugasa yoki rasmi bo'lmasa, qoidaga mos keyingisi olinadi.
 const HERO_PICKS = [
   (p) => /труба|quvur/i.test(p.groupName || p.name),
   (p) => /фитинг|fiting/i.test(p.subcategory),
@@ -13,13 +13,8 @@ const HERO_PICKS = [
   (p) => p.categorySlug === 'elektr-jihozlari' || /подстанц|podstansiya/i.test(p.subcategory),
 ];
 const HERO_COUNT = HERO_PICKS.length;
-
 const FEATURED_COUNT = 8;
 
-/**
- * @param {Array} products
- * @param {Array} [avoid] bosh sahifada boshqa joyda chiqadigan mahsulotlar — ular va suratlari takrorlanmaydi
- */
 export function pickHeroProducts(products, avoid = []) {
   const candidates = products.filter(
     (p) => p.inStock && p.hasImage && !avoid.some((x) => x.id === p.id || x.image === p.image)
@@ -31,7 +26,6 @@ export function pickHeroProducts(products, avoid = []) {
     const product = candidates.find((p) => rule(p) && isFree(p));
     if (product) picked.push(product);
   }
-  // Qoidaga mos topilmaganlar o'rniga: avval hali ishlatilmagan kategoriyadan, keyin istalgani
   for (const preferNewCategory of [true, false]) {
     for (const p of candidates) {
       if (picked.length >= HERO_COUNT) break;
@@ -43,14 +37,6 @@ export function pickHeroProducts(products, avoid = []) {
   return picked;
 }
 
-/**
- * "Tanlangan mahsulotlar" avtomatik tanlovi: sotuvda, surati bor.
- * Har qadamda: avval hali chiqmagan kategoriya, keyin hali chiqmagan brend, keyin
- * kam ishlatilgan kategoriya. `avoid` (hero) va o'zaro — bir xil mahsulot, surat yoki
- * mahsulot guruhi (faqat o'lchami farq qiladigan) takrorlanmaydi.
- * @param {Array} products
- * @param {Array} [avoid] ko'rinishi takrorlanmasligi kerak bo'lgan mahsulotlar (hero)
- */
 export function pickFeaturedProducts(products, avoid = [], count = FEATURED_COUNT) {
   const candidates = products.filter((p) => p.inStock && p.hasImage);
   const picked = [];
@@ -81,11 +67,6 @@ export function pickFeaturedProducts(products, avoid = [], count = FEATURED_COUN
   return picked;
 }
 
-/**
- * Bosh sahifadagi hero va "Tanlangan mahsulotlar" — bir-birini takrorlamaydi.
- * Bazada featured=true (sotuvda) mahsulot bo'lsa, avtomatik tanlov o'rniga o'shalar chiqadi
- * va hero ulardan boshqa mahsulotlarni oladi.
- */
 export function pickHomeProducts(products) {
   const manual = products.filter((p) => p.featured && p.inStock).slice(0, FEATURED_COUNT);
   if (manual.length) {
@@ -95,6 +76,26 @@ export function pickHomeProducts(products) {
   const hero = pickHeroProducts(products);
   const featured = pickFeaturedProducts(products, hero);
   return { hero, featured, featuredSource: 'auto' };
+}
+
+function renderBlueprintDivider(id = 'bp-1') {
+  return `
+    <div class="blueprint-divider" id="${id}" aria-hidden="true">
+      <svg class="blueprint-svg" viewBox="0 0 1000 48" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="bp-grad-${id}" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#1D4ED8" stop-opacity="0.15" />
+            <stop offset="50%" stop-color="#38BDF8" stop-opacity="0.85" />
+            <stop offset="100%" stop-color="#1D4ED8" stop-opacity="0.15" />
+          </linearGradient>
+        </defs>
+        <line x1="0" y1="24" x2="1000" y2="24" stroke="url(#bp-grad-${id})" class="blueprint-pipe" />
+        <circle cx="200" cy="24" r="5" class="blueprint-node" />
+        <circle cx="500" cy="24" r="7" class="blueprint-node" />
+        <circle cx="800" cy="24" r="5" class="blueprint-node" />
+      </svg>
+    </div>
+  `;
 }
 
 function renderProjectsCarousel() {
@@ -152,10 +153,10 @@ function renderProjectsCarousel() {
           <div class="section-subtitle">${t('projectsSub')}</div>
         </div>
         <div class="projects-carousel-nav-arrows">
-          <button type="button" class="carousel-arrow-btn" id="proj-prev-btn" aria-label="Oldingi loyiha">
+          <button type="button" class="carousel-arrow-btn" id="proj-prev-btn" aria-label="Oldingi ta'minot yo'nalishi">
             ${icon('chevron-left', '', 20)}
           </button>
-          <button type="button" class="carousel-arrow-btn" id="proj-next-btn" aria-label="Keyingi loyiha">
+          <button type="button" class="carousel-arrow-btn" id="proj-next-btn" aria-label="Keyingi ta'minot yo'nalishi">
             ${icon('chevron-right', '', 20)}
           </button>
         </div>
@@ -186,8 +187,44 @@ function renderProjectsCarousel() {
 
 function renderNevoCorporateAbout(catalog) {
   const productCount = catalog.status === 'ready' && catalog.products.length ? catalog.products.length : 100;
+  
+  const gauges = [
+    {
+      id: 'g1',
+      target: 1,
+      suffix: '',
+      percent: 100,
+      title: t('statYears'),
+      sub: t('statYearsLabel'),
+    },
+    {
+      id: 'g2',
+      target: productCount,
+      suffix: '+',
+      percent: 85,
+      title: t('statProducts'),
+      sub: t('statProductsLabel'),
+    },
+    {
+      id: 'g3',
+      target: 100,
+      suffix: '%',
+      percent: 100,
+      title: t('statPartners'),
+      sub: t('statPartnersLabel'),
+    },
+    {
+      id: 'g4',
+      target: 12,
+      suffix: '+',
+      percent: 92,
+      title: t('statDelivery'),
+      sub: t('statDeliveryLabel'),
+    },
+  ];
+
   return `
-    <!-- NEVO CORPORATE ABOUT & METRICS (REALISTIC & AUTHENTIC) -->
+    <!-- SCENE 2: NEVO CORPORATE ABOUT & 4 TECHNICAL PRESSURE GAUGES -->
     <section class="nevo-corp-about-section" id="stats-anchor">
       <div class="shell">
         <div class="nevo-corp-about-header">
@@ -199,60 +236,35 @@ function renderNevoCorporateAbout(catalog) {
             </div>
           </div>
           <div class="nevo-corp-intro-text">
-            <p>
-              ${t('heroDesc')}
-            </p>
+            <p>${t('aboutCorpText')}</p>
           </div>
         </div>
 
-        <!-- 4 Minimalist Line-Art Metrics (Authentic & Realistic for Nevo Group) -->
+        <!-- 4 Technical Pressure Gauge Indicators -->
         <div class="nevo-corp-metrics-grid">
-          <div class="nevo-metric-stat-item">
-            <div class="nevo-metric-icon-wrap">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                <line x1="12" y1="22.08" x2="12" y2="12"></line>
-              </svg>
+          ${gauges.map((g, idx) => `
+            <div class="nevo-gauge-item" data-gauge-id="${g.id}">
+              <div class="nevo-gauge-dial" data-percent="${g.percent}">
+                <svg class="nevo-gauge-svg" viewBox="0 0 120 120" width="116" height="116" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="gauge-grad-${idx}" x1="0%" y1="100%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#1D4ED8" />
+                      <stop offset="100%" stop-color="#38BDF8" />
+                    </linearGradient>
+                  </defs>
+                  <!-- Background Track Arc (260 deg) -->
+                  <path class="gauge-track" d="M 25 95 A 50 50 0 1 1 95 95" fill="none" />
+                  <!-- Progress Arc (Animated via dashoffset) -->
+                  <path class="gauge-progress" d="M 25 95 A 50 50 0 1 1 95 95" fill="none" stroke="url(#gauge-grad-${idx})" stroke-dasharray="245" stroke-dashoffset="245" />
+                </svg>
+                <div class="gauge-center-content">
+                  <div class="nevo-metric-big-num" data-count="${g.target}" data-suffix="${g.suffix}">${g.target}${g.suffix}</div>
+                </div>
+              </div>
+              <div class="nevo-gauge-title">${esc(g.title)}</div>
+              <div class="nevo-gauge-sub">${esc(g.sub)}</div>
             </div>
-            <div class="nevo-metric-big-num" data-count="1" data-suffix="">1</div>
-            <div class="nevo-metric-tag-label">${t('statYears')}</div>
-          </div>
-
-          <div class="nevo-metric-stat-item">
-            <div class="nevo-metric-icon-wrap">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-            </div>
-            <div class="nevo-metric-big-num" data-count="${productCount}" data-suffix="+">${productCount}+</div>
-            <div class="nevo-metric-tag-label">${t('statProducts')}</div>
-          </div>
-
-          <div class="nevo-metric-stat-item">
-            <div class="nevo-metric-icon-wrap">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                <path d="m9 12 2 2 4-4"></path>
-              </svg>
-            </div>
-            <div class="nevo-metric-big-num" data-count="100" data-suffix="%">100%</div>
-            <div class="nevo-metric-tag-label">${t('statPartners')}</div>
-          </div>
-
-          <div class="nevo-metric-stat-item">
-            <div class="nevo-metric-icon-wrap">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="1" y="3" width="15" height="13"></rect>
-                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                <circle cx="18.5" cy="18.5" r="2.5"></circle>
-              </svg>
-            </div>
-            <div class="nevo-metric-big-num" data-count="12" data-suffix="+">12+</div>
-            <div class="nevo-metric-tag-label">${t('statDelivery')}</div>
-          </div>
+          `).join('')}
         </div>
       </div>
     </section>
@@ -264,7 +276,7 @@ function renderNevoCatalogShowcase() {
     {
       slug: 'truba-va-fitinglar',
       title: 'Polipropilen (PP-R) va Kompozit Quvurlar',
-      sub: "Suv ta'minoti va isitish tizimlari uchun sertifikatlangan polimer quvurlar",
+      sub: "Suv ta'minoti va isitish tizimlari uchun polimer quvurlar",
       img: '/images/categories/ppr-pipes.webp',
       badge: 'PP-R / PN20 / PN25',
       iconHtml: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>',
@@ -288,7 +300,7 @@ function renderNevoCatalogShowcase() {
     {
       slug: 'truba-va-fitinglar',
       title: 'Polietilen (HDPE PE-100) bosimli quvurlar',
-      sub: "Ichimlik suvi va gaz magistrallari uchun yuqori bosimli polietilen quvurlar",
+      sub: "Ichimlik suvi va gaz tarmoqlari uchun yuqori bosimli polietilen quvurlar",
       img: '/images/categories/hdpe-pipes.webp',
       badge: 'PE 100 / SDR 11 / SDR 17',
       iconHtml: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
@@ -296,31 +308,31 @@ function renderNevoCatalogShowcase() {
   ];
 
   return `
-    <!-- NEVO GROUP LUXURY CATALOG SHOWCASE -->
+    <!-- SCENE 3: NEVO GROUP LUXURY CATALOG SHOWCASE -->
     <section class="home-section nevo-catalog-showcase-section" id="catalog-anchor">
       <div class="section-head nevo-catalog-section-head">
         <div>
-          <div class="section-pill-tag">ASOSIY YO'NALISHLAR</div>
-          <h2 class="section-title">Mahsulotlar va Katalog</h2>
-          <div class="section-subtitle">Isitish, suv ta'minoti va muhandislik tizimlari uchun sanoat jihozlari, komplektovchi qismlar va materiallarning keng assortimenti.</div>
+          <div class="section-pill-tag">${t('catalogBtn').toUpperCase()}</div>
+          <h2 class="section-title">${t('catalogStackTitle')}</h2>
+          <div class="section-subtitle">${t('catalogSub')}</div>
         </div>
         <a href="/katalog" class="section-link nevo-catalog-head-link">
-          <span>Katalogni ko'rish</span>
+          <span>${t('heroCtaCatalog')}</span>
           ${icon('arrow-right', '', 16)}
         </a>
       </div>
 
-      <!-- Quick Search Bar -->
+      <!-- Quick Search Bar with ⌘K -->
       <div class="nevo-catalog-search-strip">
-        <span class="nevo-search-label">KATALOGDAN QIDIRISH</span>
+        <span class="nevo-search-label">${t('searchInCatalog')}</span>
         <div class="nevo-search-box-wrap" onclick="window.__openQuickSearch ? window.__openQuickSearch() : (window.location.href='/katalog');">
           ${icon('search', '', 18)}
-          <input type="text" placeholder="Mahsulot qidirish — masalan: PN20, fiting, kran..." readonly class="nevo-search-input-fake" />
+          <input type="text" placeholder="${esc(t('searchPlaceholderExtended'))}" readonly class="nevo-search-input-fake" />
           <span class="search-kbd-badge">⌘K</span>
         </div>
       </div>
 
-      <!-- Cards Grid -->
+      <!-- Category Cover Cards Grid -->
       <div class="nevo-catalog-grid">
         ${categories.map(c => `
           <a href="/katalog/${esc(c.slug)}" class="nevo-cat-card">
@@ -337,7 +349,7 @@ function renderNevoCatalogShowcase() {
                   <p class="nevo-cat-subtext">${esc(c.sub)}</p>
                 </div>
                 <span class="nevo-cat-btn">
-                  <span>Ko'rish</span>
+                  <span>${t('viewAction')}</span>
                   ${icon('arrow-right', '', 16)}
                 </span>
               </div>
@@ -345,13 +357,187 @@ function renderNevoCatalogShowcase() {
           </a>
         `).join('')}
       </div>
+    </section>
+  `;
+}
 
-      <!-- Slider Dots Pagination -->
-      <div class="nevo-catalog-dots">
-        <span class="nevo-dot active"></span>
-        <span class="nevo-dot"></span>
-        <span class="nevo-dot"></span>
-        <span class="nevo-dot"></span>
+function renderBestsellersSlider(products) {
+  if (!products || !products.length) return '';
+  return `
+    <!-- SCENE 4: BESTSELLERS / "OMBORDAN HOZIROQ" SLIDER -->
+    <section class="home-section bestsellers-section">
+      <div class="section-head bestsellers-head">
+        <div>
+          <div class="section-pill-tag">OMBORDAN HOZIROQ</div>
+          <h2 class="section-title">Ommabop Mahsulotlar</h2>
+          <div class="section-subtitle">Toshkent markaziy omborimizda doimiy tayyor zaxiradagi xaridorgir pozitsiyalar</div>
+        </div>
+        <div class="bestsellers-nav-arrows">
+          <button type="button" class="carousel-arrow-btn" id="bestseller-prev-btn" aria-label="Oldingi mahsulotlar">
+            ${icon('chevron-left', '', 20)}
+          </button>
+          <button type="button" class="carousel-arrow-btn" id="bestseller-next-btn" aria-label="Keyingi mahsulotlar">
+            ${icon('chevron-right', '', 20)}
+          </button>
+        </div>
+      </div>
+      <div class="bestsellers-slider-track" id="bestsellers-slider-track">
+        ${products.map(p => `
+          <div class="bestseller-card-slot">
+            ${renderProductCard(p)}
+          </div>
+        `).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function renderWhyNevo() {
+  const benefits = [
+    {
+      icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`,
+      title: "Doimiy Ombor Zaxirasi",
+      desc: "Katalogdagi barcha asosiy mahsulotlar Toshkent markaziy omborimizda tayyor holda saqlanadi."
+    },
+    {
+      icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>`,
+      title: "Zavod Texnik Pasporti",
+      desc: "Har bir partiya mahsulot uchun rasmiy ishlab chiqaruvchi sertifikati va texnik pasporti beriladi."
+    },
+    {
+      icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
+      title: "Shaffof Ulgurji Narxlar",
+      desc: "To'g'ridan-to'g'ri birinchi qo'l narxlar, qulay to'lov shakllari va rasmiy shartnoma kafolati."
+    },
+    {
+      icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`,
+      title: "Muhandislik Maslahati",
+      desc: "Smeta, loyiha va chizmalaringiz bo'yicha to'g'ri quvur va zapor armaturalarni tanlashda muhandis ko'magi."
+    }
+  ];
+
+  return `
+    <!-- SCENE 5: WHY NEVO (4 HONEST BENEFITS) -->
+    <section class="home-section why-nevo-section">
+      <div class="section-head text-center">
+        <div class="section-pill-tag">NEGA AYNAN NEVO?</div>
+        <h2 class="section-title">Ishonchli va Professional Ta'minot</h2>
+        <div class="section-subtitle">Sanoat va fuqarolik qurilishi uchun sertifikatlangan santexnika mahsulotlari</div>
+      </div>
+      <div class="why-nevo-grid">
+        ${benefits.map(b => `
+          <div class="why-nevo-card">
+            <div class="why-nevo-icon">${b.icon}</div>
+            <h3 class="why-nevo-card-title">${esc(b.title)}</h3>
+            <p class="why-nevo-card-desc">${esc(b.desc)}</p>
+          </div>
+        `).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function renderHowToOrder() {
+  const steps = [
+    { num: '01', title: "Mahsulotni tanlang", desc: "Katalog bo'limlaridan yoki ⌘K tezkor qidiruv orqali kerakli tovarlarni toping." },
+    { num: '02', title: "Savatga qo'shing", desc: "Miqdorni belgilab savatga kiriting yoki to'g'ridan-to'g'ri narx so'rovini yuboring." },
+    { num: '03', title: "Smetani tasdiqlang", desc: "Operatorimiz qisqa vaqtda bog'lanib, zaxirani va aniq narxni tasdiqlaydi." },
+    { num: '04', title: "Tezkor qabul qiling", desc: "Ombordan o'zingiz olib keting yoki O'zbekistonning istalgan hududiga yetkazib beramiz." }
+  ];
+
+  return `
+    <!-- SCENE 6: HOW TO ORDER (4 ANIMATED STEPS) -->
+    <section class="home-section how-to-order-section">
+      <div class="section-head text-center">
+        <div class="section-pill-tag">4 ODDIY QADAM</div>
+        <h2 class="section-title">${t('howToOrder')}</h2>
+        <div class="section-subtitle">Ombordan tovarlarni tez va oson xarid qilish jarayoni</div>
+      </div>
+      <div class="how-to-order-steps-grid">
+        ${steps.map(s => `
+          <div class="order-step-card">
+            <div class="step-num-badge">${s.num}</div>
+            <h3 class="step-title">${esc(s.title)}</h3>
+            <p class="step-desc">${esc(s.desc)}</p>
+          </div>
+        `).join('')}
+      </div>
+      <div class="text-center" style="margin-top: 32px;">
+        <a href="/tanlash" class="btn-royal-gold">
+          <span>${t('findForMe')}</span>
+          ${icon('arrow-right', '', 16)}
+        </a>
+      </div>
+    </section>
+  `;
+}
+
+function renderBrandsMarquee() {
+  const brands = [
+    'ALL AYZEN', 'Absan Sanat', 'NEVO', 'FIRAT', 'VALFEX',
+    'Kalde', 'Dizayn', 'Pilsa', 'Ostendorf', 'Poelsan'
+  ];
+
+  return `
+    <!-- SCENE 7: BRANDS & PARTNERS MARQUEE -->
+    <section class="brands-marquee-section" aria-label="Hamkor brendlar">
+      <div class="shell">
+        <div class="brands-marquee-label">ISHLAB CHIQARUVCHILAR VA ISHONCHLI HAMKORLAR</div>
+      </div>
+      <div class="brands-marquee-strip">
+        <div class="brands-marquee-track">
+          ${[...brands, ...brands].map(b => `
+            <div class="brand-chip-item">
+              <span class="brand-chip-dot"></span>
+              <span class="brand-chip-text">${esc(b)}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderFaqSection() {
+  const faqs = [
+    {
+      q: "Mahsulotlar sifat sertifikatiga egami?",
+      a: "Ha, barcha quvurlar, zapor armaturalar va elektrotexnika mahsulotlari zavod texnik pasporti hamda tegishli GOST va ISO sertifikatlariga ega."
+    },
+    {
+      q: "Viloyatlarga yetkazib berish qanday amalga oshiriladi?",
+      a: "Toshkent shahri va O'zbekistonning barcha 12 viloyatiga ishonchli yuk tashish xizmatlari orqali buyurtma qilingan kunning o'zida yuklab jo'natiladi."
+    },
+    {
+      q: "To'lov qanday usullarda qabul qilinadi?",
+      a: "To'lovlar korxonalar uchun hisob-raqam orqali (pul o'tkazish, QQS bilan rasmiy shartnoma) hamda jismoniy shaxslar uchun naqd yoki bank kartasi orqali amalga oshiriladi."
+    },
+    {
+      q: "Katta qurilish obyektlari uchun maxsus optom chegirmalar bormi?",
+      a: "Ha, yirik pudratchilar va qurilish kompaniyalari uchun smeta bo'yicha maxsus ulgurji narxlar va bosqichma-bosqich ta'minot shartnomalari taqdim etiladi."
+    }
+  ];
+
+  return `
+    <!-- SCENE 9: ACCESSIBLE FAQ ACCORDION -->
+    <section class="home-section faq-section">
+      <div class="section-head text-center">
+        <div class="section-pill-tag">SAVOL-JAVOBLAR</div>
+        <h2 class="section-title">Ko'p Beriladigan Savollar</h2>
+        <div class="section-subtitle">Xarid, yetkazib berish va to'lov shartlari haqida muhim ma'lumotlar</div>
+      </div>
+      <div class="faq-accordion-wrap">
+        ${faqs.map((f, i) => `
+          <details class="faq-accordion-item" ${i === 0 ? 'open' : ''}>
+            <summary class="faq-summary">
+              <span class="faq-question">${esc(f.q)}</span>
+              <span class="faq-chevron">${icon('chevron-down', '', 18)}</span>
+            </summary>
+            <div class="faq-content">
+              <p>${esc(f.a)}</p>
+            </div>
+          </details>
+        `).join('')}
       </div>
     </section>
   `;
@@ -359,10 +545,12 @@ function renderNevoCatalogShowcase() {
 
 export function renderHomePage() {
   const catalog = getCatalog();
+  const products = catalog.status === 'ready' ? catalog.products : [];
+  const { featured } = pickHomeProducts(products);
 
   return `
     <main class="home-page-content">
-      <!-- NEVO LUXURY 8K INDUSTRIAL ENGINEERING HERO SLIDESHOW (100% Bespoke, No Watermarks) -->
+      <!-- SCENE 1: NEVO CINEMATIC HERO SLIDESHOW -->
       <section class="hero-section hero-section-nevo">
         <div class="hero-slideshow-backdrop" id="nevo-hero-slideshow">
           <div class="hero-slide-item active" data-slide="0">
@@ -424,34 +612,63 @@ export function renderHomePage() {
         </div>
 
         <!-- Scroll Mouse Indicator -->
-        <a href="#stats-anchor" class="hero-scroll-indicator" aria-label="Pastga tushish">
+        <a href="#stats-anchor" class="hero-scroll-indicator" aria-label="${t('scrollDownAria')}">
           <div class="scroll-mouse-icon">
             <span class="scroll-mouse-dot"></span>
           </div>
         </a>
       </section>
 
-      <!-- NEVO CORPORATE ABOUT & 4 METRICS -->
+      <!-- SCENE 2: NEVO CORPORATE ABOUT & 4 PRESSURE GAUGES -->
       ${renderNevoCorporateAbout(catalog)}
 
+      <!-- BLUEPRINT DIVIDER 1 -->
+      ${renderBlueprintDivider('bp-divider-1')}
+
       <div class="shell">
-        <!-- NEVO GROUP LUXURY CATALOG SHOWCASE -->
+        <!-- SCENE 3: CATEGORY SHOWCASE -->
         ${renderNevoCatalogShowcase()}
 
-        <!-- YIRIK LOYIHALARDA (MAJOR PROJECTS IN UZBEKISTAN) CAROUSEL -->
+        <!-- SCENE 4: BESTSELLERS / "OMBORDAN HOZIROQ" SLIDER -->
+        ${renderBestsellersSlider(featured)}
+
+        <!-- SCENE 5: WHY NEVO (4 HONEST BENEFITS) -->
+        ${renderWhyNevo()}
+
+        <!-- SCENE 6: HOW TO ORDER -->
+        ${renderHowToOrder()}
+      </div>
+
+      <!-- SCENE 7: BRANDS & PARTNERS MARQUEE -->
+      ${renderBrandsMarquee()}
+
+      <!-- BLUEPRINT DIVIDER 2 -->
+      ${renderBlueprintDivider('bp-divider-2')}
+
+      <div class="shell">
+        <!-- SCENE 8: SUPPLY LOGISTICS & INFRASTRUCTURE CAROUSEL -->
         ${renderProjectsCarousel()}
 
-        <!-- MIJOZLAR FIKRI (TESTIMONIALS) -->
+        <!-- SCENE 9: TESTIMONIALS / MIJOZLAR FIKRI -->
         ${renderTestimonials()}
 
-        <!-- Dark Final CTA Banner -->
+        <!-- SCENE 10: ACCESSIBLE FAQ -->
+        ${renderFaqSection()}
+
+        <!-- SCENE 11: DARK FINAL CTA BANNER -->
         <div class="cta-banner-dark" style="margin-top: 54px; margin-bottom: 54px;">
-          <h3>Kerakli mahsulotni topdingizmi?</h3>
-          <p>Narx va mavjudligini bilish uchun biz bilan hoziroq bog'laning.</p>
-          <a href="/aloqa" class="btn-white">
-            ${icon('message-circle', '', 18)}
-            <span>Bog'lanish</span>
-          </a>
+          <h3>${t('bulkOrderMenu')}</h3>
+          <p>${t('specNote')}</p>
+          <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+            <a href="/katta-buyurtma" class="btn-royal-gold">
+              ${icon('file-text', '', 18)}
+              <span>${t('bulkOrderMenu')}</span>
+            </a>
+            <a href="/aloqa" class="btn-royal-glass">
+              ${icon('phone', '', 18)}
+              <span>${t('contactUs')}</span>
+            </a>
+          </div>
         </div>
       </div>
     </main>
@@ -459,7 +676,7 @@ export function renderHomePage() {
 }
 
 export function initHomeAnimations() {
-  // Bespoke NEVO Hero 8K Industrial Slideshow Controller
+  // 1. Bespoke NEVO Hero 8K Industrial Slideshow Controller
   let heroCurrent = 0;
   const heroSlides = document.querySelectorAll('#nevo-hero-slideshow .hero-slide-item');
   const heroDots = document.querySelectorAll('#hero-slides-dots .hero-slide-dot');
@@ -495,36 +712,95 @@ export function initHomeAnimations() {
       });
     }
   }
-  // Animated Stat Counters
-  const counters = document.querySelectorAll('.stat-number[data-count], .nevo-metric-big-num[data-count]');
-  if (counters.length > 0 && 'IntersectionObserver' in window) {
-    const observer = new IntersectionObserver((entries, obs) => {
+
+  // 2. Hide Floating Expert Button when Hero CTAs are in viewport
+  const floatingBtn = document.getElementById('floating-expert-btn');
+  const heroCta = document.querySelector('.hero-buttons');
+  if (floatingBtn && heroCta && 'IntersectionObserver' in window) {
+    const heroObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        floatingBtn.classList.toggle('hero-cta-visible', entry.isIntersecting);
+      });
+    }, { threshold: 0.1 });
+    heroObserver.observe(heroCta);
+  }
+
+  // 3. Blueprint Dividers Animation on Scroll
+  const blueprintDividers = document.querySelectorAll('.blueprint-divider');
+  if (blueprintDividers.length > 0 && 'IntersectionObserver' in window) {
+    const bpObserver = new IntersectionObserver((entries, obs) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          const el = entry.target;
-          const target = parseInt(el.getAttribute('data-count'), 10);
-          const suffix = el.getAttribute('data-suffix') || '';
-          let count = 0;
-          const duration = 1600;
-          const stepTime = 25;
-          const steps = duration / stepTime;
-          const increment = target / steps;
-          const timer = setInterval(() => {
-            count += increment;
-            if (count >= target) {
-              count = target;
-              clearInterval(timer);
-            }
-            el.textContent = Math.floor(count).toLocaleString('ru-RU').replace(/,/g, ' ') + suffix;
-          }, stepTime);
-          obs.unobserve(el);
+          entry.target.classList.add('is-drawn');
+          obs.unobserve(entry.target);
         }
       });
     }, { threshold: 0.15 });
-    counters.forEach(c => observer.observe(c));
+    blueprintDividers.forEach(el => bpObserver.observe(el));
   }
 
-  // Projects Carousel Navigation
+  // 4. Pressure Gauge Dials Animation & Counters
+  const gaugeItems = document.querySelectorAll('.nevo-gauge-item');
+  if (gaugeItems.length > 0 && 'IntersectionObserver' in window) {
+    const gaugeObserver = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const item = entry.target;
+          const dial = item.querySelector('.nevo-gauge-dial');
+          const progressPath = item.querySelector('.gauge-progress');
+          const numEl = item.querySelector('.nevo-metric-big-num[data-count]');
+
+          if (dial && progressPath) {
+            const pct = parseInt(dial.getAttribute('data-percent'), 10) || 100;
+            const fullCircumference = 245;
+            const targetOffset = fullCircumference * (1 - (pct / 100) * 0.72);
+            progressPath.style.strokeDashoffset = String(targetOffset);
+          }
+
+          if (numEl) {
+            const target = parseInt(numEl.getAttribute('data-count'), 10) || 0;
+            const suffix = numEl.getAttribute('data-suffix') || '';
+            let count = 0;
+            const duration = 1600;
+            const stepTime = 25;
+            const steps = duration / stepTime;
+            const increment = target / steps;
+            const timer = setInterval(() => {
+              count += increment;
+              if (count >= target) {
+                count = target;
+                clearInterval(timer);
+              }
+              numEl.textContent = Math.floor(count).toLocaleString('ru-RU').replace(/,/g, ' ') + suffix;
+            }, stepTime);
+          }
+
+          obs.unobserve(item);
+        }
+      });
+    }, { threshold: 0.15 });
+    gaugeItems.forEach(el => gaugeObserver.observe(el));
+  }
+
+  // 5. Bestsellers Slider Navigation
+  const bsPrev = document.getElementById('bestseller-prev-btn');
+  const bsNext = document.getElementById('bestseller-next-btn');
+  const bsTrack = document.getElementById('bestsellers-slider-track');
+  if (bsTrack) {
+    const scrollAmount = 300;
+    if (bsPrev) {
+      bsPrev.addEventListener('click', () => {
+        bsTrack.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      });
+    }
+    if (bsNext) {
+      bsNext.addEventListener('click', () => {
+        bsTrack.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      });
+    }
+  }
+
+  // 6. Projects Carousel Navigation
   const prevBtn = document.getElementById('proj-prev-btn');
   const nextBtn = document.getElementById('proj-next-btn');
   const track = document.getElementById('projects-carousel-track');
@@ -542,8 +818,10 @@ export function initHomeAnimations() {
     }
   }
 
-  // 3D Card Hover Perspective Tilt
-  const tiltCards = document.querySelectorAll('.hero-img-card, .product-card, .benefit-card, .worker-card, .project-card, .nevo-cat-card');
+  // 7. 3D Card Hover Perspective Tilt
+  const tiltCards = document.querySelectorAll(
+    '.hero-img-card, .product-card, .why-nevo-card, .order-step-card, .worker-card, .project-card, .nevo-cat-card'
+  );
   tiltCards.forEach(card => {
     card.addEventListener('mousemove', (e) => {
       const rect = card.getBoundingClientRect();

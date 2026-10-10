@@ -1,4 +1,5 @@
 @import './styles/tokens.css';
+@import './styles/home-scenes.css';
 
 /* Inter — saytning o'zidan (public/fonts). Variable font: bitta fayl 400–800 og'irliklarni qamraydi.
    unicode-range tufayli brauzer faqat sahifada ishlatilgan subsetni yuklaydi. */
@@ -2535,32 +2536,52 @@ input, textarea, select {
   transform: translateY(0);
 }
 
-/* Floating Expert Button */
+/* Floating Expert Button — Ergonomic Side-Docked Position */
 .floating-expert-btn {
   position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
+  bottom: 32px;
+  right: 32px;
+  left: auto;
+  transform: translateY(0);
+  background: linear-gradient(135deg, var(--nevo-blue-700, #1D4ED8) 0%, var(--nevo-sky-500, #0EA5E9) 100%);
   color: #FFFFFF !important;
-  padding: 12px 24px;
+  padding: 12px 22px;
   border-radius: 9999px;
-  font-size: 14.5px;
-  font-weight: 850;
+  font-family: var(--font-display, 'Exo 2', sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 8px 26px rgba(14, 165, 233, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 24px rgba(29, 78, 216, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   z-index: 85;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .floating-expert-btn:hover {
-  transform: translateX(-50%) scale(1.04);
-  background: linear-gradient(135deg, #38BDF8 0%, #0EA5E9 100%);
-  box-shadow: 0 12px 32px rgba(56, 189, 248, 0.6);
+  transform: translateY(-2px) scale(1.03);
+  background: linear-gradient(135deg, var(--nevo-blue-600, #2563EB) 0%, var(--nevo-sky-400, #38BDF8) 100%);
+  box-shadow: 0 12px 30px rgba(56, 189, 248, 0.55);
   color: #FFFFFF !important;
+}
+
+.floating-expert-btn.hero-cta-visible {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+}
+
+@media (max-width: 768px) {
+  .floating-expert-btn {
+    bottom: 84px;
+    right: 16px;
+    left: auto;
+    padding: 10px 16px;
+    font-size: 13px;
+    gap: 6px;
+  }
 }
 
 /* Responsive Media Queries */

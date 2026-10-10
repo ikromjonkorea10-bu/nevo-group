@@ -30,6 +30,7 @@ import { initIntroSplash } from './components/IntroSplash.js';
 import { renderMaintenanceScreen, initMaintenanceUnlock } from './components/MaintenanceScreen.js';
 import { initProductModalGlobal } from './components/ProductModal.js';
 import { initQuickSearchGlobal } from './components/QuickSearch.js';
+import { t } from './lib/i18n.js';
 
 window.__getCatalog = getCatalog;
 
@@ -328,9 +329,9 @@ function router() {
     ${renderFooter()}
     ${renderMobileBottomNav(route)}
     ${showFloatingBtn ? `
-      <a href="/aloqa" class="floating-expert-btn" aria-label="Mutaxassisdan so'rash">
+      <a href="/aloqa" class="floating-expert-btn" id="floating-expert-btn" aria-label="${t('expertConsult')}">
         ${icon('message-circle', '', 18)}
-        <span>Mutaxassisdan so'rash</span>
+        <span>${t('expertConsult')}</span>
       </a>
     ` : ''}
     <div class="nevo-preview-floating-badge" id="preview-badge" title="Faqat siz ko'ra olasiz. Oddiy foydalanuvchilarga sayt texnik rejimda ko'rinadi.">

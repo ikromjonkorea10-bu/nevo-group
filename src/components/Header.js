@@ -4,7 +4,7 @@ import { getCatalog, matchesSearch } from '../lib/catalog.js';
 import { esc } from '../lib/format.js';
 import { renderNavSkeleton } from './StatusViews.js';
 import { CONTACTS, MAIN_PHONE, INSTAGRAM_URL } from '../data/content.js';
-import { getLang, setLang, t } from '../lib/i18n.js';
+import { getLang, setLang, t, formatProductCount } from '../lib/i18n.js';
 
 window.__setLanguage = (lang) => {
   setLang(lang);
@@ -21,7 +21,7 @@ function renderCategoryNav(categories) {
               <div class="nav-mega-dropdown">
                 <div class="mega-dropdown-inner">
                   <div class="mega-subcategories">
-                    <div class="mega-subcat-title">${esc(cat.name)} bo'limlari</div>
+                    <div class="mega-subcat-title">${esc(cat.name)} ${t('sectionsWord')}</div>
                     <div class="mega-subcat-grid">
                       ${cat.subcategories.map(sub => `
                         <a href="/katalog/${encodeURIComponent(cat.slug)}?sub=${encodeURIComponent(sub.name)}" class="mega-subcat-link">
@@ -37,9 +37,9 @@ function renderCategoryNav(categories) {
                       <img src="${esc(cat.image)}" alt="${esc(cat.name)}" onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';">
                     </div>
                     <div class="mega-thumb-info">
-                      <div class="mega-cat-badge">${cat.count} ta mahsulot</div>
+                      <div class="mega-cat-badge">${formatProductCount(cat.count)}</div>
                       <a href="/katalog/${esc(cat.slug)}" class="mega-view-all">
-                        <span>Bo'limga o'tish</span>
+                        <span>${t('goToSection')}</span>
                         ${icon('arrow-right', '', 14)}
                       </a>
                     </div>
@@ -118,18 +118,20 @@ export function renderHeader() {
 
           <div class="header-actions">
             <!-- Mobile Language Switcher -->
-            <div class="header-mobile-lang">
+            <div class="header-mobile-lang" role="group" aria-label="Language selection">
               <button type="button" class="lang-toggle-btn-sm ${currentLang === 'uz' ? 'active' : ''}" onclick="window.__setLanguage('uz')">UZ</button>
               <span class="lang-divider">|</span>
               <button type="button" class="lang-toggle-btn-sm ${currentLang === 'ru' ? 'active' : ''}" onclick="window.__setLanguage('ru')">RU</button>
+              <span class="lang-divider">|</span>
+              <button type="button" class="lang-toggle-btn-sm ${currentLang === 'en' ? 'active' : ''}" onclick="window.__setLanguage('en')">EN</button>
             </div>
-            <a href="/savat" class="header-icon-btn" aria-label="Savat">
+            <a href="/savat" class="header-icon-btn" aria-label="${t('navCart')}">
               ${icon('shopping-cart', '', 20)}
               <span class="cart-count-badge" id="header-cart-badge" style="${cartCount > 0 ? '' : 'display:none;'}">
                 ${cartCount}
               </span>
             </a>
-            <a href="tel:${MAIN_PHONE.tel}" class="header-icon-btn" aria-label="Qo'ng'iroq qilish">
+            <a href="tel:${MAIN_PHONE.tel}" class="header-icon-btn" aria-label="${t('contactUs')}">
               ${icon('phone', '', 20)}
             </a>
           </div>
