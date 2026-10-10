@@ -23,6 +23,7 @@ function renderPage({ origin, slug, category, products, dbError = false }) {
     : "Santexnika va qurilish mahsulotlari: truba va fitinglar, zapor armatura, yong'in va elektr jihozlari.";
   const image = `${origin}/og-image.jpg`;
   const e = escapeHtml;
+  const isLive = String(process.env.VITE_SITE_LIVE || '').toLowerCase() === 'true' || process.env.VITE_SITE_LIVE === '1';
 
   return `<!DOCTYPE html>
 <html lang="uz">
@@ -31,7 +32,8 @@ function renderPage({ origin, slug, category, products, dbError = false }) {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${e(title)}</title>
 <meta name="description" content="${e(description)}" />
-${category ? `<link rel="canonical" href="${e(url)}" />` : '<meta name="robots" content="noindex" />'}
+<meta name="robots" content="${isLive ? (category ? 'index,follow' : 'noindex') : 'noindex,nofollow'}" />
+${category ? `<link rel="canonical" href="${e(url)}" />` : ''}
 <meta property="og:site_name" content="${SITE}" />
 <meta property="og:locale" content="uz_UZ" />
 <meta property="og:type" content="website" />

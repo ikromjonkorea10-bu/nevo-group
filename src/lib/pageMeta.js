@@ -114,6 +114,17 @@ export function updatePageMeta(route, param = '') {
   setMetaTag('og:title', title, 'property');
   setMetaTag('og:description', description, 'property');
 
+  const isLive =
+    String(import.meta.env?.VITE_SITE_LIVE || '').toLowerCase() === 'true' ||
+    import.meta.env?.VITE_SITE_LIVE === '1';
+  if (!isLive) {
+    setMetaTag('robots', 'noindex,nofollow');
+  } else if (route === 'product' && ready && !getProductBySlug(param)) {
+    setMetaTag('robots', 'noindex');
+  } else {
+    setMetaTag('robots', 'index,follow');
+  }
+
   // Compute canonical URL path
   let canonicalPath = '/';
   if (route === 'catalog' || route === 'bolim') {

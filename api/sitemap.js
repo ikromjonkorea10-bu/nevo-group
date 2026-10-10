@@ -8,6 +8,14 @@ import { restGet, siteOrigin, escapeHtml } from './_lib.js';
 const PAGE = 1000;
 
 export default async function handler(req, res) {
+  const isLive = String(process.env.VITE_SITE_LIVE || '').toLowerCase() === 'true' || process.env.VITE_SITE_LIVE === '1';
+  if (!isLive) {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store, max-age=0');
+    return res.end('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>\n');
+  }
+
   const origin = siteOrigin(req);
   const urls = [
     { loc: `${origin}/`, changefreq: 'daily', priority: '1.0' },
