@@ -43,19 +43,19 @@ export function renderFooter() {
             <h5>Bo'limlar</h5>
             <ul class="footer-links-list">
               ${categories.length ? categories.map(c => `
-                <li><a href="#bolim/${esc(c.slug)}">${esc(c.name)}</a></li>
-              `).join('') : `<li><a href="#catalog">Butun katalog</a></li>`}
+                <li><a href="/katalog/${esc(c.slug)}">${esc(c.name)}</a></li>
+              `).join('') : `<li><a href="/katalog">Butun katalog</a></li>`}
             </ul>
           </div>
 
           <div class="footer-col">
             <h5>Xaridorga</h5>
             <ul class="footer-links-list">
-              <li><a href="#catalog">Butun katalog</a></li>
-              <li><a href="#tanlash">Menga mos mahsulotni toping</a></li>
-              <li><a href="#katta-buyurtma">Katta qurilish buyurtmasi</a></li>
-              <li><a href="#savat">Savat</a></li>
-              <li><a href="#aloqa">Qanday buyurtma beriladi</a></li>
+              <li><a href="/katalog">Butun katalog</a></li>
+              <li><a href="/tanlash">Menga mos mahsulotni toping</a></li>
+              <li><a href="/katta-buyurtma">Katta qurilish buyurtmasi</a></li>
+              <li><a href="/savat">Savat</a></li>
+              <li><a href="/aloqa">Qanday buyurtma beriladi</a></li>
             </ul>
           </div>
 
@@ -64,7 +64,7 @@ export function renderFooter() {
             <p style="font-size: 14px; color: var(--muted); margin-bottom: 16px; line-height: 1.5;">
               Kerakli mahsulotni topishda yordam beramiz — yozing yoki qo'ng'iroq qiling.
             </p>
-            <a href="#aloqa" class="btn-primary" style="width: 100%; justify-content: center;">
+            <a href="/aloqa" class="btn-primary" style="width: 100%; justify-content: center;">
               Biz bilan bog'lanish
             </a>
           </div>

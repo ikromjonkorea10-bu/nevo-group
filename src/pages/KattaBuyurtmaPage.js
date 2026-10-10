@@ -45,7 +45,7 @@ const ELEMENT_FIELDS = {
 function breadcrumbs() {
   return `
     <nav class="breadcrumbs">
-      <a href="#home">Bosh sahifa</a>
+      <a href="/">Bosh sahifa</a>
       <span>›</span>
       <span style="color: var(--ink); font-weight: 600;">Katta buyurtma</span>
     </nav>
@@ -78,7 +78,7 @@ export function renderKattaBuyurtmaPage() {
             <button type="button" class="btn-secondary" onclick="window.__resetBulkOrder()">
               Yangi ro'yxat yuborish
             </button>
-            <a href="#catalog" class="btn-primary" onclick="window.__resetBulkOrder(true)">
+            <a href="/katalog" class="btn-primary" onclick="window.__resetBulkOrder(true)">
               Katalogga qaytish
             </a>
           </div>

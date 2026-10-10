@@ -94,7 +94,7 @@ export function renderNotFound(title, text, { categories = [] } = {}) {
         <h1 class="status-title">${esc(title)}</h1>
         <p class="status-text">${esc(text)}</p>
 
-        <form class="not-found-search" role="search" onsubmit="event.preventDefault(); const q = this.elements.q.value.trim(); window.location.hash = q ? '#catalog?search=' + encodeURIComponent(q) : '#catalog';">
+        <form class="not-found-search" role="search" onsubmit="event.preventDefault(); const q = this.elements.q.value.trim(); const target = q ? '/katalog?search=' + encodeURIComponent(q) : '/katalog'; if (window.__navigateTo) window.__navigateTo(target); else window.location.href = target;">
           <label for="not-found-search-input" class="visually-hidden">Mahsulot qidirish</label>
           ${icon('search', '', 18)}
           <input type="search" id="not-found-search-input" name="q" placeholder="Mahsulot nomi yoki o'lchami" autocomplete="off" enterkeyhint="search" />
@@ -102,11 +102,11 @@ export function renderNotFound(title, text, { categories = [] } = {}) {
         </form>
 
         <div class="not-found-actions">
-          <a href="#catalog" class="btn-primary">
+          <a href="/katalog" class="btn-primary">
             ${icon('chevron-left', '', 18)}
             <span>Katalogga qaytish</span>
           </a>
-          <a href="#home" class="btn-secondary">Bosh sahifa</a>
+          <a href="/" class="btn-secondary">Bosh sahifa</a>
         </div>
 
         ${categories.length ? `
@@ -114,7 +114,7 @@ export function renderNotFound(title, text, { categories = [] } = {}) {
             <div class="not-found-cats-label">Yoki bo'limni tanlang</div>
             <div class="not-found-cats-list">
               ${categories.map((c) => `
-                <a href="#bolim/${esc(c.slug)}" class="cat-pill">${esc(c.name)} (${c.count})</a>
+                <a href="/katalog/${esc(c.slug)}" class="cat-pill">${esc(c.name)} (${c.count})</a>
               `).join('')}
             </div>
           </div>

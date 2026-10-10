@@ -23,9 +23,10 @@ export async function restGet(path) {
 
 /** Saytning to'liq manzili (https://domen) — so'rovning o'zidan olinadi */
 export function siteOrigin(req) {
+  if (process.env.VITE_SITE_URL) return process.env.VITE_SITE_URL.replace(/\/+$/, '');
   if (process.env.SITE_URL) return process.env.SITE_URL.replace(/\/+$/, '');
-  const host = req.headers['x-forwarded-host'] || req.headers.host || 'nevogroup.uz';
-  const proto = req.headers['x-forwarded-proto'] || (String(host).startsWith('localhost') ? 'http' : 'https');
+  const host = req?.headers?.['x-forwarded-host'] || req?.headers?.host || 'nevogroup.uz';
+  const proto = req?.headers?.['x-forwarded-proto'] || (String(host).startsWith('localhost') ? 'http' : 'https');
   return `${proto}://${host}`;
 }
 

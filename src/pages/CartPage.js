@@ -28,7 +28,7 @@ const ELEMENT_FIELDS = Object.fromEntries(Object.entries(FIELD_ELEMENTS).map(([f
 function breadcrumbs() {
   return `
     <nav class="breadcrumbs">
-      <a href="#home">Bosh sahifa</a>
+      <a href="/">Bosh sahifa</a>
       <span>›</span>
       <span style="color: var(--ink); font-weight: 600;">Savat</span>
     </nav>
@@ -51,7 +51,7 @@ function renderSuccess() {
           Tez orada operatorimiz siz bilan bog'lanib, tovarlar mavjudligi va yetkazib berish vaqtini tasdiqlaydi.
           Murojaat qilganda buyurtma raqamini ayting.
         </p>
-        <a href="#catalog" class="btn-primary" onclick="window.__closeOrderSuccess()">
+        <a href="/katalog" class="btn-primary" onclick="window.__closeOrderSuccess()">
           <span>Katalogga qaytish</span>
           ${icon('arrow-right', '', 18)}
         </a>
@@ -75,7 +75,7 @@ function renderEmpty() {
         <p style="color: var(--muted); font-size: 15px; max-width: 360px; margin: 0 auto 24px;">
           Katalogdan kerakli santexnika va qurilish mahsulotlarini tanlab qo'shing.
         </p>
-        <a href="#catalog" class="btn-primary">
+        <a href="/katalog" class="btn-primary">
           <span>Katalogga o'tish</span>
           ${icon('arrow-right', '', 18)}
         </a>
@@ -213,7 +213,7 @@ export function renderCartPage() {
                 onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';"
               />
               <div>
-                <a href="#product/${esc(item.product.slug)}" class="cart-item-name">${esc(item.product.name)}</a>
+                <a href="/katalog/mahsulot/${esc(item.product.slug)}" class="cart-item-name">${esc(item.product.name)}</a>
                 <div class="cart-item-meta">
                   ${item.product.sku ? `Kod: ${esc(item.product.sku)} · ` : ''}${esc(item.product.priceFormatted)} / ${esc(item.product.unit)}
                 </div>
@@ -282,7 +282,7 @@ export function renderCartPage() {
         </button>
 
         <div style="text-align: center; margin-top: 14px;">
-          <a href="#catalog" style="display: inline-flex; align-items: center; min-height: 32px; font-size: 14.5px; font-weight: 600; color: var(--nevo-blue);">
+          <a href="/katalog" style="display: inline-flex; align-items: center; min-height: 32px; font-size: 14.5px; font-weight: 600; color: var(--nevo-blue);">
             Yana mahsulot qo'shish
           </a>
         </div>

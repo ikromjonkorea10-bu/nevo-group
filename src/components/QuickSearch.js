@@ -189,7 +189,7 @@ function renderQuickSearchDOM() {
                   .map(
                     (c, i) => `
                   <a
-                    href="#catalog/${esc(c.slug)}"
+                    href="/katalog/${esc(c.slug)}"
                     class="search-cat-item ${i === activeIndex ? 'selected' : ''}"
                     data-index="${i}"
                     data-type="category"
@@ -383,7 +383,11 @@ function selectItem(item) {
   if (item.type === 'category') {
     saveRecentSearch(item.data.name);
     closeQuickSearch();
-    window.location.hash = `#catalog/${item.data.slug}`;
+    if (window.__navigateTo) {
+      window.__navigateTo(`/katalog/${item.data.slug}`);
+    } else {
+      window.location.href = `/katalog/${item.data.slug}`;
+    }
   } else if (item.type === 'product') {
     saveRecentSearch(item.data.name);
     closeQuickSearch();

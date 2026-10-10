@@ -187,7 +187,7 @@ function renderCatalogIndexPage(categories, _products) {
                   const countText = `${cat.count} ${t('productsWord')}`;
                   return `
                   <div class="swiper-slide category-tall-slide">
-                    <a href="#catalog/${esc(cat.slug)}" class="category-cover-card" data-slug="${esc(cat.slug)}">
+                    <a href="/katalog/${esc(cat.slug)}" class="category-cover-card" data-slug="${esc(cat.slug)}">
                       <div class="cat-card-bg-wrap">
                         <img
                           src="${esc(cover)}"
@@ -266,7 +266,7 @@ function renderCatalogIndexPage(categories, _products) {
                       <p class="stacking-cat-desc">${esc(cat.shortDesc)}</p>
                     </div>
 
-                    <a href="#catalog/${esc(cat.slug)}" class="stacking-open-btn">
+                    <a href="/katalog/${esc(cat.slug)}" class="stacking-open-btn">
                       <span>${t('openCategory')}</span>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path>
@@ -274,7 +274,7 @@ function renderCatalogIndexPage(categories, _products) {
                     </a>
                   </div>
 
-                  <a href="#catalog/${esc(cat.slug)}" class="stacking-card-overlay-link" aria-label="${esc(cat.name)}"></a>
+                  <a href="/katalog/${esc(cat.slug)}" class="stacking-card-overlay-link" aria-label="${esc(cat.name)}"></a>
                 </div>
               `;
               })
@@ -395,9 +395,9 @@ function renderCategoryDetailPage(category, products, _params) {
 
         <div class="shell category-hero-inner">
           <nav class="cat-breadcrumbs" aria-label="Breadcrumb">
-            <a href="#home">${t('breadHome')}</a>
+            <a href="/">${t('breadHome')}</a>
             <span class="crumb-separator">/</span>
-            <a href="#catalog">${t('breadCatalog')}</a>
+            <a href="/katalog">${t('breadCatalog')}</a>
             <span class="crumb-separator">/</span>
             <span class="crumb-current">${esc(category.name)}</span>
           </nav>
@@ -418,7 +418,7 @@ function renderCategoryDetailPage(category, products, _params) {
                 <strong>${productCountText}</strong>
               </span>
 
-              <a href="#catalog" class="btn-return-catalog">
+              <a href="/katalog" class="btn-return-catalog">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path>
                 </svg>
@@ -471,7 +471,7 @@ function renderCategoryDetailPage(category, products, _params) {
               </div>
               <h2 class="empty-title">Mahsulotlar tez orada qo'shiladi</h2>
               <p class="empty-desc">Ushbu bo'lim uchun yangi tovarlar omborga qabul qilinmoqda. Narx va buyurtma uchun biz bilan bog'laning.</p>
-              <a href="#catalog" class="btn-primary-sky">Katalogga qaytish</a>
+              <a href="/katalog" class="btn-primary-sky">Katalogga qaytish</a>
             </div>
           `
               : `
@@ -542,7 +542,7 @@ function renderCategoryNotFound() {
     <div class="shell" style="padding: 120px 0; text-align: center;">
       <h1 style="font-size: 32px; font-weight: 800; color: #FFFFFF; margin-bottom: 12px;">Bo'lim topilmadi</h1>
       <p style="color: #94A3B8; font-size: 16px; margin-bottom: 24px;">Ushbu kategoriya mavjud emas yoki nomi o'zgartirilgan.</p>
-      <a href="#catalog" class="btn-primary-sky">Katalogga qaytish</a>
+      <a href="/katalog" class="btn-primary-sky">Katalogga qaytish</a>
     </div>
   `;
 }

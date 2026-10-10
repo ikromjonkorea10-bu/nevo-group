@@ -678,7 +678,7 @@ function drawTurntableFrame() {
   if (badgeZ > 0) {
     ctx.translate(badgeX, 0);
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '700 13px "Plus Jakarta Sans", sans-serif';
+    ctx.font = '700 13px "Exo 2", sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('NEVO · PN25', 0, 5);
   }

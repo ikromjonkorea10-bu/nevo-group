@@ -35,7 +35,7 @@ export function renderTanlashPage() {
           <div class="status-card" style="margin-top: 24px;">
             <h2 class="status-title">Hozircha mos mahsulot topilmadi</h2>
             <p class="status-text">Operatorimiz sizga mos variantni topib beradi.</p>
-            <a href="#aloqa" class="btn-primary">Bog'lanish</a>
+            <a href="/aloqa" class="btn-primary">Bog'lanish</a>
           </div>
         </div>
       `;
@@ -44,7 +44,7 @@ export function renderTanlashPage() {
     return `
       <div class="shell quiz-page-wrap">
         <nav class="breadcrumbs">
-          <a href="#home">Bosh sahifa</a>
+          <a href="/">Bosh sahifa</a>
           <span>›</span>
           <span style="color: var(--ink); font-weight: 600;">Mahsulot tanlash</span>
         </nav>
@@ -89,7 +89,7 @@ export function renderTanlashPage() {
           <button type="button" class="btn-secondary" onclick="window.__restartQuiz()">
             Qaytadan tanlash
           </button>
-          <a href="#catalog" class="btn-primary">
+          <a href="/katalog" class="btn-primary">
             Katalogni ko'rish
           </a>
         </div>
@@ -101,7 +101,7 @@ export function renderTanlashPage() {
   return `
     <div class="shell quiz-page-wrap">
       <nav class="breadcrumbs">
-        <a href="#home">Bosh sahifa</a>
+        <a href="/">Bosh sahifa</a>
         <span>›</span>
         <span style="color: var(--ink); font-weight: 600;">Mahsulot tanlash</span>
       </nav>

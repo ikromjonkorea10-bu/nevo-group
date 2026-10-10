@@ -186,7 +186,7 @@ export function renderContactPage() {
             Kerakli mahsulotni topsangiz, so'rov matni avtomatik tayyorlanadi.
           </p>
         </div>
-        <a href="#catalog" class="btn-primary">
+        <a href="/katalog" class="btn-primary">
           <span>Katalogga o'tish</span>
           ${icon('arrow-right', '', 18)}
         </a>

@@ -39,7 +39,7 @@ export function renderProductCard(product) {
       onclick="window.__openProductModal(${product.id}, event)"
     >
       <a
-        href="#product/${esc(product.slug)}"
+        href="/katalog/mahsulot/${esc(product.slug)}"
         class="product-card-link-overlay"
         aria-label="${name} — ${t('viewPhoto')}"
       ></a>

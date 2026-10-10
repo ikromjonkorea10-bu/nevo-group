@@ -1,55 +1,282 @@
-// Brauzer tabidagi sarlavha va meta description — har bir sahifa uchun.
-// Eslatma: Telegram/Facebook kabi ulashish botlari JavaScript'ni bajarmaydi va
-// #hash qismini ko'rmaydi. Mahsulot havolasining ulashish kartasi (og:title,
-// og:image) server tomonda /p/<slug> manzilida yasaladi — api/share.js.
-
+// NEVO GROUP — Dynamic Page Metadata, Canonical & Hreflang SEO Engine
 import { getCatalog, getProductBySlug, getCategoryBySlug } from './catalog.js';
+import { getLang } from './i18n.js';
 
-const SITE = 'NEVO GROUP';
-const DEFAULT_TITLE = 'NEVO GROUP — Santexnika va qurilish mahsulotlari';
-const DEFAULT_DESCRIPTION =
-  "Santexnika va qurilish mahsulotlari: truba va fitinglar, zapor armatura, yong'in va elektr jihozlari. Narxlar so'mda, O'zbekiston bo'ylab yetkazib berish.";
+const SITE_ORIGIN = 'https://nevogroup.uz';
 
-const STATIC_TITLES = {
-  catalog: 'Katalog',
-  tanlash: 'Mahsulot tanlash',
-  'katta-buyurtma': 'Katta buyurtma',
-  savat: 'Savat',
-  aloqa: 'Aloqa',
+const TITLES = {
+  uz: {
+    home: "NEVO GROUP — Santexnika va Qurilish Mollari Ombordan",
+    catalog: "Mahsulotlar Katalogi — NEVO GROUP",
+    tanlash: "Mahsulot Tanlash Bo'yicha Yordam — NEVO GROUP",
+    'katta-buyurtma': "Katta Qurilish Buyurtmasi — NEVO GROUP",
+    savat: "Xarid Savati — NEVO GROUP",
+    aloqa: "Biz Bilan Bog'lanish va Ombor Manzili — NEVO GROUP",
+  },
+  ru: {
+    home: "NEVO GROUP — Сантехника и строительные товары со склада",
+    catalog: "Каталог продукции — NEVO GROUP",
+    tanlash: "Помощь в подборе оборудования — NEVO GROUP",
+    'katta-buyurtma': "Оптовый заказ для строительства — NEVO GROUP",
+    savat: "Корзина покупок — NEVO GROUP",
+    aloqa: "Контакты и адрес склада — NEVO GROUP",
+  },
+  en: {
+    home: "NEVO GROUP — Industrial Plumbing & Supplies from Warehouse",
+    catalog: "Product Catalog — NEVO GROUP",
+    tanlash: "Equipment Selection Guide — NEVO GROUP",
+    'katta-buyurtma': "Wholesale & Commercial Orders — NEVO GROUP",
+    savat: "Shopping Cart — NEVO GROUP",
+    aloqa: "Contact Us & Warehouse Location — NEVO GROUP",
+  },
 };
 
-function setDescription(text) {
-  const meta = document.querySelector('meta[name="description"]');
-  if (meta) meta.setAttribute('content', text);
+const DESCRIPTIONS = {
+  uz: "Santexnika va qurilish mollari: truba va fitinglar, zapor armatura, yong'in va elektr jihozlari. Optom va chakana narxlar, O'zbekiston bo'ylab tezkor yetkazib berish.",
+  ru: "Сантехника и строительные товары: трубы и фитинги, запорная арматура, противопожарное и электрооборудование. Оптовые и розничные поставки по Узбекистану.",
+  en: "Industrial plumbing and construction supplies: pipes, fittings, industrial valves, fire protection and electrical hardware. Wholesale & retail across Uzbekistan.",
+};
+
+function setMetaTag(name, content, attrName = 'name') {
+  let el = document.querySelector(`meta[${attrName}="${name}"]`);
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute(attrName, name);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', content);
 }
 
-/** @param {string} route @param {string} [param] */
+function setLinkTag(rel, href, hreflang = null) {
+  let selector = `link[rel="${rel}"]`;
+  if (hreflang) selector += `[hreflang="${hreflang}"]`;
+  let el = document.querySelector(selector);
+  if (!el) {
+    el = document.createElement('link');
+    el.setAttribute('rel', rel);
+    if (hreflang) el.setAttribute('hreflang', hreflang);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('href', href);
+}
+
+/**
+ * Update document title, description, OpenGraph, Canonical & Hreflang
+ * @param {string} route
+ * @param {string} [param]
+ * @param {string} [path]
+ */
 export function updatePageMeta(route, param = '') {
-  let title = DEFAULT_TITLE;
-  let description = DEFAULT_DESCRIPTION;
+  const lang = getLang() || 'uz';
   const ready = getCatalog().status === 'ready';
+  const titles = TITLES[lang] || TITLES.uz;
+  
+  let title = titles[route] || titles.home;
+  let description = DESCRIPTIONS[lang] || DESCRIPTIONS.uz;
 
   if (route === 'product' && ready) {
     const product = getProductBySlug(param);
     if (product) {
-      title = `${product.name} — ${SITE}`;
-      description = `${product.name}: ${product.priceFormatted} / ${product.unit}. ${product.category}. Buyurtma bering — operator narx va mavjudligini tasdiqlaydi.`;
+      title = `${product.name} — NEVO GROUP`;
+      description = `${product.name}: ${product.priceFormatted} / ${product.unit}. ${product.category}. Sertifikatlangan kafolat va tezkor yetkazib berish.`;
     } else {
-      title = `Mahsulot topilmadi — ${SITE}`;
+      title = `Mahsulot topilmadi — NEVO GROUP`;
     }
   } else if ((route === 'bolim' || route === 'catalog') && param && ready) {
     const category = getCategoryBySlug(param);
     if (category) {
-      title = `${category.name} — ${SITE}`;
-      description = `${category.name}: ${category.count} ta mahsulot narxi bilan. ${category.shortDesc}`.trim();
+      title = `${category.name} — NEVO GROUP`;
+      description = `${category.name}: ${category.count} ta mahsulot omborda mavjud. To'liq narxlar va texnik xarakteristikalar.`;
     }
-  } else if (route === 'catalog') {
-    title = `Mahsulotlar va Sanoat Katalogi — ${SITE}`;
-    description = `NEVO GROUP to'liq sanoat katalogi: polimer quvurlar, zapor armatura, yong'in va isitish jihozlari.`;
-  } else if (STATIC_TITLES[route]) {
-    title = `${STATIC_TITLES[route]} — ${SITE}`;
   }
 
+  // Update DOM Title and Meta
   if (document.title !== title) document.title = title;
-  setDescription(description);
+  setMetaTag('description', description);
+  setMetaTag('og:title', title, 'property');
+  setMetaTag('og:description', description, 'property');
+
+  // Compute canonical URL path
+  let canonicalPath = '/';
+  if (route === 'catalog' || route === 'bolim') {
+    canonicalPath = param ? `/katalog/${param}` : '/katalog';
+  } else if (route === 'product') {
+    canonicalPath = `/katalog/mahsulot/${param}`;
+  } else if (route && route !== 'home') {
+    canonicalPath = `/${route}`;
+  }
+
+  const canonicalUrl = `${SITE_ORIGIN}${canonicalPath}`;
+  setLinkTag('canonical', canonicalUrl);
+  setMetaTag('og:url', canonicalUrl, 'property');
+
+  // Update Hreflang alternates
+  setLinkTag('alternate', `${canonicalUrl}?lang=uz`, 'uz');
+  setLinkTag('alternate', `${canonicalUrl}?lang=ru`, 'ru');
+  setLinkTag('alternate', `${canonicalUrl}?lang=en`, 'en');
+  setLinkTag('alternate', canonicalUrl, 'x-default');
+
+  // Structured Data (JSON-LD)
+  updateStructuredData(route, param, canonicalUrl, title, description);
+}
+
+function updateStructuredData(route, param, canonicalUrl, pageTitle, pageDesc) {
+  let scriptEl = document.getElementById('nevo-dynamic-jsonld');
+  if (!scriptEl) {
+    scriptEl = document.createElement('script');
+    scriptEl.id = 'nevo-dynamic-jsonld';
+    scriptEl.type = 'application/ld+json';
+    document.head.appendChild(scriptEl);
+  }
+
+  const catalog = getCatalog();
+  const ready = catalog.status === 'ready';
+
+  const baseBreadcrumbs = [
+    { '@type': 'ListItem', position: 1, name: 'Bosh sahifa', item: SITE_ORIGIN },
+  ];
+
+  let jsonLd = null;
+
+  if (route === 'product' && ready) {
+    const product = getProductBySlug(param);
+    if (product) {
+      const cat = getCategoryBySlug(product.categorySlug);
+      const breadcrumbs = [
+        ...baseBreadcrumbs,
+        { '@type': 'ListItem', position: 2, name: 'Katalog', item: `${SITE_ORIGIN}/katalog` },
+      ];
+      if (cat) {
+        breadcrumbs.push({
+          '@type': 'ListItem',
+          position: 3,
+          name: cat.name,
+          item: `${SITE_ORIGIN}/katalog/${cat.slug}`,
+        });
+      }
+      breadcrumbs.push({
+        '@type': 'ListItem',
+        position: breadcrumbs.length + 1,
+        name: product.name,
+        item: canonicalUrl,
+      });
+
+      jsonLd = {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'Product',
+            name: product.name,
+            description: pageDesc,
+            image: product.image?.startsWith('http') ? product.image : `${SITE_ORIGIN}${product.image || '/og-image.jpg'}`,
+            sku: product.articleCode || product.sku || `NG-${product.id}`,
+            category: product.category,
+            offers: {
+              '@type': 'Offer',
+              price: product.price || 0,
+              priceCurrency: 'UZS',
+              availability: product.inStock !== false ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+              url: canonicalUrl,
+              seller: {
+                '@type': 'Organization',
+                name: 'NEVO GROUP',
+              },
+            },
+          },
+          {
+            '@type': 'BreadcrumbList',
+            itemListElement: breadcrumbs,
+          },
+        ],
+      };
+    }
+  } else if ((route === 'catalog' || route === 'bolim') && param && ready) {
+    const category = getCategoryBySlug(param);
+    const catName = category ? category.name : param;
+    jsonLd = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'CollectionPage',
+          name: pageTitle,
+          description: pageDesc,
+          url: canonicalUrl,
+        },
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            ...baseBreadcrumbs,
+            { '@type': 'ListItem', position: 2, name: 'Katalog', item: `${SITE_ORIGIN}/katalog` },
+            { '@type': 'ListItem', position: 3, name: catName, item: canonicalUrl },
+          ],
+        },
+      ],
+    };
+  } else if (route === 'catalog') {
+    jsonLd = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'CollectionPage',
+          name: pageTitle,
+          description: pageDesc,
+          url: canonicalUrl,
+        },
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            ...baseBreadcrumbs,
+            { '@type': 'ListItem', position: 2, name: 'Katalog', item: canonicalUrl },
+          ],
+        },
+      ],
+    };
+  } else if (route === 'aloqa') {
+    jsonLd = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'ContactPage',
+          name: pageTitle,
+          description: pageDesc,
+          url: canonicalUrl,
+        },
+        {
+          '@type': 'FAQPage',
+          mainEntity: [
+            {
+              '@type': 'Question',
+              name: 'Yetkazib berish qanday amalga oshiriladi?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: "O'zbekiston bo'ylab buyurtmalar ombordan transport xizmati yoki kuryer orqali tezkor yetkazib beriladi.",
+              },
+            },
+            {
+              '@type': 'Question',
+              name: 'Katta qurilish loyihalari uchun ulgurji narxlar bormi?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: "Ha, pudratchi va korxonalarga shartnoma asosida maxsus ulgurji narxlar va to'lov shartlari taqdim etiladi.",
+              },
+            },
+          ],
+        },
+      ],
+    };
+  } else if (route && route !== 'home') {
+    jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: pageTitle,
+      description: pageDesc,
+      url: canonicalUrl,
+    };
+  }
+
+  if (jsonLd) {
+    scriptEl.textContent = JSON.stringify(jsonLd);
+  } else {
+    scriptEl.textContent = '';
+  }
 }

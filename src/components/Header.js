@@ -14,7 +14,7 @@ window.__setLanguage = (lang) => {
 function renderCategoryNav(categories) {
   return categories.map(cat => `
             <div class="nav-category-item" data-cat="${esc(cat.slug)}">
-              <a href="#bolim/${esc(cat.slug)}" class="nav-category-link" data-cat="${esc(cat.slug)}">
+              <a href="/katalog/${esc(cat.slug)}" class="nav-category-link" data-cat="${esc(cat.slug)}">
                 <span>${esc(cat.name)}</span>
                 ${icon('chevron-down', '', 13)}
               </a>
@@ -24,7 +24,7 @@ function renderCategoryNav(categories) {
                     <div class="mega-subcat-title">${esc(cat.name)} bo'limlari</div>
                     <div class="mega-subcat-grid">
                       ${cat.subcategories.map(sub => `
-                        <a href="#catalog?category=${encodeURIComponent(cat.slug)}&sub=${encodeURIComponent(sub.name)}" class="mega-subcat-link">
+                        <a href="/katalog/${encodeURIComponent(cat.slug)}?sub=${encodeURIComponent(sub.name)}" class="mega-subcat-link">
                           <span class="subcat-dot"></span>
                           <span class="subcat-name">${esc(sub.name)}</span>
                           <span class="subcat-count">${sub.count}</span>
@@ -38,7 +38,7 @@ function renderCategoryNav(categories) {
                     </div>
                     <div class="mega-thumb-info">
                       <div class="mega-cat-badge">${cat.count} ta mahsulot</div>
-                      <a href="#bolim/${esc(cat.slug)}" class="mega-view-all">
+                      <a href="/katalog/${esc(cat.slug)}" class="mega-view-all">
                         <span>Bo'limga o'tish</span>
                         ${icon('arrow-right', '', 14)}
                       </a>
@@ -70,7 +70,7 @@ export function renderHeader() {
             <span class="lang-divider">/</span>
             <button type="button" class="lang-toggle-btn ${currentLang === 'en' ? 'active' : ''}" onclick="window.__setLanguage('en')">EN</button>
           </div>
-          <a href="#aloqa" class="top-link top-link-contact">${t('contactUs')}</a>
+          <a href="/aloqa" class="top-link top-link-contact">${t('contactUs')}</a>
           <a href="${INSTAGRAM_URL}" target="_blank" rel="noopener" class="top-link" aria-label="Instagram: @${CONTACTS.instagram}">
             ${icon('instagram', '', 14)}
             <span class="top-link-text">@${CONTACTS.instagram}</span>
@@ -86,14 +86,14 @@ export function renderHeader() {
     <header class="main-header">
       <div class="shell">
         <div class="header-main-row">
-          <a href="#home" class="brand-logo" id="logo-link">
+          <a href="/" class="brand-logo" id="logo-link">
             <img src="/brand/nevo-logo.webp" alt="NEVO GROUP" width="38" height="38" onerror="this.src='/brand/nevo-logo-sm.png';">
             <div class="brand-title">
               <span class="brand-name">NEVO GROUP</span>
             </div>
           </a>
 
-          <a href="#catalog" class="catalog-trigger-btn">
+          <a href="/katalog" class="catalog-trigger-btn">
             ${icon('menu', '', 18)}
             <span>${t('catalogBtn')}</span>
           </a>
@@ -123,7 +123,7 @@ export function renderHeader() {
               <span class="lang-divider">|</span>
               <button type="button" class="lang-toggle-btn-sm ${currentLang === 'ru' ? 'active' : ''}" onclick="window.__setLanguage('ru')">RU</button>
             </div>
-            <a href="#savat" class="header-icon-btn" aria-label="Savat">
+            <a href="/savat" class="header-icon-btn" aria-label="Savat">
               ${icon('shopping-cart', '', 20)}
               <span class="cart-count-badge" id="header-cart-badge" style="${cartCount > 0 ? '' : 'display:none;'}">
                 ${cartCount}
@@ -183,7 +183,7 @@ export function initHeaderEvents() {
           `;
         } else {
           dropdown.innerHTML = matches.map(p => `
-            <a href="#product/${esc(p.slug)}" class="search-result-item" onclick="document.getElementById('search-dropdown').classList.remove('active')">
+            <a href="/katalog/mahsulot/${esc(p.slug)}" class="search-result-item" onclick="document.getElementById('search-dropdown').classList.remove('active')">
               <img src="${esc(p.image)}" alt="${esc(p.name)}" width="44" height="44" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';">
               <div class="search-result-info">
                 <div class="search-result-title">${esc(p.name)}</div>
@@ -196,7 +196,7 @@ export function initHeaderEvents() {
               <div class="search-result-price">${esc(p.priceFormatted)}</div>
             </a>
           `).join('') + `
-            <a href="#catalog?search=${encodeURIComponent(query)}" style="display: block; padding: 10px; text-align: center; background: #f8fafc; font-size: 13.5px; font-weight: 600; color: var(--nevo-blue); border-top: 1px solid var(--border);">
+            <a href="/katalog?search=${encodeURIComponent(query)}" style="display: block; padding: 10px; text-align: center; background: #f8fafc; font-size: 13.5px; font-weight: 600; color: var(--nevo-blue); border-top: 1px solid var(--border);">
               Barcha natijalarni ko'rish (${allMatches.length}) →
             </a>
           `;
@@ -224,7 +224,11 @@ export function initHeaderEvents() {
         const val = searchInput.value.trim();
         if (val) {
           dropdown.classList.remove('active');
-          window.location.hash = `#catalog?search=${encodeURIComponent(val)}`;
+          if (window.__navigateTo) {
+            window.__navigateTo(`/katalog?search=${encodeURIComponent(val)}`);
+          } else {
+            window.location.href = `/katalog?search=${encodeURIComponent(val)}`;
+          }
         }
       });
     }

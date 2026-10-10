@@ -10,14 +10,21 @@ const PAGE = 1000;
 export default async function handler(req, res) {
   const origin = siteOrigin(req);
   const urls = [
-    { loc: `${origin}/`, changefreq: 'weekly', priority: '1.0' },
-    { loc: `${origin}/catalog`, changefreq: 'weekly', priority: '0.9' },
+    { loc: `${origin}/`, changefreq: 'daily', priority: '1.0' },
+    { loc: `${origin}/katalog`, changefreq: 'daily', priority: '0.9' },
+    { loc: `${origin}/tanlash`, changefreq: 'weekly', priority: '0.7' },
+    { loc: `${origin}/katta-buyurtma`, changefreq: 'weekly', priority: '0.7' },
+    { loc: `${origin}/savat`, changefreq: 'weekly', priority: '0.5' },
+    { loc: `${origin}/aloqa`, changefreq: 'monthly', priority: '0.8' },
+    { loc: `${origin}/biz-haqimizda`, changefreq: 'monthly', priority: '0.6' },
+    { loc: `${origin}/yangiliklar`, changefreq: 'weekly', priority: '0.6' },
+    { loc: `${origin}/hamkorlar`, changefreq: 'monthly', priority: '0.6' },
   ];
 
   try {
     const categories = await restGet('categories?select=slug&order=sort_order.asc,id.asc');
     for (const c of categories) {
-      urls.push({ loc: `${origin}/k/${c.slug}`, changefreq: 'weekly', priority: '0.8' });
+      urls.push({ loc: `${origin}/katalog/${c.slug}`, changefreq: 'daily', priority: '0.8' });
     }
 
     for (let offset = 0; ; offset += PAGE) {
@@ -26,7 +33,7 @@ export default async function handler(req, res) {
       );
       for (const p of rows) {
         urls.push({
-          loc: `${origin}/p/${p.slug}`,
+          loc: `${origin}/katalog/mahsulot/${p.slug}`,
           lastmod: String(p.updated_at || '').slice(0, 10),
           changefreq: 'weekly',
           priority: '0.7',

@@ -39,17 +39,17 @@ export function renderProductDetailPage(slug) {
     <div class="shell product-detail-wrap">
       <!-- Breadcrumbs -->
       <nav class="breadcrumbs" aria-label="Breadcrumb">
-        <a href="#home">Bosh sahifa</a>
+        <a href="/">Bosh sahifa</a>
         <span>›</span>
-        <a href="#catalog">Katalog</a>
+        <a href="/katalog">Katalog</a>
         <span>›</span>
-        <a href="#bolim/${esc(product.categorySlug)}">${esc(product.category)}</a>
+        <a href="/katalog/${esc(product.categorySlug)}">${esc(product.category)}</a>
         ${product.subcategory ? `<span>›</span><span>${esc(product.subcategory)}</span>` : ''}
         <span>›</span>
         <span style="color: var(--ink); font-weight: 600;">${esc(product.name)}</span>
       </nav>
 
-      <a href="#catalog" class="back-link">
+      <a href="/katalog" class="back-link">
         ${icon('chevron-left', '', 18)}
         <span>Katalogga qaytish</span>
       </a>
@@ -199,7 +199,7 @@ export function renderProductDetailPage(slug) {
               <h2 class="section-title">O'xshash mahsulotlar</h2>
               <div class="section-subtitle">Ushbu bo'limdagi boshqa tovarlar</div>
             </div>
-            <a href="#bolim/${esc(product.categorySlug)}" class="section-link">
+            <a href="/katalog/${esc(product.categorySlug)}" class="section-link">
               <span>Bo'limdagi barcha tovarlar</span>
               ${icon('arrow-right', '', 16)}
             </a>

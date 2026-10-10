@@ -6,10 +6,23 @@
   "rewrites": [
     { "source": "/p/:slug", "destination": "/api/share?slug=:slug" },
     { "source": "/k/:slug", "destination": "/api/category?slug=:slug" },
-    { "source": "/sitemap.xml", "destination": "/api/sitemap" }
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/((?!api/|admin/|catalogs/|images/|fonts/|brand/|workers/|favicon|.*\\..*).*)", "destination": "/index.html" }
   ],
   "redirects": [
-    { "source": "/admin", "destination": "/admin/", "permanent": false }
+    { "source": "/admin", "destination": "/admin/", "permanent": false },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.nevogroup.uz" }],
+      "destination": "https://nevogroup.uz/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "nevo-group.vercel.app" }],
+      "destination": "https://nevogroup.uz/:path*",
+      "permanent": true
+    }
   ],
   "headers": [
     {

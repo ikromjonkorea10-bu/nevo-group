@@ -79,34 +79,124 @@ window.__addToCart = (productId, event) => {
   store.addToCart(productId, 1);
 };
 
-function parseRoute() {
-  const hash = window.location.hash.replace(/^#\/?/, '');
-  const [path, queryString] = hash.split('?');
-  const queryParams = {};
+export function normalizeHashToPath(hash) {
+  const clean = hash.replace(/^#\/?/, '');
+  const [routePart, queryString] = clean.split('?');
+  const parts = routePart.split('/').filter(Boolean);
+  let pathname = '/';
 
-  const searchParams = new URLSearchParams(window.location.search);
-  for (const [k, v] of searchParams.entries()) {
-    queryParams[k] = v;
+  if (!parts.length || parts[0] === 'home') {
+    pathname = '/';
+  } else if (parts[0] === 'catalog' || parts[0] === 'katalog') {
+    if (parts[1]) {
+      pathname = `/katalog/${parts[1]}`;
+    } else {
+      pathname = '/katalog';
+    }
+  } else if (parts[0] === 'bolim' && parts[1]) {
+    pathname = `/katalog/${parts[1]}`;
+  } else if ((parts[0] === 'product' || parts[0] === 'p') && parts[1]) {
+    pathname = `/katalog/mahsulot/${parts[1]}`;
+  } else if (['savat', 'aloqa', 'tanlash', 'katta-buyurtma', 'biz-haqimizda', 'yangiliklar', 'hamkorlar'].includes(parts[0])) {
+    pathname = `/${parts[0]}`;
+  } else {
+    pathname = parts[0] ? `/${parts[0]}` : '/';
   }
 
+  const searchParams = new URLSearchParams(window.location.search);
   if (queryString) {
     const pairs = queryString.split('&');
     for (const pair of pairs) {
       const [k, v] = pair.split('=');
-      if (k) queryParams[decodeURIComponent(k)] = decodeURIComponent(v || '');
+      if (k) searchParams.set(decodeURIComponent(k), decodeURIComponent(v || ''));
     }
   }
 
-  let cleanPath = path;
-  if (!cleanPath && window.location.pathname !== '/') {
-    cleanPath = window.location.pathname.replace(/^\/+|\/+$/g, '');
+  const searchStr = searchParams.toString();
+  return `${pathname}${searchStr ? '?' + searchStr : ''}`;
+}
+
+export function navigateTo(target, replace = false) {
+  let path = target;
+  if (path.startsWith(window.location.origin)) {
+    path = path.slice(window.location.origin.length);
   }
 
-  const parts = cleanPath.split('/').filter(Boolean);
-  const route = parts[0] || 'home';
-  const param = parts[1] || '';
+  if (path.startsWith('#')) {
+    path = normalizeHashToPath(path);
+  }
 
-  return { route, param, queryParams, raw: cleanPath };
+  // Preserve ?preview=1 if currently active in URL
+  const currentParams = new URLSearchParams(window.location.search);
+  const targetUrl = new URL(path, window.location.origin);
+  if (currentParams.get('preview') === '1' && !targetUrl.searchParams.has('preview')) {
+    targetUrl.searchParams.set('preview', '1');
+  }
+
+  const finalUrl = targetUrl.pathname + (targetUrl.search ? targetUrl.search : '') + targetUrl.hash;
+
+  if (replace) {
+    window.history.replaceState(null, '', finalUrl);
+  } else {
+    window.history.pushState(null, '', finalUrl);
+  }
+
+  router();
+}
+window.__navigateTo = navigateTo;
+
+function parseRoute() {
+  // If old hash exists and is not an in-page scroll anchor
+  if (
+    window.location.hash &&
+    !window.location.hash.startsWith('#category-') &&
+    !window.location.hash.startsWith('#stats-') &&
+    window.location.hash !== '#'
+  ) {
+    const newPath = normalizeHashToPath(window.location.hash);
+    window.history.replaceState(null, '', newPath);
+  }
+
+  const searchParams = new URLSearchParams(window.location.search);
+  const queryParams = {};
+  for (const [k, v] of searchParams.entries()) {
+    queryParams[k] = v;
+  }
+
+  const cleanPath = window.location.pathname.replace(/^\/+|\/+$/g, '');
+  const parts = cleanPath.split('/').filter(Boolean);
+
+  let route = 'home';
+  let param = '';
+
+  if (!parts.length) {
+    route = 'home';
+  } else if (parts[0] === 'katalog' || parts[0] === 'catalog') {
+    if (parts[1] === 'mahsulot' && parts[2]) {
+      route = 'product';
+      param = parts[2];
+    } else if (parts[1]) {
+      route = 'catalog';
+      param = parts[1];
+      if (parts[2]) queryParams.sub = parts[2];
+    } else {
+      route = 'catalog';
+    }
+  } else if (parts[0] === 'bolim' && parts[1]) {
+    route = 'catalog';
+    param = parts[1];
+  } else if ((parts[0] === 'product' || parts[0] === 'p') && parts[1]) {
+    route = 'product';
+    param = parts[1];
+  } else if (parts[0] === 'k' && parts[1]) {
+    route = 'catalog';
+    param = parts[1];
+  } else {
+    route = parts[0] || 'home';
+    param = parts[1] || '';
+  }
+
+  return { route, param, queryParams, raw: cleanPath || 'home' };
 }
 
 function sameAttributes(a, b) {
@@ -160,7 +250,20 @@ function renderApp(app, html, morphPage) {
   });
 }
 
-const KNOWN_ROUTES =new Set(['home', 'catalog', 'bolim', 'product', 'tanlash', 'katta-buyurtma', 'savat', 'aloqa']);
+const KNOWN_ROUTES = new Set([
+  'home',
+  'catalog',
+  'katalog',
+  'bolim',
+  'product',
+  'tanlash',
+  'katta-buyurtma',
+  'savat',
+  'aloqa',
+  'biz-haqimizda',
+  'yangiliklar',
+  'hamkorlar',
+]);
 // Katalog tayyor bo'lishini kutmaydigan sahifalar (yuklanish holatini o'zi ko'rsatadi)
 const STATIC_ROUTES = new Set(['home', 'aloqa']);
 
@@ -199,7 +302,7 @@ function router() {
     pageReady = false;
   } else if (route === 'home' || route === '') {
     pageHtml = renderHomePage();
-  } else if (route === 'catalog') {
+  } else if (route === 'catalog' || route === 'katalog') {
     pageHtml = renderCatalogPage(param ? { category: param, ...queryParams } : queryParams, window.location.hash);
   } else if (route === 'bolim') {
     pageHtml = renderCatalogPage({ category: param, ...queryParams }, window.location.hash);
@@ -225,7 +328,7 @@ function router() {
     ${renderFooter()}
     ${renderMobileBottomNav(route)}
     ${showFloatingBtn ? `
-      <a href="#aloqa" class="floating-expert-btn" aria-label="Mutaxassisdan so'rash">
+      <a href="/aloqa" class="floating-expert-btn" aria-label="Mutaxassisdan so'rash">
         ${icon('message-circle', '', 18)}
         <span>Mutaxassisdan so'rash</span>
       </a>
@@ -244,7 +347,7 @@ function router() {
     // Skeleton yoki xatolik ekrani — sahifa hodisalari keyinroq ulanadi
   } else if (route === 'home' || route === '') {
     initHomeAnimations();
-  } else if (route === 'catalog' || route === 'bolim') {
+  } else if (route === 'catalog' || route === 'katalog' || route === 'bolim') {
     initCatalogEvents(router);
   } else if (route === 'product') {
     initProductDetailEvents();
@@ -261,14 +364,14 @@ function router() {
   // Update active states on category links
   document.querySelectorAll('.nav-category-link').forEach(link => {
     const cat = link.getAttribute('data-cat');
-    if (route === 'bolim' && param === cat) {
+    if ((route === 'catalog' || route === 'katalog' || route === 'bolim') && param === cat) {
       link.classList.add('active');
     } else {
       link.classList.remove('active');
     }
   });
 
-  updatePageMeta(route, param);
+  updatePageMeta(route === 'katalog' ? 'catalog' : route, param);
 
   if (isNewRoute) {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -289,7 +392,30 @@ onCatalogChange((state) => {
 // Savat o'zgarganda nishonlarni yangilash (bir marta ulanadi)
 store.subscribe(({ count }) => updateCartBadges(count));
 
+// Intercept local anchor clicks for smooth History API navigation
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('a');
+  if (!link) return;
+  const href = link.getAttribute('href');
+  if (!href) return;
+
+  // Allow browser standard behavior for new windows, downloads and modifiers
+  if (link.target === '_blank' || link.hasAttribute('download') || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  if (href.startsWith('tel:') || href.startsWith('mailto:') || href.startsWith('javascript:')) return;
+  if (href.startsWith('http://') || href.startsWith('https://')) {
+    if (!href.startsWith(window.location.origin)) return;
+  }
+  if (href.startsWith('/admin') || href.startsWith('/api') || href.startsWith('/catalogs/')) return;
+  if (href.startsWith('#') && (href === '#' || href.startsWith('#category-') || href.startsWith('#stats-') || document.querySelector(href))) {
+    return;
+  }
+
+  e.preventDefault();
+  navigateTo(href);
+});
+
 // Router Event Listeners
+window.addEventListener('popstate', router);
 window.addEventListener('hashchange', router);
 window.addEventListener('nevolangchanged', router);
 initProductModalGlobal();

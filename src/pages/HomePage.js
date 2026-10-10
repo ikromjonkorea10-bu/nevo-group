@@ -304,7 +304,7 @@ function renderNevoCatalogShowcase() {
           <h2 class="section-title">Mahsulotlar va Katalog</h2>
           <div class="section-subtitle">Isitish, suv ta'minoti va muhandislik tizimlari uchun sanoat jihozlari, komplektovchi qismlar va materiallarning keng assortimenti.</div>
         </div>
-        <a href="#catalog" class="section-link nevo-catalog-head-link">
+        <a href="/katalog" class="section-link nevo-catalog-head-link">
           <span>Katalogni ko'rish</span>
           ${icon('arrow-right', '', 16)}
         </a>
@@ -313,7 +313,7 @@ function renderNevoCatalogShowcase() {
       <!-- Quick Search Bar -->
       <div class="nevo-catalog-search-strip">
         <span class="nevo-search-label">KATALOGDAN QIDIRISH</span>
-        <div class="nevo-search-box-wrap" onclick="window.location.hash='#catalog';">
+        <div class="nevo-search-box-wrap" onclick="window.__openQuickSearch ? window.__openQuickSearch() : (window.location.href='/katalog');">
           ${icon('search', '', 18)}
           <input type="text" placeholder="Mahsulot qidirish — masalan: PN20, fiting, kran..." readonly class="nevo-search-input-fake" />
           <span class="search-kbd-badge">⌘K</span>
@@ -323,7 +323,7 @@ function renderNevoCatalogShowcase() {
       <!-- Cards Grid -->
       <div class="nevo-catalog-grid">
         ${categories.map(c => `
-          <a href="#bolim/${esc(c.slug)}" class="nevo-cat-card">
+          <a href="/katalog/${esc(c.slug)}" class="nevo-cat-card">
             <div class="nevo-cat-card-bg" style="background-image: url('${c.img}');"></div>
             <div class="nevo-cat-card-overlay"></div>
             <div class="nevo-cat-card-inner">
@@ -395,11 +395,11 @@ export function renderHomePage() {
               ${t('heroDesc')}
             </p>
             <div class="hero-buttons hero-buttons-nevo">
-              <a href="#catalog" class="btn-royal-gold hero-btn-glow">
+              <a href="/katalog" class="btn-royal-gold hero-btn-glow">
                 <span>${t('heroCtaCatalog')}</span>
                 ${icon('arrow-right', '', 18)}
               </a>
-              <a href="#aloqa" class="btn-royal-glass">
+              <a href="/aloqa" class="btn-royal-glass">
                 ${icon('phone', '', 18)}
                 <span>${t('heroCtaFind')}</span>
               </a>
@@ -448,7 +448,7 @@ export function renderHomePage() {
         <div class="cta-banner-dark" style="margin-top: 54px; margin-bottom: 54px;">
           <h3>Kerakli mahsulotni topdingizmi?</h3>
           <p>Narx va mavjudligini bilish uchun biz bilan hoziroq bog'laning.</p>
-          <a href="#aloqa" class="btn-white">
+          <a href="/aloqa" class="btn-white">
             ${icon('message-circle', '', 18)}
             <span>Bog'lanish</span>
           </a>
