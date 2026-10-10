@@ -3,7 +3,6 @@
 // sessionStorage'da (sahifa yangilansa ham, tab yopilguncha).
 
 import { selectRows, isNetworkError } from './supabase.js';
-import { formatPrice } from './format.js';
 
 const CACHE_KEY = 'nevo_catalog_v3';
 const CACHE_TTL_MS = 30 * 60 * 1000;
@@ -35,7 +34,84 @@ export function onCatalogChange(fn) {
   return () => listeners.delete(fn);
 }
 
-import { getLang } from './i18n.js';
+import { getLang, formatPriceLocalized, getLocalizedUnit } from './i18n.js';
+
+export const CATEGORY_TRANSLATIONS = {
+  'truba-va-fitinglar': {
+    uz: 'Truba va fitinglar',
+    ru: 'Трубы и фитинги',
+    en: 'Pipes & Fittings',
+    desc: {
+      uz: "Suv ta'minoti va isitish tizimlari uchun polimer quvurlar va fitinglar",
+      ru: 'Полимерные трубы и фитинги для систем водоснабжения и отопления',
+      en: 'Polymer pipes and fittings for water supply and heating systems'
+    }
+  },
+  'zapor-armatura': {
+    uz: 'Zapor armatura',
+    ru: 'Запорная арматура',
+    en: 'Valves & Control Fittings',
+    desc: {
+      uz: 'Sanoat zadvijkalari, zatvorlar, sharli kranlar va filtrlar',
+      ru: 'Промышленные задвижки, затворы, шаровые краны и фильтры',
+      en: 'Industrial gate valves, butterfly valves, ball valves and strainers'
+    }
+  },
+  'kanalizatsiya': {
+    uz: 'Kanalizatsiya tizimlari',
+    ru: 'Канализационные системы',
+    en: 'Drainage & Sewage Systems',
+    desc: {
+      uz: 'Ichki va tashqi oqova suv tarmoqlari uchun quvur va elementlar',
+      ru: 'Трубы и фасонные части для внутренних и наружных сетей',
+      en: 'Pipes and components for internal and external wastewater networks'
+    }
+  },
+  'isitish-tizimlari': {
+    uz: 'Isitish va suv isitish tizimlari',
+    ru: 'Отопление и водонагрев',
+    en: 'Heating & Water Systems',
+    desc: {
+      uz: 'Isitish qozonlari, radiatorlar va harorat nazorati jihozlari',
+      ru: 'Котлы, радиаторы и оборудование для температурного контроля',
+      en: 'Boilers, radiators, and temperature control equipment'
+    }
+  },
+  'yongin-xavfsizligi': {
+    uz: "Yong'in xavfsizligi",
+    ru: 'Пожарная безопасность',
+    en: 'Fire Safety Equipment',
+    desc: {
+      uz: "Gidrantlar, o't o'chirish kranlari va xavfsizlik shlanglari",
+      ru: 'Гидранты, пожарные краны и рукава безопасности',
+      en: 'Hydrants, fire valves and safety hoses'
+    }
+  },
+  'elektr-va-avtomatika': {
+    uz: 'Elektr va avtomatika',
+    ru: 'Электрика и автоматика',
+    en: 'Electrical & Automation',
+    desc: {
+      uz: 'Sanoat transformatorlari, kabellar va avtomatika jihozlari',
+      ru: 'Промышленные трансформаторы, кабельная продукция и автоматика',
+      en: 'Industrial transformers, cables and automation gear'
+    }
+  }
+};
+
+export function getLocalizedCategoryName(slug, lang = getLang(), fallback = '') {
+  const cat = CATEGORY_TRANSLATIONS[slug];
+  if (cat && cat[lang]) return cat[lang];
+  if (cat && cat.uz) return cat.uz;
+  return fallback || slug;
+}
+
+export function getLocalizedCategoryDesc(slug, lang = getLang(), fallback = '') {
+  const cat = CATEGORY_TRANSLATIONS[slug];
+  if (cat && cat.desc && cat.desc[lang]) return cat.desc[lang];
+  if (cat && cat.desc && cat.desc.uz) return cat.desc.uz;
+  return fallback || '';
+}
 
 export const GROUP_TRANSLATIONS = {
   'Врезной хомут': { uz: 'Vrezka xomuti', ru: 'Врезной хомут', en: 'Saddle Clamp' },
@@ -97,34 +173,79 @@ export function getLocalizedSubcategory(rawSub, lang = getLang()) {
   return match ? (match[lang] || match.uz) : rawSub;
 }
 
+export function getLocalizedProductName(productOrName, rawGroup = '', lang = getLang()) {
+  const rawName = typeof productOrName === 'string'
+    ? productOrName
+    : (productOrName?.rawNameUz || productOrName?.name_uz || productOrName?.name || '');
+  if (!rawName) return '';
+
+  if (lang === 'uz') {
+    if (rawGroup && GROUP_TRANSLATIONS[rawGroup]?.uz) {
+      if (rawName.startsWith(rawGroup)) {
+        return rawName.replace(rawGroup, GROUP_TRANSLATIONS[rawGroup].uz);
+      }
+    }
+    return rawName;
+  }
+
+  if (lang === 'ru') {
+    if (rawGroup && GROUP_TRANSLATIONS[rawGroup]?.ru) {
+      const uzGroup = GROUP_TRANSLATIONS[rawGroup].uz;
+      if (uzGroup && rawName.startsWith(uzGroup)) {
+        return rawName.replace(uzGroup, GROUP_TRANSLATIONS[rawGroup].ru);
+      }
+      if (rawName.startsWith(rawGroup)) {
+        return rawName.replace(rawGroup, GROUP_TRANSLATIONS[rawGroup].ru);
+      }
+    }
+    return rawName;
+  }
+
+  if (lang === 'en') {
+    let enName = rawName;
+    if (rawGroup && GROUP_TRANSLATIONS[rawGroup]?.en) {
+      const ruGroup = rawGroup;
+      const uzGroup = GROUP_TRANSLATIONS[rawGroup].uz;
+      const enGroup = GROUP_TRANSLATIONS[rawGroup].en;
+      if (ruGroup && enName.startsWith(ruGroup)) {
+        enName = enName.replace(ruGroup, enGroup);
+      } else if (uzGroup && enName.startsWith(uzGroup)) {
+        enName = enName.replace(uzGroup, enGroup);
+      }
+    }
+    enName = enName
+      .replace(/\bДу\s*/g, 'DN ')
+      .replace(/\bРу\s*/g, 'PN ')
+      .replace(/\bХВС\b/g, 'Cold Water')
+      .replace(/\bГВС\b/g, 'Hot Water');
+    return enName;
+  }
+
+  return rawName;
+}
+
 export function mapProduct(row, categoriesById) {
   const category = categoriesById.get(row.category_id);
   const price = Number(row.price) || 0;
   const oldPrice = row.old_price === null || row.old_price === undefined ? null : Number(row.old_price);
-  const lang = getLang();
   const rawGroup = row.group_name || '';
   const rawSubcat = row.subcategory_uz || '';
-  const groupName = getLocalizedGroup(rawGroup, lang);
-  const subcategory = getLocalizedSubcategory(rawSubcat, lang);
+  const rawNameUz = row.name_uz || '';
+  const categorySlug = category ? category.slug : '';
 
   return {
     id: Number(row.id),
     slug: row.slug,
     categoryId: Number(row.category_id),
-    name: row.name_uz,
+    rawNameUz,
     sku: row.sku || '',
     description: row.description_uz || '',
-    category: category ? category.name : '',
-    categorySlug: category ? category.slug : '',
-    subcategory,
+    categorySlug,
     subcategoryRaw: rawSubcat,
     brand: row.brand || '',
     price,
-    priceFormatted: formatPrice(price),
     oldPrice,
-    oldPriceFormatted: oldPrice ? formatPrice(oldPrice) : '',
     unit: row.unit || '1 dona',
-    groupName,
     groupNameRaw: rawGroup,
     size: row.size || '',
     sizeLabel: row.size_label || '',
@@ -138,20 +259,50 @@ export function mapProduct(row, categoriesById) {
     budget: Boolean(row.budget),
     inStock: row.in_stock !== false,
     sortOrder: row.sort_order ?? 0,
+    get name() {
+      return getLocalizedProductName(this, this.groupNameRaw, getLang());
+    },
+    get groupName() {
+      return getLocalizedGroup(this.groupNameRaw, getLang());
+    },
+    get subcategory() {
+      return getLocalizedSubcategory(this.subcategoryRaw, getLang());
+    },
+    get category() {
+      return getLocalizedCategoryName(this.categorySlug, getLang(), category?.name || '');
+    },
+    get priceFormatted() {
+      return formatPriceLocalized(this.price, getLang());
+    },
+    get oldPriceFormatted() {
+      return this.oldPrice ? formatPriceLocalized(this.oldPrice, getLang()) : '';
+    },
+    get unitFormatted() {
+      return getLocalizedUnit(this.unit, getLang());
+    }
   };
 }
 
 function buildCatalog(categoryRows, productRows) {
-  const categories = categoryRows.map((c) => ({
-    id: Number(c.id),
-    slug: c.slug,
-    name: c.name_uz,
-    shortDesc: c.short_desc_uz || '',
-    image: c.image_url || FALLBACK_IMAGE,
-    sortOrder: c.sort_order ?? 0,
-    count: 0,
-    subcategories: [],
-  }));
+  const categories = categoryRows.map((c) => {
+    const slug = c.slug;
+    return {
+      id: Number(c.id),
+      slug,
+      _nameUz: c.name_uz,
+      _shortDescUz: c.short_desc_uz || '',
+      get name() {
+        return getLocalizedCategoryName(this.slug, getLang(), this._nameUz);
+      },
+      get shortDesc() {
+        return getLocalizedCategoryDesc(this.slug, getLang(), this._shortDescUz);
+      },
+      image: c.image_url || FALLBACK_IMAGE,
+      sortOrder: c.sort_order ?? 0,
+      count: 0,
+      subcategories: [],
+    };
+  });
   const byId = new Map(categories.map((c) => [c.id, c]));
   const products = productRows.map((row) => mapProduct(row, byId));
 
@@ -282,8 +433,20 @@ export function invalidateCatalog() {
 
 /** Qidiruv: nomi, o'lchami, kodi, ichki bo'limi va brendi bo'yicha (q — kichik harfda). */
 export function matchesSearch(product, q) {
-  return [product.name, product.size, product.sku, product.subcategory, product.brand, product.category]
-    .some((v) => v && v.toLowerCase().includes(q));
+  const query = (q || '').toLowerCase().trim();
+  if (!query) return false;
+  return [
+    product.name,
+    product.rawNameUz,
+    product.size,
+    product.sku,
+    product.subcategory,
+    product.subcategoryRaw,
+    product.groupName,
+    product.groupNameRaw,
+    product.brand,
+    product.category,
+  ].some((v) => v && v.toLowerCase().includes(query));
 }
 
 export function getProductById(id) {

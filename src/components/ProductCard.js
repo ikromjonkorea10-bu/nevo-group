@@ -137,7 +137,7 @@ export function renderProductCard(product) {
         <div class="product-price-row">
           <div class="product-price">
             <span class="price-val">${esc(product.priceFormatted)}</span>
-            <span class="price-unit">/ ${esc(product.unit)}</span>
+            <span class="price-unit">/ ${esc(product.unitFormatted || product.unit)}</span>
             ${
               product.oldPrice && product.oldPrice > product.price
                 ? `

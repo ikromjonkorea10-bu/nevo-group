@@ -201,7 +201,7 @@ function renderModalDOM() {
               `
               }
               ${p.badge ? `<span class="badge-accent-chip">${esc(p.badge)}</span>` : ''}
-              <span class="badge-first-hand">Birinchi qo'l kafolati</span>
+              <span class="badge-first-hand">${t('badgeFirstHand')}</span>
             </div>
           </div>
 
@@ -236,7 +236,7 @@ function renderModalDOM() {
                       ? `
                     <tr>
                       <td class="spec-prop-name">${t('unitCol')}</td>
-                      <td class="spec-prop-val">${esc(p.unit)}</td>
+                      <td class="spec-prop-val">${esc(p.unitFormatted || p.unit)}</td>
                     </tr>
                   `
                       : ''
@@ -246,7 +246,7 @@ function renderModalDOM() {
                       ? `
                     <tr>
                       <td class="spec-prop-name">${t('packQtyCol')}</td>
-                      <td class="spec-prop-val">${esc(p.packQty)} ${esc(p.unit)}</td>
+                      <td class="spec-prop-val">${esc(p.packQty)} ${esc(p.unitFormatted || p.unit)}</td>
                     </tr>
                   `
                       : ''
@@ -265,7 +265,7 @@ function renderModalDOM() {
                     material
                       ? `
                     <tr>
-                      <td class="spec-prop-name">Materiali</td>
+                      <td class="spec-prop-name">${t('materialCol')}</td>
                       <td class="spec-prop-val">${esc(material)}</td>
                     </tr>
                   `
@@ -290,15 +290,15 @@ function renderModalDOM() {
             <div class="modal-price-strip">
               <div class="modal-price-wrap">
                 <span class="modal-price-amount">${esc(p.priceFormatted)}</span>
-                <span class="modal-price-unit">/ ${esc(p.unit)}</span>
+                <span class="modal-price-unit">/ ${esc(p.unitFormatted || p.unit)}</span>
                 ${p.oldPrice && p.oldPrice > p.price ? `<span class="modal-price-old">${esc(p.oldPriceFormatted)}</span>` : ''}
               </div>
               <div class="modal-qty-control">
-                <button type="button" class="qty-btn" id="modal-qty-minus" aria-label="Kamaytirish">
+                <button type="button" class="qty-btn" id="modal-qty-minus" aria-label="${t('decreaseQty')}">
                   ${icon('minus', '', 14)}
                 </button>
                 <span class="qty-display" id="modal-qty-val">1</span>
-                <button type="button" class="qty-btn" id="modal-qty-plus" aria-label="Ko'paytirish">
+                <button type="button" class="qty-btn" id="modal-qty-plus" aria-label="${t('increaseQty')}">
                   ${icon('plus', '', 14)}
                 </button>
               </div>
