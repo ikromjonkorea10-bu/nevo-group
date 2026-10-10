@@ -1,0 +1,47 @@
+{
+  "businessModel": {
+    "role": "supplier_and_distributor",
+    "isManufacturer": false,
+    "verified": true,
+    "description": "Santexnika, muhandislik quvurlari va zapor armaturalarini to'g'ridan-to'g'ri ombordan yetkazib beruvchi ixtisoslashgan korxona."
+  },
+  "catalog": {
+    "countSource": "db_actual",
+    "approximateCount": 100,
+    "verified": true,
+    "fakeClaim1000PlusAllowed": false
+  },
+  "metrics": {
+    "yearsInBusiness": {
+      "value": null,
+      "verified": false,
+      "note": "Awaiting official legal registration date from owner"
+    },
+    "satisfiedPartners": {
+      "value": null,
+      "verified": false,
+      "note": "Awaiting verified partner invoice count from owner"
+    },
+    "qualityGuarantee": {
+      "value": "100% sertifikatlangan mahsulotlar",
+      "verified": true,
+      "note": "Barcha tovarlar zavod texnik pasporti va sertifikatlariga ega"
+    },
+    "deliveryRegions": {
+      "value": "Barcha viloyatlar",
+      "verified": true,
+      "note": "Toshkent shahri va O'zbekiston viloyatlariga kuryerlik yetkazish xizmati"
+    }
+  },
+  "projects": {
+    "hasVerifiedProjects": false,
+    "verified": false,
+    "showcaseMode": "warehouse_and_brands",
+    "note": "Unverified competitor reference projects are purged."
+  },
+  "pdfCatalogs": {
+    "hasOfficialPdfs": false,
+    "verified": false,
+    "fallbackAction": "direct_quote_inquiry"
+  }
+}

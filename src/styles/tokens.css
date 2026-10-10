@@ -1,0 +1,166 @@
+/* =====================================================================
+ * NEVO GROUP — DESIGN SYSTEM & TOKENS (Phase 1)
+ * Authentic Industrial Engineering & Luxury Wholesale Identity
+ * Palette derived directly from NEVO logo & signature engineering motifs
+ * ===================================================================== */
+
+:root {
+  /* --- PALETTE: Primary Deep Industrial Navy --- */
+  --nevo-navy-950: #040711; /* Deepest onyx backdrop */
+  --nevo-navy-900: #070D1B; /* Main cinematic background */
+  --nevo-navy-850: #0A1329; /* Elevated dark container */
+  --nevo-navy-800: #0F1C38; /* Interactive dark card */
+  --nevo-navy-700: #172648; /* Line art & divider borders */
+
+  /* --- PALETTE: Brand Royal Industrial Blue (#1D4ED8 Family) --- */
+  --nevo-blue-900: #1E3A8A;
+  --nevo-blue-700: #1D4ED8; /* Primary corporate brand blue */
+  --nevo-blue-600: #2563EB; /* Interactive button / hover */
+  --nevo-blue-500: #3B82F6; /* Active highlight */
+  --nevo-blue-400: #60A5FA; /* Subtitle highlight */
+
+  /* --- PALETTE: Electric Cyan / Pipeline Sky (#38BDF8) --- */
+  --nevo-sky-500: #0EA5E9;
+  --nevo-sky-400: #38BDF8; /* Precision cyan / glowing accents */
+  --nevo-sky-300: #7DD3FC;
+  --nevo-sky-100: #E0F2FE;
+
+  /* --- PALETTE: Signature Metallic Bronze / Warm Gold (Logo Accent) --- */
+  --nevo-gold-700: #B45309; /* Deep burnished bronze */
+  --nevo-gold-600: #D97706; /* Signature metallic gold */
+  --nevo-gold-500: #F59E0B; /* Vibrant amber gold */
+  --nevo-gold-400: #FBBF24; /* Hairline highlight */
+  --nevo-gold-100: #FEF3C7;
+  --nevo-gold-glow: rgba(245, 158, 11, 0.35);
+
+  /* --- PALETTE: Studio Light Surface (for clean, authentic product showcase) --- */
+  --nevo-studio-bg: #F8FAFC;          /* Studio section canvas */
+  --nevo-studio-surface: #FFFFFF;     /* Pure white studio surface */
+  --nevo-studio-card: #FFFFFF;        /* Product card surface */
+  --nevo-studio-card-subtle: #F1F5F9; /* Card inner image bed */
+  --nevo-studio-border: rgba(15, 23, 42, 0.08);
+  --nevo-studio-border-hover: rgba(29, 78, 216, 0.3);
+  --nevo-studio-ink: #0F172A;         /* High-contrast dark ink */
+  --nevo-studio-muted: #64748B;       /* Secondary metadata ink */
+
+  /* --- DARK THEME SURFACES & INK --- */
+  --background: var(--nevo-navy-900);
+  --surface: var(--nevo-navy-850);
+  --surface-card: rgba(14, 25, 48, 0.85);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-hover: rgba(56, 189, 248, 0.45);
+  --ink: #FFFFFF;
+  --muted: #94A3B8;
+
+  /* --- BACKWARD COMPATIBILITY VARIABLES --- */
+  --nevo-gold: var(--nevo-sky-400);
+  --nevo-gold-light: var(--nevo-sky-100);
+  --nevo-gold-hover: var(--nevo-sky-500);
+  --nevo-blue: var(--nevo-blue-600);
+  --nevo-blue-hover: var(--nevo-blue-700);
+  --nevo-orange: var(--nevo-sky-400);
+  --nevo-orange-hover: var(--nevo-sky-500);
+  --nevo-navy: var(--nevo-navy-900);
+
+  /* --- TYPOGRAPHY SCALE (Systematic, Modern & Fluid) --- */
+  --font-display: 'Exo 2', 'Exo 2 Fallback', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', 'Inter Fallback', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --text-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);  /* 12-13px */
+  --text-sm: clamp(0.8125rem, 0.78rem + 0.2vw, 0.875rem);  /* 13-14px */
+  --text-base: clamp(0.9375rem, 0.9rem + 0.2vw, 1rem);     /* 15-16px */
+  --text-lg: clamp(1.0625rem, 1rem + 0.3vw, 1.125rem);     /* 17-18px */
+  --text-xl: clamp(1.1875rem, 1.1rem + 0.45vw, 1.3125rem); /* 19-21px */
+  --text-2xl: clamp(1.375rem, 1.25rem + 0.65vw, 1.625rem); /* 22-26px */
+  --text-3xl: clamp(1.625rem, 1.45rem + 0.9vw, 2.125rem);  /* 26-34px */
+  --text-4xl: clamp(2rem, 1.7rem + 1.5vw, 2.75rem);        /* 32-44px */
+  --text-5xl: clamp(2.375rem, 1.95rem + 2.2vw, 3.5rem);    /* 38-56px */
+
+  /* --- SPACING GRID (4/8pt Systematic Scale) --- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* --- RADII --- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* --- ELEVATION & SHADOWS --- */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 14px -1px rgba(0, 0, 0, 0.16);
+  --shadow-lg: 0 10px 30px -3px rgba(0, 0, 0, 0.25);
+  --shadow-xl: 0 20px 42px -6px rgba(0, 0, 0, 0.35);
+  --shadow-studio-card: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
+  --shadow-studio-hover: 0 12px 32px -4px rgba(15, 23, 42, 0.14);
+  --shadow-blue-glow: 0 0 35px -5px rgba(29, 78, 216, 0.45);
+  --shadow-sky-glow: 0 0 30px -5px rgba(56, 189, 248, 0.4);
+  --shadow-gold-glow: 0 0 28px -4px rgba(245, 158, 11, 0.35);
+
+  /* --- MOTION PHYSICS & EASINGS --- */
+  --ease-cinematic: cubic-bezier(0.22, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 280ms;
+  --duration-slow: 450ms;
+  --duration-entrance: 1000ms;
+
+  /* --- Z-INDEX LAYERS --- */
+  --z-base: 1;
+  --z-raised: 10;
+  --z-sticky: 30;
+  --z-header: 50;
+  --z-fab: 80;
+  --z-drawer: 100;
+  --z-modal: 150;
+  --z-toast: 200;
+}
+
+/* =====================================================================
+ * SECTION RHYTHM CLASSES
+ * ===================================================================== */
+.section-rhythm-cinematic-dark {
+  background-color: var(--nevo-navy-900);
+  color: var(--ink);
+  position: relative;
+}
+
+.section-rhythm-proof-dark {
+  background-color: var(--nevo-navy-850);
+  color: var(--ink);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.section-rhythm-studio-light {
+  background-color: var(--nevo-studio-bg);
+  color: var(--nevo-studio-ink);
+  position: relative;
+}
+
+.section-rhythm-studio-white {
+  background-color: var(--nevo-studio-surface);
+  color: var(--nevo-studio-ink);
+  position: relative;
+}
+
+.section-rhythm-footer-dark {
+  background-color: var(--nevo-navy-950);
+  color: var(--ink);
+  border-top: 1px solid rgba(245, 158, 11, 0.2);
+}

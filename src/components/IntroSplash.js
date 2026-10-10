@@ -3,6 +3,7 @@
 
 export function initIntroSplash() {
   if (sessionStorage.getItem('nevo_splash_done')) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const splash = document.createElement('div');
   splash.id = 'nevo-intro-splash';
@@ -24,7 +25,7 @@ export function initIntroSplash() {
       <!-- Brand Typography -->
       <div class="nevo-intro-typography" id="nevo-intro-text">
         <div class="nevo-intro-brand-title">NEVO GROUP</div>
-        <div class="nevo-intro-brand-sub">MUVAFFAQIYATLI MUHANDISLIK TIZIMLARI</div>
+        <div class="nevo-intro-brand-sub">SANTEXNIKA VA QURILISH MOLLARI</div>
       </div>
 
       <!-- Progress Fill Line -->

@@ -11,7 +11,7 @@ export function renderMaintenanceScreen() {
         <div class="maintenance-brand">
           <img src="/brand/nevo-logo.webp" alt="NEVO GROUP" class="maintenance-logo" onerror="this.src='/brand/nevo-logo-sm.png';">
           <div class="maintenance-brand-name">NEVO GROUP</div>
-          <div class="maintenance-brand-tag">MUVAFFAQIYATLI MUHANDISLIK TIZIMLARI</div>
+          <div class="maintenance-brand-tag">SANTEXNIKA VA QURILISH MOLLARI</div>
         </div>
 
         <!-- Status Indicator -->

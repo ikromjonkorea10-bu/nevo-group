@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vite",
     "dev:local": "vite --mode emulator",
+    "prebuild": "node scripts/check-originality.mjs",
     "build": "vite build",
     "preview": "vite preview",
+    "check:originality": "node scripts/check-originality.mjs",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format:check": "prettier --check .",

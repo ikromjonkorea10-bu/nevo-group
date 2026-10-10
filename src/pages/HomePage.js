@@ -100,46 +100,46 @@ export function pickHomeProducts(products) {
 function renderProjectsCarousel() {
   const projects = [
     {
-      img: '/projects/nest-one.webp',
+      img: '/workers/worker-warehouse.webp',
       title: t('project1Title'),
       type: t('project1Type'),
       desc: t('project1Desc'),
-      tags: ['#Quvurlar', '#ZaporArmatura', '#NestOne'],
+      tags: ['#Ombor', '#Logistika', '#TezkorYuklash'],
     },
     {
-      img: '/projects/humo-arena.webp',
+      img: '/images/catalog-slides/slide-valves.jpg',
       title: t('project2Title'),
       type: t('project2Type'),
       desc: t('project2Desc'),
-      tags: ['#HumoArena', '#Sovutish', '#Flaneslar'],
+      tags: ['#ZaporArmatura', '#Zadvijkalar', '#Flaneslar'],
     },
     {
-      img: '/projects/islamic-center.webp',
+      img: '/images/catalog-slides/slide-pipes.jpg',
       title: t('project3Title'),
       type: t('project3Type'),
       desc: t('project3Desc'),
-      tags: ['#IslomSivilizatsiyasi', '#Gidrantlar', '#Isitish'],
+      tags: ['#PolimerQuvurlar', '#PPR', '#Fitinglar'],
     },
     {
-      img: '/projects/tashkent-city.webp',
+      img: '/images/catalog-slides/slide-sewer.jpg',
       title: t('project4Title'),
       type: t('project4Type'),
       desc: t('project4Desc'),
-      tags: ['#CongressHall', '#SanoatQuvurlari', '#TashkentCity'],
+      tags: ['#YonginXavfsizligi', '#Gidrantlar', '#Shlanglar'],
     },
     {
-      img: '/workers/worker-construction.webp',
+      img: '/workers/worker-delivery.webp',
       title: t('project5Title'),
       type: t('project5Type'),
       desc: t('project5Desc'),
-      tags: ['#YangiOzbekiston', '#Muhandislik', '#PEQuvurlar'],
+      tags: ['#OptomYetkazish', '#Smeta', '#BarchaViloyatlar'],
     },
     {
-      img: '/workers/worker-pipefitting.webp',
+      img: '/workers/worker-consultant.webp',
       title: t('project6Title'),
       type: t('project6Type'),
       desc: t('project6Desc'),
-      tags: ['#Magistral', '#SanoatMontaj', '#Vstavkalar'],
+      tags: ['#TexnikMaslahat', '#Muhandislik', '#Tanlash'],
     },
   ];
 
@@ -185,7 +185,7 @@ function renderProjectsCarousel() {
 }
 
 function renderNevoCorporateAbout(catalog) {
-  const productCount = catalog.status === 'ready' && catalog.products.length ? catalog.products.length : 1000;
+  const productCount = catalog.status === 'ready' && catalog.products.length ? catalog.products.length : 100;
   return `
     <!-- NEVO CORPORATE ABOUT & METRICS (REALISTIC & AUTHENTIC) -->
     <section class="nevo-corp-about-section" id="stats-anchor">
@@ -200,7 +200,7 @@ function renderNevoCorporateAbout(catalog) {
           </div>
           <div class="nevo-corp-intro-text">
             <p>
-              O'zbekiston bo'ylab suv ta'minoti, isitish, kanalizatsiya va sanoat muhandislik tizimlari uchun sertifikatlangan polimer quvurlar, fitinglar hamda zapor armaturalarni to'g'ridan-to'g'ri birinchi qo'l kafolati va professional servis bilan yetkazib beruvchi ishonchli korxona.
+              ${t('heroDesc')}
             </p>
           </div>
         </div>
@@ -210,24 +210,24 @@ function renderNevoCorporateAbout(catalog) {
           <div class="nevo-metric-stat-item">
             <div class="nevo-metric-icon-wrap">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
               </svg>
             </div>
-            <div class="nevo-metric-big-num" data-count="10" data-suffix="+">10+</div>
-            <div class="nevo-metric-tag-label">YIL TAJRIBA</div>
+            <div class="nevo-metric-big-num" data-count="1" data-suffix="">1</div>
+            <div class="nevo-metric-tag-label">${t('statYears')}</div>
           </div>
 
           <div class="nevo-metric-stat-item">
             <div class="nevo-metric-icon-wrap">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m21.12 6.4-6-3.87a3 3 0 0 0-3.24 0l-6 3.87a3 3 0 0 0-1.88 2.6v7.74a3 3 0 0 0 1.88 2.6l6 3.87a3 3 0 0 0 3.24 0l6-3.87a3 3 0 0 0 1.88-2.6V9a3 3 0 0 0-1.88-2.6z"></path>
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
               </svg>
             </div>
             <div class="nevo-metric-big-num" data-count="${productCount}" data-suffix="+">${productCount}+</div>
-            <div class="nevo-metric-tag-label">MAHSULOT TURI</div>
+            <div class="nevo-metric-tag-label">${t('statProducts')}</div>
           </div>
 
           <div class="nevo-metric-stat-item">
@@ -238,20 +238,20 @@ function renderNevoCorporateAbout(catalog) {
               </svg>
             </div>
             <div class="nevo-metric-big-num" data-count="100" data-suffix="%">100%</div>
-            <div class="nevo-metric-tag-label">SIFAT KAFOLATI</div>
+            <div class="nevo-metric-tag-label">${t('statPartners')}</div>
           </div>
 
           <div class="nevo-metric-stat-item">
             <div class="nevo-metric-icon-wrap">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                <rect x="1" y="3" width="15" height="13"></rect>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                <circle cx="18.5" cy="18.5" r="2.5"></circle>
               </svg>
             </div>
-            <div class="nevo-metric-big-num" data-count="3000" data-suffix="+">3 000+</div>
-            <div class="nevo-metric-tag-label">MAMNUN HAMKORLAR</div>
+            <div class="nevo-metric-big-num" data-count="12" data-suffix="+">12+</div>
+            <div class="nevo-metric-tag-label">${t('statDelivery')}</div>
           </div>
         </div>
       </div>
@@ -385,23 +385,23 @@ export function renderHomePage() {
               <span class="royal-badge-emblem">
                 <img src="/brand/nevo-logo-sm.png" alt="NEVO" width="18" height="18" />
               </span>
-              <span>NEVO GROUP · SANOAT VA MUHANDISLIK TIZIMLARI</span>
+              <span>${t('heroBadge')}</span>
             </div>
 
             <h1 class="hero-title hero-title-nevo">
-              <span class="brand-gold-word">NEVO GROUP</span> — muhandislik tizimlari uchun O'zbekistonda ishlab chiqarilgan kompleks yechimlar
+              <span class="brand-gold-word">NEVO GROUP</span> — ${t('heroTitleAccent')}
             </h1>
             <p class="hero-desc hero-desc-nevo">
-              Suv ta'minoti, isitish va kanalizatsiya uchun 1000+ turdagi quvur, fiting va komplektatsiyalar.
+              ${t('heroDesc')}
             </p>
             <div class="hero-buttons hero-buttons-nevo">
               <a href="#catalog" class="btn-royal-gold hero-btn-glow">
-                <span>Katalogni ko'rish</span>
+                <span>${t('heroCtaCatalog')}</span>
                 ${icon('arrow-right', '', 18)}
               </a>
               <a href="#aloqa" class="btn-royal-glass">
                 ${icon('phone', '', 18)}
-                <span>Biz bilan bog'lanish</span>
+                <span>${t('heroCtaFind')}</span>
               </a>
             </div>
           </div>
