@@ -1,0 +1,318 @@
+{
+  "version": "1.0.0",
+  "budgets": {
+    "imageMaxBytes": 256000,
+    "heroPosterMaxBytes": 153600,
+    "videoMaxBytes": 6291456
+  },
+  "slots": [
+    {
+      "id": "brand-logo-main",
+      "page": "global",
+      "section": "header-footer",
+      "type": "image/png",
+      "recommendedSize": "512x512",
+      "aspectRatio": "1:1",
+      "altKey": "brandName",
+      "source": "nevo",
+      "path": "/brand/nevo-logo.png"
+    },
+    {
+      "id": "brand-logo-sm",
+      "page": "global",
+      "section": "header-compact",
+      "type": "image/png",
+      "recommendedSize": "128x128",
+      "aspectRatio": "1:1",
+      "altKey": "brandName",
+      "source": "nevo",
+      "path": "/brand/nevo-logo-sm.png"
+    },
+    {
+      "id": "brand-favicon",
+      "page": "global",
+      "section": "head",
+      "type": "image/x-icon",
+      "recommendedSize": "48x48",
+      "aspectRatio": "1:1",
+      "altKey": "brandName",
+      "source": "nevo",
+      "path": "/brand/favicon.ico"
+    },
+    {
+      "id": "home-hero-slide-1",
+      "page": "home",
+      "section": "hero",
+      "type": "image/jpeg",
+      "recommendedSize": "1920x1080",
+      "aspectRatio": "16:9",
+      "altKey": "splashSlide1",
+      "source": "nevo",
+      "path": "/images/hero/hero-plant-1.jpg"
+    },
+    {
+      "id": "home-hero-slide-2",
+      "page": "home",
+      "section": "hero",
+      "type": "image/jpeg",
+      "recommendedSize": "1920x1080",
+      "aspectRatio": "16:9",
+      "altKey": "splashSlide2",
+      "source": "nevo",
+      "path": "/images/hero/hero-valves-2.jpg"
+    },
+    {
+      "id": "home-hero-slide-3",
+      "page": "home",
+      "section": "hero",
+      "type": "image/jpeg",
+      "recommendedSize": "1920x1080",
+      "aspectRatio": "16:9",
+      "altKey": "splashSlide3",
+      "source": "nevo",
+      "path": "/images/hero/hero-factory-3.jpg"
+    },
+    {
+      "id": "home-video-pipeline",
+      "page": "home",
+      "section": "showcase",
+      "type": "video/webm",
+      "recommendedSize": "1920x1080",
+      "aspectRatio": "16:9",
+      "altKey": "videoTitle",
+      "source": "nevo",
+      "path": "/videos/pipeline-showcase.webm"
+    },
+    {
+      "id": "home-video-warehouse",
+      "page": "home",
+      "section": "showcase",
+      "type": "video/webm",
+      "recommendedSize": "1920x1080",
+      "aspectRatio": "16:9",
+      "altKey": "videoTitle",
+      "source": "nevo",
+      "path": "/videos/warehouse-showcase.webm"
+    },
+    {
+      "id": "catalog-hero-pipes-1600",
+      "page": "catalog",
+      "section": "hero-slideshow",
+      "type": "image/webp",
+      "recommendedSize": "1600x900",
+      "aspectRatio": "16:9",
+      "altKey": "slidePipes",
+      "source": "nevo",
+      "path": "/images/catalog-slides/pipes-1600.webp"
+    },
+    {
+      "id": "catalog-hero-pipes-800",
+      "page": "catalog",
+      "section": "hero-slideshow",
+      "type": "image/webp",
+      "recommendedSize": "800x450",
+      "aspectRatio": "16:9",
+      "altKey": "slidePipes",
+      "source": "nevo",
+      "path": "/images/catalog-slides/pipes-800.webp"
+    },
+    {
+      "id": "catalog-hero-valves-1600",
+      "page": "catalog",
+      "section": "hero-slideshow",
+      "type": "image/webp",
+      "recommendedSize": "1600x900",
+      "aspectRatio": "16:9",
+      "altKey": "slideValves",
+      "source": "nevo",
+      "path": "/images/catalog-slides/valves-1600.webp"
+    },
+    {
+      "id": "catalog-hero-valves-800",
+      "page": "catalog",
+      "section": "hero-slideshow",
+      "type": "image/webp",
+      "recommendedSize": "800x450",
+      "aspectRatio": "16:9",
+      "altKey": "slideValves",
+      "source": "nevo",
+      "path": "/images/catalog-slides/valves-800.webp"
+    },
+    {
+      "id": "catalog-hero-factory-1600",
+      "page": "catalog",
+      "section": "hero-slideshow",
+      "type": "image/webp",
+      "recommendedSize": "1600x900",
+      "aspectRatio": "16:9",
+      "altKey": "heroBadge",
+      "source": "nevo",
+      "path": "/images/catalog-slides/factory-1600.webp"
+    },
+    {
+      "id": "catalog-hero-factory-800",
+      "page": "catalog",
+      "section": "hero-slideshow",
+      "type": "image/webp",
+      "recommendedSize": "800x450",
+      "aspectRatio": "16:9",
+      "altKey": "heroBadge",
+      "source": "nevo",
+      "path": "/images/catalog-slides/factory-800.webp"
+    },
+    {
+      "id": "catalog-hero-plant-1600",
+      "page": "catalog",
+      "section": "hero-slideshow",
+      "type": "image/webp",
+      "recommendedSize": "1600x900",
+      "aspectRatio": "16:9",
+      "altKey": "statDelivery",
+      "source": "nevo",
+      "path": "/images/catalog-slides/plant-1600.webp"
+    },
+    {
+      "id": "catalog-hero-plant-800",
+      "page": "catalog",
+      "section": "hero-slideshow",
+      "type": "image/webp",
+      "recommendedSize": "800x450",
+      "aspectRatio": "16:9",
+      "altKey": "statDelivery",
+      "source": "nevo",
+      "path": "/images/catalog-slides/plant-800.webp"
+    },
+    {
+      "id": "catalog-hero-sewer-1600",
+      "page": "catalog",
+      "section": "hero-slideshow",
+      "type": "image/webp",
+      "recommendedSize": "1600x900",
+      "aspectRatio": "16:9",
+      "altKey": "slideSewer",
+      "source": "nevo",
+      "path": "/images/catalog-slides/sewer-1600.webp"
+    },
+    {
+      "id": "catalog-hero-sewer-800",
+      "page": "catalog",
+      "section": "hero-slideshow",
+      "type": "image/webp",
+      "recommendedSize": "800x450",
+      "aspectRatio": "16:9",
+      "altKey": "slideSewer",
+      "source": "nevo",
+      "path": "/images/catalog-slides/sewer-800.webp"
+    },
+    {
+      "id": "category-cover-pipes",
+      "page": "catalog",
+      "section": "category-slider",
+      "type": "image/webp",
+      "recommendedSize": "600x800",
+      "aspectRatio": "3:4",
+      "altKey": "slidePipes",
+      "source": "nevo",
+      "path": "/images/catalog-slides/pipes-1600.webp"
+    },
+    {
+      "id": "category-cover-valves",
+      "page": "catalog",
+      "section": "category-slider",
+      "type": "image/webp",
+      "recommendedSize": "600x800",
+      "aspectRatio": "3:4",
+      "altKey": "slideValves",
+      "source": "nevo",
+      "path": "/images/catalog-slides/valves-1600.webp"
+    },
+    {
+      "id": "category-cover-factory",
+      "page": "catalog",
+      "section": "category-slider",
+      "type": "image/webp",
+      "recommendedSize": "600x800",
+      "aspectRatio": "3:4",
+      "altKey": "heroBadge",
+      "source": "nevo",
+      "path": "/images/catalog-slides/factory-1600.webp"
+    },
+    {
+      "id": "category-cover-plant",
+      "page": "catalog",
+      "section": "category-slider",
+      "type": "image/webp",
+      "recommendedSize": "600x800",
+      "aspectRatio": "3:4",
+      "altKey": "statDelivery",
+      "source": "nevo",
+      "path": "/images/catalog-slides/plant-1600.webp"
+    },
+    {
+      "id": "category-cover-sewer",
+      "page": "catalog",
+      "section": "category-slider",
+      "type": "image/webp",
+      "recommendedSize": "600x800",
+      "aspectRatio": "3:4",
+      "altKey": "slideSewer",
+      "source": "nevo",
+      "path": "/images/catalog-slides/sewer-1600.webp"
+    },
+    {
+      "id": "category-cover-ppr",
+      "page": "home",
+      "section": "categories",
+      "type": "image/webp",
+      "recommendedSize": "800x600",
+      "aspectRatio": "4:3",
+      "altKey": "slidePipes",
+      "source": "nevo",
+      "path": "/images/categories/ppr-pipes.webp"
+    },
+    {
+      "id": "category-cover-valves-fittings",
+      "page": "home",
+      "section": "categories",
+      "type": "image/webp",
+      "recommendedSize": "800x600",
+      "aspectRatio": "4:3",
+      "altKey": "slideValves",
+      "source": "nevo",
+      "path": "/images/categories/valves-fittings.webp"
+    },
+    {
+      "id": "category-cover-sewer-pipes",
+      "page": "home",
+      "section": "categories",
+      "type": "image/webp",
+      "recommendedSize": "800x600",
+      "aspectRatio": "4:3",
+      "altKey": "slideSewer",
+      "source": "nevo",
+      "path": "/images/categories/sewer-pipes.webp"
+    },
+    {
+      "id": "category-cover-hdpe-pipes",
+      "page": "home",
+      "section": "categories",
+      "type": "image/webp",
+      "recommendedSize": "800x600",
+      "aspectRatio": "4:3",
+      "altKey": "statProducts",
+      "source": "nevo",
+      "path": "/images/categories/hdpe-pipes.webp"
+    },
+    {
+      "id": "og-image-default",
+      "page": "global",
+      "section": "seo-opengraph",
+      "type": "image/jpeg",
+      "recommendedSize": "1200x630",
+      "aspectRatio": "1.91:1",
+      "altKey": "brandName",
+      "source": "nevo",
+      "path": "/images/og/nevo-ppr-truba-pn20-kompozit.jpg"
+    }
+  ]
+}
