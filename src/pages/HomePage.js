@@ -4,7 +4,7 @@ import { esc } from '../lib/format.js';
 import { renderTestimonials } from '../components/Testimonials.js';
 import { renderProductCard } from '../components/ProductCard.js';
 import { t } from '../lib/i18n.js';
-import { initHeroVideo, isMobileOrTouch } from '../lib/heroVideo.js';
+import { initHeroVideo, initHeroMotionImage, isMobileOrTouch } from '../lib/heroVideo.js';
 
 // Hero kartalari bazadagi mahsulotlardan qoida bo'yicha tanlanadi — ID yozilmaydi.
 const HERO_PICKS = [
@@ -684,6 +684,16 @@ export function initHomeAnimations() {
       heroBackdrop.classList.add('is-video-ready');
       document.querySelector('.hero-section-nevo')?.classList.add('has-video');
       if (soundBtn && !isMobile) soundBtn.hidden = false;
+    },
+  });
+  initHeroMotionImage({
+    host: heroBackdrop,
+    before: heroBackdrop ? heroBackdrop.querySelector('.hero-slide-gradient-overlay') : null,
+    src: '/videos/home-hero-mobile.webp',
+    onReady: () => {
+      if (!heroBackdrop) return;
+      heroBackdrop.classList.add('is-video-ready');
+      document.querySelector('.hero-section-nevo')?.classList.add('has-video');
     },
   });
   if (soundBtn && heroVideo) {

@@ -8924,3 +8924,35 @@ html.no-hero-video .hero-sound-toggle {
   }
 }
 
+
+/* Mobil: animatsiyali WebP fon (<video> emas, shuning uchun brauzer pleyeri chiqmaydi) */
+.hero-motion-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  background: transparent;
+}
+.hero-motion-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+  display: block;
+  filter: brightness(0.9) contrast(1.05);
+  pointer-events: none;
+}
+.hero-slideshow-backdrop.is-video-ready .hero-motion-layer,
+.catalog-hero-bg.is-video-ready .hero-motion-layer {
+  opacity: 1;
+}
+@media (min-width: 900px) {
+  .hero-motion-layer { display: none; }
+}

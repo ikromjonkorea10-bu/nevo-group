@@ -10,7 +10,7 @@ import { openProductModal } from '../components/ProductModal.js';
 import { renderQuickSearchTrigger } from '../components/QuickSearch.js';
 import { PDF_CATALOGS } from '../data/catalogs.js';
 import Swiper from 'swiper';
-import { initHeroVideo, isMobileOrTouch } from '../lib/heroVideo.js';
+import { initHeroVideo, initHeroMotionImage, isMobileOrTouch } from '../lib/heroVideo.js';
 
 // Category High-Res Industrial Cover Mappings (Optimized WebP, <= 120KB)
 export const CATEGORY_HERO_SLIDES = {
@@ -883,6 +883,16 @@ function initCategoryReactiveHeroBg(_categories) {
           { src: '/videos/catalog-hero.mp4', type: 'video/mp4' },
         ],
     observeEl: heroEl,
+    onReady: () => {
+      heroEl.classList.add('has-video');
+      if (catBg) catBg.classList.add('is-video-ready');
+    },
+  });
+
+  initHeroMotionImage({
+    host: catBg,
+    before: catBg ? catBg.querySelector('.catalog-hero-dark-overlay') : null,
+    src: '/videos/catalog-hero-mobile.webp',
     onReady: () => {
       heroEl.classList.add('has-video');
       if (catBg) catBg.classList.add('is-video-ready');

@@ -42,6 +42,11 @@ for (const slot of slots) {
     if (slot.id.includes('poster') && size > budgets.heroPosterMaxBytes) {
       console.error(`❌ Hero poster "${slot.id}" exceeds budget: ${size} > ${budgets.heroPosterMaxBytes} bytes`);
       errors++;
+    } else if (slot.id.includes('motion')) {
+      if (size > budgets.videoMaxBytes) {
+        console.error(`❌ Motion image "${slot.id}" exceeds budget: ${size} > ${budgets.videoMaxBytes} bytes`);
+        errors++;
+      }
     } else if (size > budgets.imageMaxBytes) {
       console.error(`❌ Image "${slot.id}" exceeds budget: ${size} > ${budgets.imageMaxBytes} bytes`);
       errors++;

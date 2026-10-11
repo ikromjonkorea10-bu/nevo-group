@@ -390,6 +390,28 @@
       "altKey": "heroTitle",
       "source": "nevo",
       "path": "/videos/catalog-hero-poster.webp"
+    },
+    {
+      "id": "home-hero-motion-mobile",
+      "page": "home",
+      "section": "hero-video",
+      "type": "image/webp",
+      "recommendedSize": "640x360",
+      "aspectRatio": "16:9",
+      "altKey": "heroTitle",
+      "source": "nevo",
+      "path": "/videos/home-hero-mobile.webp"
+    },
+    {
+      "id": "catalog-hero-motion-mobile",
+      "page": "catalog",
+      "section": "hero-video",
+      "type": "image/webp",
+      "recommendedSize": "640x360",
+      "aspectRatio": "16:9",
+      "altKey": "heroTitle",
+      "source": "nevo",
+      "path": "/videos/catalog-hero-mobile.webp"
     }
   ]
 }

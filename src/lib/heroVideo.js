@@ -97,10 +97,9 @@ export function shouldLoadHeroVideo() {
   const conn = navigator.connection;
   if (conn && conn.saveData) return false;
 
-  if (isMobileOrTouch()) {
-    if (conn && conn.effectiveType && conn.effectiveType !== '4g') return false;
-    return isAllowedMobileBrowser();
-  }
+  // Mobil/touch qurilmalarda <video> ishlatilmaydi (Xiaomi/MIUI va boshqa brauzerlar uni o'z pleyerida ochib,
+  // qora blok chiqaradi). Mobilda animatsiyali WebP rasm ishlatiladi (initHeroMotionImage).
+  if (isMobileOrTouch()) return false;
 
   // Desktop (>=900px, mouse pointer)
   return true;
@@ -318,5 +317,46 @@ export function initHeroVideo(video, { poster, sources, observeEl, onReady, onFa
     else if (ready) tryPlay();
   });
 
+  return true;
+}
+
+
+/**
+ * Mobil/touch qurilmalarda animatsiyali WebP fon ishlatilsinmi.
+ * <video> emas, oddiy <img> bo'lgani uchun hech qanday brauzer uni pleyerga aylantirmaydi.
+ */
+export function shouldUseMotionImage() {
+  if (typeof window === 'undefined') return false;
+  if (!isMobileOrTouch()) return false;
+  if (getHvOverride() === false) return false;
+  if (mq('(prefers-reduced-motion: reduce)')) return false;
+  const conn = navigator.connection;
+  if (conn && conn.saveData) return false;
+  if (conn && conn.effectiveType && conn.effectiveType !== '4g') return false;
+  return true;
+}
+
+/**
+ * @param {{ host: Element|null, before?: Element|null, src: string, onReady?: () => void }} opts
+ * @returns {boolean}
+ */
+export function initHeroMotionImage({ host, before, src, onReady }) {
+  if (!host || !src || !shouldUseMotionImage()) return false;
+  const layer = document.createElement('div');
+  layer.className = 'hero-motion-layer';
+  layer.setAttribute('aria-hidden', 'true');
+  const img = document.createElement('img');
+  img.className = 'hero-motion-img';
+  img.alt = '';
+  img.decoding = 'async';
+  img.setAttribute('aria-hidden', 'true');
+  img.addEventListener('load', () => {
+    if (typeof onReady === 'function') onReady();
+  }, { once: true });
+  img.addEventListener('error', () => layer.remove(), { once: true });
+  layer.appendChild(img);
+  if (before && before.parentNode === host) host.insertBefore(layer, before);
+  else host.appendChild(layer);
+  img.src = src;
   return true;
 }
