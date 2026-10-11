@@ -337,14 +337,18 @@ export function shouldUseMotionImage() {
 }
 
 /**
- * @param {{ host: Element|null, before?: Element|null, src: string, onReady?: () => void }} opts
+ * Animatsiyali WebP fonni ishga tushiradi. Poster (statik 1-kadr) darhol ko'rsatiladi, shuning uchun
+ * eski slayd rasmlari mobilda hech qachon ko'rinmaydi.
+ * @param {{ host: Element|null, before?: Element|null, src: string, poster?: string, onReady?: () => void }} opts
  * @returns {boolean}
  */
-export function initHeroMotionImage({ host, before, src, onReady }) {
+export function initHeroMotionImage({ host, before, src, poster, onReady }) {
   if (!host || !src || !shouldUseMotionImage()) return false;
+  const root = document.documentElement;
   const layer = document.createElement('div');
   layer.className = 'hero-motion-layer';
   layer.setAttribute('aria-hidden', 'true');
+  if (poster) layer.style.backgroundImage = `url("${poster}")`;
   const img = document.createElement('img');
   img.className = 'hero-motion-img';
   img.alt = '';
@@ -353,10 +357,24 @@ export function initHeroMotionImage({ host, before, src, onReady }) {
   img.addEventListener('load', () => {
     if (typeof onReady === 'function') onReady();
   }, { once: true });
-  img.addEventListener('error', () => layer.remove(), { once: true });
+  img.addEventListener('error', () => {
+    layer.remove();
+    root.classList.remove('has-motion-hero');
+  }, { once: true });
   layer.appendChild(img);
   if (before && before.parentNode === host) host.insertBefore(layer, before);
   else host.appendChild(layer);
+  root.classList.add('has-motion-hero');
   img.src = src;
   return true;
+}
+
+/**
+ * Animatsiyani boshidan boshlash (kesh'dan, qayta yuklamasdan): img'ni klon bilan almashtiradi.
+ */
+export function restartHeroMotionImage(host) {
+  const img = host && host.querySelector('.hero-motion-img');
+  if (!img || !img.parentNode) return;
+  const clone = img.cloneNode(false);
+  img.replaceWith(clone);
 }

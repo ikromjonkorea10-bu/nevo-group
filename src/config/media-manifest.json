@@ -412,6 +412,39 @@
       "altKey": "heroTitle",
       "source": "nevo",
       "path": "/videos/catalog-hero-mobile.webp"
+    },
+    {
+      "id": "home-hero-motion-poster",
+      "page": "home",
+      "section": "hero-video",
+      "type": "image/webp",
+      "recommendedSize": "540x960",
+      "aspectRatio": "9:16",
+      "altKey": "heroTitle",
+      "source": "nevo",
+      "path": "/videos/home-hero-mobile-poster.webp"
+    },
+    {
+      "id": "catalog-hero-motion-poster",
+      "page": "catalog",
+      "section": "hero-video",
+      "type": "image/webp",
+      "recommendedSize": "540x960",
+      "aspectRatio": "9:16",
+      "altKey": "heroTitle",
+      "source": "nevo",
+      "path": "/videos/catalog-hero-mobile-poster.webp"
+    },
+    {
+      "id": "home-hero-audio-mobile",
+      "page": "home",
+      "section": "hero-video",
+      "type": "audio/mpeg",
+      "recommendedSize": "15s",
+      "aspectRatio": "n/a",
+      "altKey": "heroTitle",
+      "source": "nevo",
+      "path": "/videos/home-hero-audio.mp3"
     }
   ]
 }

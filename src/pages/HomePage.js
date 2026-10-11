@@ -4,7 +4,7 @@ import { esc } from '../lib/format.js';
 import { renderTestimonials } from '../components/Testimonials.js';
 import { renderProductCard } from '../components/ProductCard.js';
 import { t } from '../lib/i18n.js';
-import { initHeroVideo, initHeroMotionImage, isMobileOrTouch } from '../lib/heroVideo.js';
+import { initHeroVideo, initHeroMotionImage, restartHeroMotionImage, isMobileOrTouch } from '../lib/heroVideo.js';
 
 // Hero kartalari bazadagi mahsulotlardan qoida bo'yicha tanlanadi — ID yozilmaydi.
 const HERO_PICKS = [
@@ -690,14 +690,67 @@ export function initHomeAnimations() {
     host: heroBackdrop,
     before: heroBackdrop ? heroBackdrop.querySelector('.hero-slide-gradient-overlay') : null,
     src: '/videos/home-hero-mobile.webp',
+    poster: '/videos/home-hero-mobile-poster.webp',
     onReady: () => {
       if (!heroBackdrop) return;
       heroBackdrop.classList.add('is-video-ready');
       document.querySelector('.hero-section-nevo')?.classList.add('has-video');
+      if (soundBtn) soundBtn.hidden = false;
     },
   });
+  // Mobil: ovoz alohida <audio> orqali (video pleyeri yo'q). Tugma bosilganda animatsiya va ovoz birga boshlanadi.
+  let mobileAudio = null;
+  let mobileSoundOn = false;
+  if (soundBtn && document.documentElement.classList.contains('has-motion-hero')) {
+    const syncBtn = (on) => {
+      soundBtn.setAttribute('aria-pressed', String(on));
+      const label = on ? soundBtn.dataset.off : soundBtn.dataset.on;
+      soundBtn.setAttribute('aria-label', label);
+      soundBtn.classList.toggle('is-on', on);
+      const lbl = soundBtn.querySelector('.hero-sound-label');
+      if (lbl) lbl.textContent = label;
+    };
+    const startAudioWithAnimation = () => {
+      if (!mobileAudio) {
+        mobileAudio = new Audio('/videos/home-hero-audio.mp3');
+        mobileAudio.preload = 'auto';
+        mobileAudio.addEventListener('ended', () => {
+          if (!mobileSoundOn) return;
+          restartHeroMotionImage(heroBackdrop);
+          mobileAudio.currentTime = 0;
+          mobileAudio.play().catch(() => {});
+        });
+      }
+      restartHeroMotionImage(heroBackdrop);
+      mobileAudio.currentTime = 0;
+      mobileAudio.play().catch(() => {
+        mobileSoundOn = false;
+        syncBtn(false);
+      });
+    };
+    soundBtn.addEventListener('click', () => {
+      mobileSoundOn = !mobileSoundOn;
+      syncBtn(mobileSoundOn);
+      if (mobileSoundOn) startAudioWithAnimation();
+      else if (mobileAudio) mobileAudio.pause();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && mobileAudio && !mobileAudio.paused) mobileAudio.pause();
+      else if (!document.hidden && mobileSoundOn && mobileAudio && mobileAudio.paused) mobileAudio.play().catch(() => {});
+    });
+    if ('IntersectionObserver' in window && heroBackdrop) {
+      new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (!mobileAudio) return;
+          if (!e.isIntersecting) mobileAudio.pause();
+          else if (mobileSoundOn && mobileAudio.paused && !document.hidden) mobileAudio.play().catch(() => {});
+        });
+      }, { threshold: 0.1 }).observe(heroBackdrop);
+    }
+  }
   if (soundBtn && heroVideo) {
     soundBtn.addEventListener('click', () => {
+      if (document.documentElement.classList.contains('has-motion-hero')) return;
       heroVideo.muted = !heroVideo.muted;
       const on = !heroVideo.muted;
       soundBtn.setAttribute('aria-pressed', String(on));

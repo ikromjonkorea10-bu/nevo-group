@@ -8949,10 +8949,36 @@ html.no-hero-video .hero-sound-toggle {
   filter: none;
   pointer-events: none;
 }
+.hero-motion-layer {
+  background-size: cover;
+  background-position: 50% 30%;
+  background-repeat: no-repeat;
+  background-color: #060b18;
+}
 .hero-slideshow-backdrop.is-video-ready .hero-motion-layer,
 .catalog-hero-bg.is-video-ready .hero-motion-layer {
   opacity: 1;
 }
 @media (min-width: 900px) {
   .hero-motion-layer { display: none; }
+}
+
+/* Mobil animatsiyali fon yoqilganda eski slayd rasmlari butunlay yashiriladi (soyasi ko'rinib qolmasin) */
+html.has-motion-hero .hero-motion-layer { opacity: 1; }
+@media (max-width: 899px) {
+  html.has-motion-hero .hero-slide-item,
+  html.has-motion-hero .catalog-bg-layer,
+  html.has-motion-hero .hero-slides-nav {
+    display: none !important;
+  }
+  html.has-motion-hero .hero-sound-toggle,
+  html.has-motion-hero.no-hero-video .hero-sound-toggle {
+    display: inline-flex !important;
+    left: auto;
+    bottom: auto;
+    right: 14px;
+    top: 14px;
+    z-index: 8;
+  }
+  html.has-motion-hero .hero-sound-toggle[hidden] { display: none !important; }
 }

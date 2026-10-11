@@ -893,6 +893,7 @@ function initCategoryReactiveHeroBg(_categories) {
     host: catBg,
     before: catBg ? catBg.querySelector('.catalog-hero-dark-overlay') : null,
     src: '/videos/catalog-hero-mobile.webp',
+    poster: '/videos/catalog-hero-mobile-poster.webp',
     onReady: () => {
       heroEl.classList.add('has-video');
       if (catBg) catBg.classList.add('is-video-ready');
