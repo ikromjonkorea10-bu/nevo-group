@@ -11,7 +11,7 @@ import { renderQuickSearchTrigger } from '../components/QuickSearch.js';
 import { PDF_CATALOGS } from '../data/catalogs.js';
 import Swiper from 'swiper';
 import { Navigation, Pagination, Keyboard, FreeMode } from 'swiper/modules';
-import { initHeroVideo, isMobileViewport } from '../lib/heroVideo.js';
+import { initHeroVideo } from '../lib/heroVideo.js';
 
 // Category High-Res Industrial Cover Mappings (Optimized WebP, <= 120KB)
 export const CATEGORY_HERO_SLIDES = {
@@ -170,8 +170,8 @@ function renderCatalogIndexPage(categories, _products) {
               id="catalog-hero-img-b"
             />
           </div>
-          <div class="catalog-bg-video-layer" id="catalog-bg-video-layer">
-            <video class="catalog-bg-video" id="catalog-hero-video" muted loop playsinline preload="none" poster="/videos/catalog-hero-poster.webp" tabindex="-1"></video>
+          <div class="catalog-bg-video-layer" id="catalog-bg-video-layer" aria-hidden="true">
+            <video class="catalog-bg-video" id="catalog-hero-video" muted loop playsinline preload="none" disablePictureInPicture disableRemotePlayback controlsList="nodownload nofullscreen noremoteplayback" tabindex="-1" aria-hidden="true"></video>
           </div>
           <div class="catalog-hero-dark-overlay"></div>
           <div class="catalog-hero-radial-glow"></div>
@@ -871,17 +871,15 @@ function initCategoryReactiveHeroBg(_categories) {
 
   if (!heroEl || !layerA || !layerB || !imgA || !imgB) return;
 
-  // Fon video: tayyor bo'lsa slayd rasmlari fallback bo'lib qoladi
+  // Fon video (faqat desktop/non-touch; tayyor bo'lsa slayd rasmlari fallback bo'lib qoladi)
   const catVideo = document.getElementById('catalog-hero-video');
   const catBg = document.getElementById('catalog-hero-bg');
-  const catMobile = isMobileViewport();
   initHeroVideo(catVideo, {
-    sources: catMobile
-      ? [{ src: '/videos/catalog-hero-720.mp4', type: 'video/mp4' }]
-      : [
-          { src: '/videos/catalog-hero.webm', type: 'video/webm; codecs="vp9"' },
-          { src: '/videos/catalog-hero.mp4', type: 'video/mp4' },
-        ],
+    poster: '/videos/catalog-hero-poster.webp',
+    sources: [
+      { src: '/videos/catalog-hero.webm', type: 'video/webm; codecs="vp9"' },
+      { src: '/videos/catalog-hero.mp4', type: 'video/mp4' },
+    ],
     observeEl: heroEl,
     onReady: () => {
       heroEl.classList.add('has-video');

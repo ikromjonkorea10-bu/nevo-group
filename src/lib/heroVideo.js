@@ -9,33 +9,48 @@ function mq(query) {
   }
 }
 
+export function isMobileOrTouch() {
+  return mq('(max-width: 899px)') || mq('(pointer: coarse)');
+}
+
 export function isMobileViewport() {
-  return mq('(max-width: 768px)');
+  return isMobileOrTouch();
 }
 
 export function shouldLoadHeroVideo() {
   if (typeof window === 'undefined') return false;
+  // Mobil viewport yoki touch qurilmalarda fon video mutlaqo yuklanmaydi (Xiaomi/MIUI va boshqa mobil brauzerlar cheklovi)
+  if (isMobileOrTouch()) return false;
   if (mq('(prefers-reduced-motion: reduce)')) return false;
   const conn = navigator.connection;
   if (conn && conn.saveData) return false;
-  if (isMobileViewport() && conn && conn.effectiveType && conn.effectiveType !== '4g') return false;
   return true;
 }
 
 /**
  * @param {HTMLVideoElement|null} video
- * @param {{ sources: {src:string,type:string}[], observeEl?: Element|null, onReady?: () => void }} opts
+ * @param {{ poster?: string, sources: {src:string,type:string}[], observeEl?: Element|null, onReady?: () => void }} opts
  * @returns {boolean} yuklash boshlandimi
  */
-export function initHeroVideo(video, { sources, observeEl, onReady }) {
+export function initHeroVideo(video, { poster, sources, observeEl, onReady }) {
   if (!video || !sources || sources.length === 0 || !shouldLoadHeroVideo()) return false;
 
+  if (poster) {
+    video.poster = poster;
+  }
   video.muted = true;
   video.defaultMuted = true;
   video.loop = true;
   video.playsInline = true;
   video.setAttribute('playsinline', '');
   video.setAttribute('muted', '');
+  video.setAttribute('tabindex', '-1');
+  video.setAttribute('aria-hidden', 'true');
+  video.setAttribute('controlsList', 'nodownload nofullscreen noremoteplayback');
+  video.setAttribute('disablePictureInPicture', '');
+  video.setAttribute('disableRemotePlayback', '');
+  video.disablePictureInPicture = true;
+  video.disableRemotePlayback = true;
   video.preload = 'auto';
 
   for (const s of sources) {
