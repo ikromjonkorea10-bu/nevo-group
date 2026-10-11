@@ -396,8 +396,8 @@
       "page": "home",
       "section": "hero-video",
       "type": "image/webp",
-      "recommendedSize": "960x540",
-      "aspectRatio": "16:9",
+      "recommendedSize": "720x1280",
+      "aspectRatio": "9:16",
       "altKey": "heroTitle",
       "source": "nevo",
       "path": "/videos/home-hero-mobile.webp"
@@ -407,8 +407,8 @@
       "page": "catalog",
       "section": "hero-video",
       "type": "image/webp",
-      "recommendedSize": "960x540",
-      "aspectRatio": "16:9",
+      "recommendedSize": "720x1280",
+      "aspectRatio": "9:16",
       "altKey": "heroTitle",
       "source": "nevo",
       "path": "/videos/catalog-hero-mobile.webp"
