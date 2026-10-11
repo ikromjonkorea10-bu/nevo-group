@@ -4,6 +4,7 @@
 // (api/category.js), mahsulotlar /p/<slug> (api/share.js) manzillari bilan beriladi.
 
 import { restGet, siteOrigin, escapeHtml } from './_lib.js';
+import { resolveProductSlug } from '../src/data/slug-redirects.js';
 
 const PAGE = 1000;
 
@@ -41,7 +42,7 @@ export default async function handler(req, res) {
       );
       for (const p of rows) {
         urls.push({
-          loc: `${origin}/katalog/mahsulot/${p.slug}`,
+          loc: `${origin}/katalog/mahsulot/${resolveProductSlug(p.slug)}`,
           lastmod: String(p.updated_at || '').slice(0, 10),
           changefreq: 'weekly',
           priority: '0.7',

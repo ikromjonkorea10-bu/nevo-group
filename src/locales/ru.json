@@ -299,5 +299,10 @@
   "catalogLoadError": "Каталог не загрузился, попробуйте снова.",
   "catalogLoading": "Каталог загружается…",
   "searchNotFound": "товаров не найдено.",
-  "viewAllResults": "Посмотреть все результаты"
+  "viewAllResults": "Посмотреть все результаты",
+  "productNotFound": "Товар не найден",
+  "productNotFoundDesc": "Такого товара не существует",
+  "privacyPolicy": "Политика конфиденциальности",
+  "orSelectCategory": "Или выберите категорию",
+  "searchProducts": "Поиск товаров"
 }

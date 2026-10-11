@@ -12,6 +12,7 @@ const TITLES = {
     'katta-buyurtma': "Katta Qurilish Buyurtmasi — NEVO GROUP",
     savat: "Xarid Savati — NEVO GROUP",
     aloqa: "Biz Bilan Bog'lanish va Ombor Manzili — NEVO GROUP",
+    'maxfiylik-siyosati': "Maxfiylik Siyosati — NEVO GROUP",
   },
   ru: {
     home: "NEVO GROUP — Сантехника и строительные товары со склада",
@@ -20,6 +21,7 @@ const TITLES = {
     'katta-buyurtma': "Оптовый заказ для строительства — NEVO GROUP",
     savat: "Корзина покупок — NEVO GROUP",
     aloqa: "Контакты и адрес склада — NEVO GROUP",
+    'maxfiylik-siyosati': "Политика конфиденциальности — NEVO GROUP",
   },
   en: {
     home: "NEVO GROUP — Industrial Plumbing & Supplies from Warehouse",
@@ -28,6 +30,7 @@ const TITLES = {
     'katta-buyurtma': "Wholesale & Commercial Orders — NEVO GROUP",
     savat: "Shopping Cart — NEVO GROUP",
     aloqa: "Contact Us & Warehouse Location — NEVO GROUP",
+    'maxfiylik-siyosati': "Privacy Policy — NEVO GROUP",
   },
 };
 
@@ -293,7 +296,19 @@ function updateStructuredData(route, param, canonicalUrl, pageTitle, pageDesc) {
         },
       ],
     };
-  } else if (route && route !== 'home') {
+  } else if (route === 'home' || !route) {
+    jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'NEVO GROUP',
+      url: SITE_ORIGIN,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${SITE_ORIGIN}/katalog?search={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    };
+  } else {
     jsonLd = {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -306,6 +321,6 @@ function updateStructuredData(route, param, canonicalUrl, pageTitle, pageDesc) {
   if (jsonLd) {
     scriptEl.textContent = JSON.stringify(jsonLd);
   } else {
-    scriptEl.textContent = '';
+    scriptEl.remove();
   }
 }

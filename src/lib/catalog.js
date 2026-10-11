@@ -7,7 +7,7 @@ import { selectRows, isNetworkError } from './supabase.js';
 const CACHE_KEY = 'nevo_catalog_v3';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const PAGE_SIZE = 1000;
-const FALLBACK_IMAGE = '/brand/nevo-logo-sm.png';
+const FALLBACK_IMAGE = '/images/placeholder-product.svg';
 
 export const PRODUCT_COLUMNS =
   'id, category_id, slug, name_uz, description_uz, price, old_price, image_url, in_stock, featured, ' +
@@ -35,6 +35,7 @@ export function onCatalogChange(fn) {
 }
 
 import { getLang, formatPriceLocalized, getLocalizedUnit } from './i18n.js';
+import { resolveProductSlug } from '../data/slug-redirects.js';
 
 export const CATEGORY_TRANSLATIONS = {
   'truba-va-fitinglar': {
@@ -207,8 +208,9 @@ const CYRILLIC_TO_LATIN = {
 };
 
 export function transliterateCyrillic(str) {
-  if (!str) return '';
-  return str.split('').map(c => CYRILLIC_TO_LATIN[c] || c).join('');
+  const s = String(str ?? '');
+  if (!s) return '';
+  return s.split('').map(c => CYRILLIC_TO_LATIN[c] || c).join('');
 }
 
 const UZ_TECH_TERMS = [
@@ -256,53 +258,66 @@ const UZ_TECH_TERMS = [
 ];
 
 export function getLocalizedGroup(rawGroup, lang = getLang()) {
-  if (!rawGroup) return '';
-  const match = GROUP_TRANSLATIONS[rawGroup];
-  if (match) return match[lang] || match.uz;
-  if (lang === 'uz' && /[\u0400-\u04FF]/.test(rawGroup)) {
-    return transliterateCyrillic(rawGroup);
+  const s = String(rawGroup ?? '').trim();
+  if (!s) return '';
+  const match = GROUP_TRANSLATIONS[s];
+  if (match) return match[lang] || match.uz || s;
+  if (lang === 'uz' && /[\u0400-\u04FF]/.test(s)) {
+    return transliterateCyrillic(s);
   }
-  return rawGroup;
+  return s;
 }
 
 export function getLocalizedSubcategory(rawSub, lang = getLang()) {
-  if (!rawSub) return '';
-  const match = SUBCAT_TRANSLATIONS[rawSub];
-  if (match) return match[lang] || match.uz;
-  if (lang === 'uz' && /[\u0400-\u04FF]/.test(rawSub)) {
-    return transliterateCyrillic(rawSub);
+  const s = String(rawSub ?? '').trim();
+  if (!s) return '';
+  const match = SUBCAT_TRANSLATIONS[s];
+  if (match) return match[lang] || match.uz || s;
+  if (lang === 'uz' && /[\u0400-\u04FF]/.test(s)) {
+    return transliterateCyrillic(s);
   }
-  return rawSub;
+  return s;
 }
 
 export function getLocalizedSizeLabel(raw, lang = getLang()) {
-  if (!raw) return '';
+  const s = String(raw ?? '').trim();
+  if (!s) return '';
   if (lang === 'uz') {
-    if (raw.includes('Диаметр')) return 'Diametr';
-    if (raw.includes('Размер')) return "O'lcham";
-    if (raw.includes('Мощность')) return 'Quvvat, kVA';
-    return transliterateCyrillic(raw);
+    if (s.includes('Диаметр')) return 'Diametr';
+    if (s.includes('Размер')) return "O'lcham";
+    if (s.includes('Мощность')) return 'Quvvat, kVA';
+    return transliterateCyrillic(s);
   }
   if (lang === 'en') {
-    if (raw.includes('Диаметр')) return 'Diameter';
-    if (raw.includes('Размер')) return 'Size';
-    if (raw.includes('Мощность')) return 'Power, kVA';
-    return raw;
+    if (s.includes('Диаметр')) return 'Diameter';
+    if (s.includes('Размер')) return 'Size';
+    if (s.includes('Мощность')) return 'Power, kVA';
+    return s;
   }
-  return raw;
+  return s;
 }
 
 export function getLocalizedProductName(productOrName, rawGroup = '', lang = getLang()) {
-  const rawName = typeof productOrName === 'string'
-    ? productOrName
-    : (productOrName?.rawNameUz || productOrName?.name_uz || productOrName?.name || '');
+  let rawName = '';
+  if (typeof productOrName === 'string') {
+    rawName = productOrName;
+  } else if (productOrName && typeof productOrName === 'object') {
+    rawName = productOrName.rawNameUz || productOrName.name_uz || productOrName._name || '';
+    if (!rawName && typeof productOrName.name === 'string') {
+      rawName = productOrName.name;
+    }
+  }
+  rawName = String(rawName ?? '').trim();
   if (!rawName) return '';
+
+  const groupStr = String(rawGroup ?? '').trim();
 
   if (lang === 'uz') {
     let uzName = rawName;
-    if (rawGroup && GROUP_TRANSLATIONS[rawGroup]?.uz) {
-      if (uzName.startsWith(rawGroup)) {
-        uzName = uzName.replace(rawGroup, GROUP_TRANSLATIONS[rawGroup].uz);
+    if (groupStr && GROUP_TRANSLATIONS[groupStr]?.uz) {
+      const translatedGroup = GROUP_TRANSLATIONS[groupStr].uz;
+      if (uzName.startsWith(groupStr)) {
+        uzName = uzName.replace(groupStr, translatedGroup);
       }
     }
     for (const [from, to] of UZ_TECH_TERMS) {
@@ -313,17 +328,18 @@ export function getLocalizedProductName(productOrName, rawGroup = '', lang = get
     if (/[\u0400-\u04FF]/.test(uzName)) {
       uzName = transliterateCyrillic(uzName);
     }
-    return uzName.replace(/\s+/g, ' ').trim();
+    return String(uzName ?? '').replace(/\s+/g, ' ').trim();
   }
 
   if (lang === 'ru') {
-    if (rawGroup && GROUP_TRANSLATIONS[rawGroup]?.ru) {
-      const uzGroup = GROUP_TRANSLATIONS[rawGroup].uz;
+    if (groupStr && GROUP_TRANSLATIONS[groupStr]?.ru) {
+      const uzGroup = GROUP_TRANSLATIONS[groupStr].uz;
+      const ruGroup = GROUP_TRANSLATIONS[groupStr].ru;
       if (uzGroup && rawName.startsWith(uzGroup)) {
-        return rawName.replace(uzGroup, GROUP_TRANSLATIONS[rawGroup].ru);
+        return String(rawName.replace(uzGroup, ruGroup) ?? '').trim();
       }
-      if (rawName.startsWith(rawGroup)) {
-        return rawName.replace(rawGroup, GROUP_TRANSLATIONS[rawGroup].ru);
+      if (rawName.startsWith(groupStr)) {
+        return String(rawName.replace(groupStr, ruGroup) ?? '').trim();
       }
     }
     return rawName;
@@ -331,17 +347,17 @@ export function getLocalizedProductName(productOrName, rawGroup = '', lang = get
 
   if (lang === 'en') {
     let enName = rawName;
-    if (rawGroup && GROUP_TRANSLATIONS[rawGroup]?.en) {
-      const ruGroup = rawGroup;
-      const uzGroup = GROUP_TRANSLATIONS[rawGroup].uz;
-      const enGroup = GROUP_TRANSLATIONS[rawGroup].en;
+    if (groupStr && GROUP_TRANSLATIONS[groupStr]?.en) {
+      const ruGroup = groupStr;
+      const uzGroup = GROUP_TRANSLATIONS[groupStr].uz;
+      const enGroup = GROUP_TRANSLATIONS[groupStr].en;
       if (ruGroup && enName.startsWith(ruGroup)) {
         enName = enName.replace(ruGroup, enGroup);
       } else if (uzGroup && enName.startsWith(uzGroup)) {
         enName = enName.replace(uzGroup, enGroup);
       }
     }
-    enName = enName
+    enName = String(enName ?? '')
       .replace(/\(электропривод\)/gi, '(Electric Actuator)')
       .replace(/\bДу\s*/g, 'DN ')
       .replace(/\bРу\s*/g, 'PN ')
@@ -352,63 +368,82 @@ export function getLocalizedProductName(productOrName, rawGroup = '', lang = get
     if (/[\u0400-\u04FF]/.test(enName)) {
       enName = transliterateCyrillic(enName);
     }
-    return enName.replace(/\s+/g, ' ').trim();
+    return String(enName ?? '').replace(/\s+/g, ' ').trim();
   }
 
   return rawName;
 }
 
 export function getLocalizedProductDescription(product, rawDesc = '', lang = getLang()) {
-  const name = typeof product === 'string' ? product : product?.name || '';
-  if (lang === 'uz') {
-    if (!rawDesc || /[\u0400-\u04FF]/.test(rawDesc)) {
-      return `${name} — NEVO GROUP rasmiy omboridan sertifikatlangan zavod kafolati bilan.`;
+  let name = '';
+  if (typeof product === 'string') {
+    name = product;
+  } else if (product && typeof product === 'object') {
+    name = product.rawNameUz || product.name_uz || '';
+    if (!name) {
+      try {
+        name = product.name || '';
+      } catch {
+        name = '';
+      }
     }
-    return rawDesc;
+  }
+  name = String(name ?? '').trim();
+  const desc = String(rawDesc ?? '').trim();
+
+  if (lang === 'uz') {
+    if (!desc || /[\u0400-\u04FF]/.test(desc)) {
+      return `${name || 'Mahsulot'} — NEVO GROUP rasmiy omboridan sertifikatlangan zavod kafolati bilan.`;
+    }
+    return desc;
   }
   if (lang === 'ru') {
-    if (!rawDesc) {
-      return `${name} — официальные поставки со склада NEVO GROUP с заводской гарантией.`;
+    if (!desc) {
+      return `${name || 'Товар'} — официальные поставки со склада NEVO GROUP с заводской гарантией.`;
     }
-    return rawDesc;
+    return desc;
   }
   if (lang === 'en') {
-    if (!rawDesc) {
-      return `${name} — official supplies directly from NEVO GROUP warehouse with quality guarantee.`;
+    if (!desc) {
+      return `${name || 'Product'} — official supplies directly from NEVO GROUP warehouse with quality guarantee.`;
     }
-    return rawDesc;
+    return desc;
   }
-  return rawDesc || '';
+  return desc || `${name || 'Mahsulot'} — NEVO GROUP`;
 }
 
 export function mapProduct(row, categoriesById) {
   const category = categoriesById.get(row.category_id);
   const price = Number(row.price) || 0;
   const oldPrice = row.old_price === null || row.old_price === undefined ? null : Number(row.old_price);
-  const rawGroup = row.group_name || '';
-  const rawSubcat = row.subcategory_uz || '';
-  const rawNameUz = row.name_uz || '';
-  const categorySlug = category ? category.slug : '';
+  const rawGroup = String(row.group_name ?? '');
+  const rawSubcat = String(row.subcategory_uz ?? '');
+  const rawNameUz = String(row.name_uz ?? '');
+  const categorySlug = category ? String(category.slug ?? '') : '';
+  const rawSlug = String(row.slug ?? '');
+  const slug = resolveProductSlug(rawSlug);
 
   return {
     id: Number(row.id),
-    slug: row.slug,
+    slug,
+    rawSlug,
+    legacySlug: rawSlug !== slug ? rawSlug : null,
     categoryId: Number(row.category_id),
     rawNameUz,
-    sku: row.sku || '',
-    rawDescriptionUz: row.description_uz || '',
+    sku: String(row.sku ?? ''),
+    rawDescriptionUz: String(row.description_uz ?? ''),
     categorySlug,
     subcategoryRaw: rawSubcat,
-    brand: row.brand || '',
+    brand: String(row.brand ?? ''),
     price,
     oldPrice,
-    unit: row.unit || '1 dona',
+    unit: String(row.unit ?? '1 dona'),
     groupNameRaw: rawGroup,
-    size: row.size || '',
-    sizeLabelRaw: row.size_label || '',
-    packQty: row.pack_qty || '',
-    supplier: row.supplier || '',
-    priceDate: row.price_date || '',
+    size: String(row.size ?? ''),
+    sizeLabelRaw: String(row.size_label ?? ''),
+    packQty: String(row.pack_qty ?? ''),
+    supplier: String(row.supplier ?? ''),
+    priceDate: String(row.price_date ?? ''),
     image: row.image_url || FALLBACK_IMAGE,
     hasImage: Boolean(row.image_url),
     specs: row.specs && typeof row.specs === 'object' ? row.specs : {},
@@ -618,7 +653,14 @@ export function getProductById(id) {
 }
 
 export function getProductBySlug(slug) {
-  return state.products.find((p) => p.slug === slug) || null;
+  if (!slug) return null;
+  const s = String(slug).trim();
+  const target = resolveProductSlug(s);
+  return (
+    state.products.find(
+      (p) => p.slug === target || p.slug === s || p.rawSlug === s || p.legacySlug === s
+    ) || null
+  );
 }
 
 export function getCategoryBySlug(slug) {

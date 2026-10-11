@@ -186,7 +186,7 @@ export function initHeaderEvents() {
         } else {
           dropdown.innerHTML = matches.map(p => `
             <a href="/katalog/mahsulot/${esc(p.slug)}" class="search-result-item" onclick="document.getElementById('search-dropdown').classList.remove('active')">
-              <img src="${esc(p.image)}" alt="${esc(p.name)}" width="44" height="44" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';">
+              <img src="${esc(p.image)}" alt="${esc(p.name)}" width="44" height="44" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/images/placeholder-product.svg';">
               <div class="search-result-info">
                 <div class="search-result-title">${esc(p.name)}</div>
                 <div class="search-result-sub">

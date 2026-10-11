@@ -299,5 +299,10 @@
   "catalogLoadError": "Catalog failed to load, please try again.",
   "catalogLoading": "Loading catalog…",
   "searchNotFound": "no products found.",
-  "viewAllResults": "View all results"
+  "viewAllResults": "View all results",
+  "productNotFound": "Product not found",
+  "productNotFoundDesc": "This product does not exist",
+  "privacyPolicy": "Privacy Policy",
+  "orSelectCategory": "Or select a category",
+  "searchProducts": "Search products"
 }

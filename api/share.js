@@ -6,6 +6,7 @@
 // odam esa darhol saytdagi mahsulot sahifasiga yo'naltiriladi.
 
 import { SLUG_RE, restGet, siteOrigin, escapeHtml, formatPrice, jsonLdScript } from './_lib.js';
+import { resolveProductSlug, getLegacySlug } from '../src/data/slug-redirects.js';
 
 const SITE = 'NEVO GROUP';
 
@@ -45,7 +46,8 @@ function productJsonLd({ origin, slug, product }) {
 }
 
 function renderPage({ origin, slug, product }) {
-  const target = `/#product/${slug}`;
+  const canonicalSlug = resolveProductSlug(slug);
+  const target = `/katalog/mahsulot/${canonicalSlug}`;
   const title = product ? `${product.name_uz} — ${SITE}` : `Mahsulot topilmadi — ${SITE}`;
   const description = product
     ? `${formatPrice(product.price)} / ${product.unit}${product.brand ? ` · ${product.brand}` : ''}. ` +
@@ -99,10 +101,16 @@ export default async function handler(req, res) {
 
   const origin = siteOrigin(req);
   let product = null;
+  const legacySlug = getLegacySlug(slug);
   try {
-    const rows = await restGet(
+    let rows = await restGet(
       `products?select=name_uz,price,unit,brand,sku,image_url,in_stock&slug=eq.${encodeURIComponent(slug)}&limit=1`
     );
+    if (!rows.length && legacySlug && legacySlug !== slug) {
+      rows = await restGet(
+        `products?select=name_uz,price,unit,brand,sku,image_url,in_stock&slug=eq.${encodeURIComponent(legacySlug)}&limit=1`
+      );
+    }
     product = rows[0] || null;
   } catch (err) {
     // Baza vaqtincha javob bermasa ham havola ishlasin: umumiy karta + yo'naltirish

@@ -56,8 +56,8 @@
   --nevo-gold: var(--nevo-sky-400);
   --nevo-gold-light: var(--nevo-sky-100);
   --nevo-gold-hover: var(--nevo-sky-500);
-  --nevo-blue: var(--nevo-blue-600);
-  --nevo-blue-hover: var(--nevo-blue-700);
+  --nevo-blue: #1D4ED8;
+  --nevo-blue-hover: #1E40AF;
   --nevo-orange: var(--nevo-sky-400);
   --nevo-orange-hover: var(--nevo-sky-500);
   --nevo-navy: var(--nevo-navy-900);

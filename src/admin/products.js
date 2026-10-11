@@ -14,7 +14,12 @@ const SPEC_KEYS = [
   { key: 'Ishlab chiqaruvchi', id: 'spec-maker', label: 'Ishlab chiqaruvchi' },
 ];
 
-const listState = { search: '', category: 'all', stock: 'all', visible: PAGE_SIZE };
+const listState = { search: '', category: 'all', stock: 'all', image: 'all', visible: PAGE_SIZE };
+
+export function hasRealProductImage(p) {
+  const url = String(p?.image_url ?? '');
+  return Boolean(url && !url.includes('placeholder') && !url.includes('nevo-logo'));
+}
 
 async function fetchCategories(supabase) {
   return supabase.from('categories').select('id, slug, name_uz').order('sort_order').order('id');
@@ -88,6 +93,8 @@ export async function renderProductsPage(container, ctx) {
       if (listState.category !== 'all' && String(p.category_id) !== listState.category) return false;
       if (listState.stock === 'in' && !p.in_stock) return false;
       if (listState.stock === 'out' && p.in_stock) return false;
+      if (listState.image === 'missing' && hasRealProductImage(p)) return false;
+      if (listState.image === 'has' && !hasRealProductImage(p)) return false;
       if (!q) return true;
       return [p.name_uz, p.size, p.sku, p.slug, p.brand, p.subcategory_uz].some((v) => (v || '').toLowerCase().includes(q));
     });
@@ -117,9 +124,12 @@ export async function renderProductsPage(container, ctx) {
               <tr>
                 <td>
                   <div class="admin-product-cell">
-                    <img class="admin-thumb" src="${esc(p.image_url || '/brand/nevo-logo-sm.png')}" alt="" loading="lazy" onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';" />
+                    <img class="admin-thumb" src="${esc(p.image_url || '/images/placeholder-product.svg')}" alt="" loading="lazy" onerror="this.onerror=null;this.src='/images/placeholder-product.svg';" />
                     <div>
-                      <div style="font-weight: 600;">${esc(p.name_uz)}</div>
+                      <div style="font-weight: 600;">
+                        ${esc(p.name_uz)}
+                        ${hasRealProductImage(p) ? '' : '<span class="flag flag-no" style="font-size: 10px; margin-left: 4px; padding: 2px 6px;">Rasmsiz</span>'}
+                      </div>
                       <div class="admin-cell-sub">${esc([p.sku, p.brand].filter(Boolean).join(' · ') || p.slug)}</div>
                     </div>
                   </div>
@@ -183,6 +193,8 @@ export async function renderProductsPage(container, ctx) {
     });
   };
 
+  const missingCount = products.filter((p) => !hasRealProductImage(p)).length;
+
   body.innerHTML = `
     <div class="admin-toolbar">
       <label for="products-search" class="visually-hidden">Qidirish</label>
@@ -197,6 +209,12 @@ export async function renderProductsPage(container, ctx) {
         <option value="all" ${listState.stock === 'all' ? 'selected' : ''}>Barcha holatlar</option>
         <option value="in" ${listState.stock === 'in' ? 'selected' : ''}>Mavjud</option>
         <option value="out" ${listState.stock === 'out' ? 'selected' : ''}>Mavjud emas</option>
+      </select>
+      <label for="products-image" class="visually-hidden">Rasm holati</label>
+      <select class="admin-select" id="products-image">
+        <option value="all" ${listState.image === 'all' ? 'selected' : ''}>Barcha rasmlar</option>
+        <option value="missing" ${listState.image === 'missing' ? 'selected' : ''}>Rasmsiz (${missingCount} ta)</option>
+        <option value="has" ${listState.image === 'has' ? 'selected' : ''}>Rasmli</option>
       </select>
     </div>
     <div id="products-table"></div>
@@ -218,6 +236,11 @@ export async function renderProductsPage(container, ctx) {
   });
   body.querySelector('#products-stock').addEventListener('change', (e) => {
     listState.stock = e.target.value;
+    listState.visible = PAGE_SIZE;
+    drawTable();
+  });
+  body.querySelector('#products-image').addEventListener('change', (e) => {
+    listState.image = e.target.value;
     listState.visible = PAGE_SIZE;
     drawTable();
   });

@@ -3,7 +3,7 @@
 
 import { icon } from '../icons.js';
 import { esc } from '../lib/format.js';
-import { getCatalog, getProductBySlug } from '../lib/catalog.js';
+import { getCatalog, getProductBySlug, onCatalogChange } from '../lib/catalog.js';
 import { t } from '../lib/i18n.js';
 import { CONTACTS } from '../data/content.js';
 
@@ -99,7 +99,7 @@ function renderModalDOM() {
   root.className = 'product-modal-root active';
   root.innerHTML = `
     <div class="product-modal-backdrop" id="product-modal-backdrop" aria-hidden="true"></div>
-    <div class="product-modal-container" role="dialog" aria-modal="true" aria-label="${name}">
+    <div class="product-modal-container product-modal" role="dialog" aria-modal="true" aria-label="${name}">
       
       <!-- Top Bar: Category breadcrumb & Close button -->
       <div class="product-modal-topbar">
@@ -146,7 +146,7 @@ function renderModalDOM() {
                 class="modal-main-img"
                 id="modal-main-image"
                 loading="eager"
-                onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';"
+                onerror="this.onerror=null;this.src='/images/placeholder-product.svg';"
               />
               <div class="modal-img-zoom-lens" id="modal-zoom-lens" aria-hidden="true"></div>
             </div>
@@ -186,7 +186,8 @@ function renderModalDOM() {
         <!-- Right: Specs Table & Purchase Actions -->
         <div class="modal-info-column">
           <div class="modal-info-header">
-            <h2 class="modal-product-title">${name}</h2>
+            <h2 class="modal-product-title product-modal-title">${name}</h2>
+            ${p.description ? `<p class="modal-product-desc product-modal-desc" style="color: var(--muted); font-size: 14px; margin-top: 6px; margin-bottom: 12px; line-height: 1.5;">${esc(p.description)}</p>` : ''}
             <div class="modal-badges-strip">
               ${
                 p.inStock
@@ -317,7 +318,7 @@ function renderModalDOM() {
               </button>
 
               <a
-                href="https://t.me/${CONTACTS.telegramBot.replace('@', '')}?start=order_${p.id}"
+                href="https://t.me/${String(CONTACTS.telegramBot || CONTACTS.telegram || 'Nevo_Group').replace('@', '')}?start=order_${p.id}"
                 target="_blank"
                 rel="noopener"
                 class="btn-modal-order"
@@ -346,7 +347,7 @@ function renderModalDOM() {
                 (rel) => `
               <div class="modal-related-item" data-slug="${esc(rel.slug)}">
                 <div class="rel-thumb-wrap">
-                  <img src="${esc(rel.image)}" alt="${esc(rel.name)}" loading="lazy" onerror="this.src='/brand/nevo-logo-sm.png';">
+                  <img src="${esc(rel.image)}" alt="${esc(rel.name)}" loading="lazy" onerror="this.src='/images/placeholder-product.svg';">
                 </div>
                 <div class="rel-info">
                   <h4 class="rel-name" title="${esc(rel.name)}">${esc(rel.name)}</h4>
@@ -695,18 +696,25 @@ export function initProductModalGlobal() {
     }
   });
 
-  // Check URL query param on page load
-  try {
-    const url = new URL(window.location.href);
-    const openSlug = url.searchParams.get('open');
-    if (openSlug) {
-      const catalog = getCatalog();
-      if (catalog.status === 'ready') {
-        const prod = getProductBySlug(openSlug);
-        if (prod) openProductModal(prod);
+  const checkUrlOpen = () => {
+    try {
+      const url = new URL(window.location.href);
+      const openSlug = url.searchParams.get('open');
+      if (openSlug) {
+        const catalog = getCatalog();
+        if (catalog.status === 'ready') {
+          const prod = getProductBySlug(openSlug);
+          if (prod && (!activeProduct || activeProduct.id !== prod.id)) {
+            openProductModal(prod);
+          }
+        }
       }
+    } catch (e) {
+      void e;
     }
-  } catch (e) {
-    void e;
-  }
+  };
+
+  onCatalogChange(checkUrlOpen);
+  window.addEventListener('popstate', checkUrlOpen);
+  checkUrlOpen();
 }

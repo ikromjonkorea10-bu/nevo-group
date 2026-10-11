@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" fill="none">
+  <rect width="400" height="400" rx="16" fill="#F8FAFC"/>
+  <rect x="1" y="1" width="398" height="398" rx="15" stroke="#E2E8F0" stroke-width="2"/>
+  <g transform="translate(140, 140)" stroke="#94A3B8" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Clean Neutral Engineering Hardware Icon -->
+    <path d="M60 10 L110 38 L110 90 L60 118 L10 90 L10 38 Z" fill="#EEF2F6"/>
+    <path d="M10 38 L60 66 L110 38"/>
+    <path d="M60 66 L60 118"/>
+    <!-- Central mechanical circle -->
+    <circle cx="60" cy="52" r="14" fill="#E2E8F0" stroke="#94A3B8" stroke-width="3"/>
+  </g>
+  <text x="200" y="280" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#94A3B8" letter-spacing="0.5">NEVO GROUP</text>
+</svg>

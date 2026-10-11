@@ -125,8 +125,8 @@
   --nevo-gold-light: #E0F2FE;
   --nevo-gold-hover: #0284C7;
   --nevo-gold-glow: rgba(56, 189, 248, 0.45);
-  --nevo-blue: #0EA5E9;
-  --nevo-blue-hover: #0284C7;
+  --nevo-blue: #1D4ED8;
+  --nevo-blue-hover: #1E40AF;
   --nevo-orange: #0EA5E9;
   --nevo-orange-hover: #0284C7;
   --nevo-navy: #060B18;
@@ -8287,8 +8287,8 @@ body.modal-backdrop-open {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #0EA5E9;
-  border: 1px solid #38BDF8;
+  background: var(--nevo-blue, #1D4ED8);
+  border: 1px solid #2563EB;
   color: #FFFFFF;
   font-size: 14px;
   font-weight: 750;
@@ -8299,8 +8299,8 @@ body.modal-backdrop-open {
 }
 
 .btn-modal-cart:hover {
-  background: #0284C7;
-  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.4);
+  background: var(--nevo-blue-hover, #1E40AF);
+  box-shadow: 0 4px 16px rgba(29, 78, 216, 0.4);
 }
 
 .btn-modal-order {
@@ -8744,4 +8744,69 @@ body.search-modal-open {
     background-position: center;
   }
 }
+
+/* Accessibility: Skip to Content */
+.skip-to-content {
+  position: absolute;
+  top: -120px;
+  left: 20px;
+  background: var(--nevo-blue, #1D4ED8);
+  color: #ffffff !important;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  z-index: 100000;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  transition: top 0.2s ease-in-out;
+}
+.skip-to-content:focus {
+  top: 20px;
+  outline: 3px solid #60A5FA;
+  outline-offset: 3px;
+}
+
+/* Accessibility: Mobile Touch Targets (>= 44px) */
+@media (max-width: 768px) {
+  .qty-btn,
+  .cart-qty-btn {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    width: 44px !important;
+    height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .modal-close-btn {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+  .preview-exit-btn {
+    min-height: 44px !important;
+    padding: 10px 16px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+  .hero-slide-dot,
+  .nevo-dot,
+  .cat-hero-dot {
+    position: relative;
+  }
+  .hero-slide-dot::before,
+  .nevo-dot::before,
+  .cat-hero-dot::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
 

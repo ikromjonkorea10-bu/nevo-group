@@ -299,5 +299,10 @@
   "catalogLoadError": "Katalog yuklanmadi, qayta urinib ko'ring.",
   "catalogLoading": "Katalog yuklanmoqda…",
   "searchNotFound": "bo'yicha mahsulot topilmadi.",
-  "viewAllResults": "Barcha natijalarni ko'rish"
+  "viewAllResults": "Barcha natijalarni ko'rish",
+  "productNotFound": "Mahsulot topilmadi",
+  "productNotFoundDesc": "Bunday mahsulot mavjud emas",
+  "privacyPolicy": "Maxfiylik siyosati",
+  "orSelectCategory": "Yoki bo'limni tanlang",
+  "searchProducts": "Mahsulot qidirish"
 }

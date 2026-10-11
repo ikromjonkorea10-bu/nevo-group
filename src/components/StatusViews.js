@@ -1,5 +1,6 @@
 import { icon } from '../icons.js';
 import { esc } from '../lib/format.js';
+import { t } from '../lib/i18n.js';
 
 export function renderProductCardSkeleton() {
   return `
@@ -87,31 +88,33 @@ export function renderConfigError() {
  * @param {{ categories?: Array<{ slug: string, name: string, count: number }> }} [options]
  */
 export function renderNotFound(title, text, { categories = [] } = {}) {
+  const displayTitle = title || t('productNotFound');
+  const displayText = text || t('productNotFoundDesc');
   return `
     <div class="shell" style="padding-top: 40px; padding-bottom: 60px;">
       <div class="status-card not-found-card">
         <div class="status-icon">${icon('boxes', '', 26)}</div>
-        <h1 class="status-title">${esc(title)}</h1>
-        <p class="status-text">${esc(text)}</p>
+        <h1 class="status-title">${esc(displayTitle)}</h1>
+        <p class="status-text">${esc(displayText)}</p>
 
         <form class="not-found-search" role="search" onsubmit="event.preventDefault(); const q = this.elements.q.value.trim(); const target = q ? '/katalog?search=' + encodeURIComponent(q) : '/katalog'; if (window.__navigateTo) window.__navigateTo(target); else window.location.href = target;">
-          <label for="not-found-search-input" class="visually-hidden">Mahsulot qidirish</label>
+          <label for="not-found-search-input" class="visually-hidden">${t('searchProducts')}</label>
           ${icon('search', '', 18)}
-          <input type="search" id="not-found-search-input" name="q" placeholder="Mahsulot nomi yoki o'lchami" autocomplete="off" enterkeyhint="search" />
-          <button type="submit" class="btn-primary">Qidirish</button>
+          <input type="search" id="not-found-search-input" name="q" placeholder="${esc(t('searchPlaceholder'))}" autocomplete="off" enterkeyhint="search" />
+          <button type="submit" class="btn-primary">${t('search')}</button>
         </form>
 
         <div class="not-found-actions">
           <a href="/katalog" class="btn-primary">
             ${icon('chevron-left', '', 18)}
-            <span>Katalogga qaytish</span>
+            <span>${t('backToCatalog')}</span>
           </a>
-          <a href="/" class="btn-secondary">Bosh sahifa</a>
+          <a href="/" class="btn-secondary">${t('home')}</a>
         </div>
 
         ${categories.length ? `
           <div class="not-found-cats">
-            <div class="not-found-cats-label">Yoki bo'limni tanlang</div>
+            <div class="not-found-cats-label">${t('orSelectCategory')}</div>
             <div class="not-found-cats-list">
               ${categories.map((c) => `
                 <a href="/katalog/${esc(c.slug)}" class="cat-pill">${esc(c.name)} (${c.count})</a>

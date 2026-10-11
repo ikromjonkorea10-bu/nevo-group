@@ -210,7 +210,7 @@ export function renderCartPage() {
                 height="64"
                 loading="lazy"
                 decoding="async"
-                onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';"
+                onerror="this.onerror=null;this.src='/images/placeholder-product.svg';"
               />
               <div>
                 <a href="/katalog/mahsulot/${esc(item.product.slug)}" class="cart-item-name">${esc(item.product.name)}</a>

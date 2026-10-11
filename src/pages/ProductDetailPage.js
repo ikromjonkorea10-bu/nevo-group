@@ -15,8 +15,8 @@ export function renderProductDetailPage(slug) {
 
   if (!product) {
     return renderNotFound(
-      t('categoryNotFound'),
-      t('categoryNotFoundDesc'),
+      t('productNotFound'),
+      t('productNotFoundDesc'),
       { categories: getCatalog().categories }
     );
   }
@@ -40,34 +40,11 @@ export function renderProductDetailPage(slug) {
     [t('skuCol'), sku],
   ].filter(([, value]) => Boolean(value));
 
-  const jsonLd = {
-    '@context': 'https://schema.org/',
-    '@type': 'Product',
-    name: product.name,
-    image: product.image.startsWith('http') ? product.image : `https://nevogroup.uz${product.image}`,
-    description: product.description || `${product.name} — NEVO GROUP rasmiy omboridan`,
-    sku: sku,
-    brand: {
-      '@type': 'Brand',
-      name: manufacturer,
-    },
-    offers: {
-      '@type': 'Offer',
-      url: `https://nevogroup.uz/katalog/mahsulot/${product.slug}`,
-      priceCurrency: 'UZS',
-      price: product.price,
-      availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      seller: {
-        '@type': 'Organization',
-        name: 'NEVO GROUP',
-      },
-    },
-  };
-
-  const telegramLink = `https://t.me/${CONTACTS.telegramBot.replace('@', '')}?start=order_${product.id}`;
+  const botHandle = String(CONTACTS.telegramBot || CONTACTS.telegram || 'Nevo_Group').replace('@', '');
+  const telegramLink = `https://t.me/${botHandle}?start=order_${product.id}`;
 
   return `
-    <div class="shell product-detail-wrap">
+    <div class="shell product-detail-wrap" id="main-content">
       <!-- Breadcrumbs -->
       <nav class="breadcrumbs" aria-label="Breadcrumb">
         <a href="/">${t('breadHome')}</a>
@@ -98,7 +75,7 @@ export function renderProductDetailPage(slug) {
               fetchpriority="high"
               decoding="async"
               class="detail-gallery-img"
-              onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';"
+              onerror="this.onerror=null;this.src='/images/placeholder-product.svg';"
             />
           </div>
         </div>
@@ -248,10 +225,6 @@ export function renderProductDetailPage(slug) {
         </section>
       ` : ''}
 
-      <!-- JSON-LD Product Structured Data -->
-      <script type="application/ld+json">
-        ${JSON.stringify(jsonLd)}
-      </script>
     </div>
   `;
 }

@@ -12,7 +12,7 @@ import 'swiper/css/free-mode';
 import { icon } from './icons.js';
 import { store } from './store.js';
 import { isSupabaseConfigured } from './lib/supabase.js';
-import { getCatalog, loadCatalog, onCatalogChange } from './lib/catalog.js';
+import { getCatalog, loadCatalog, onCatalogChange, getProductBySlug } from './lib/catalog.js';
 import { renderPageSkeleton, renderLoadError, renderConfigError } from './components/StatusViews.js';
 import { renderHeader, initHeaderEvents, updateCartBadges } from './components/Header.js';
 import { renderFooter } from './components/Footer.js';
@@ -24,13 +24,15 @@ import { renderTanlashPage, initTanlashEvents } from './pages/TanlashPage.js';
 import { renderKattaBuyurtmaPage, initKattaBuyurtmaEvents } from './pages/KattaBuyurtmaPage.js';
 import { renderCartPage, initCartEvents } from './pages/CartPage.js';
 import { renderContactPage, initContactEvents } from './pages/ContactPage.js';
+import { renderPrivacyPolicyPage } from './pages/PrivacyPolicyPage.js';
 import { initAnalytics, trackPageview } from './lib/analytics.js';
 import { updatePageMeta } from './lib/pageMeta.js';
 import { initIntroSplash } from './components/IntroSplash.js';
 import { renderMaintenanceScreen, initMaintenanceUnlock } from './components/MaintenanceScreen.js';
-import { initProductModalGlobal } from './components/ProductModal.js';
+import { initProductModalGlobal, openProductModal, getActiveModalProduct } from './components/ProductModal.js';
 import { initQuickSearchGlobal } from './components/QuickSearch.js';
 import { t, onLangChange } from './lib/i18n.js';
+import { resolveProductSlug } from './data/slug-redirects.js';
 
 window.__getCatalog = getCatalog;
 
@@ -197,6 +199,34 @@ function parseRoute() {
     param = parts[1] || '';
   }
 
+  if (route === 'product' && param) {
+    const canonicalSlug = resolveProductSlug(param);
+    if (canonicalSlug && canonicalSlug !== param) {
+      try {
+        const url = new URL(window.location.href);
+        url.pathname = `/katalog/mahsulot/${canonicalSlug}`;
+        window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+      } catch (e) {
+        void e;
+      }
+      param = canonicalSlug;
+    }
+  }
+
+  if (queryParams.open) {
+    const canonicalOpen = resolveProductSlug(queryParams.open);
+    if (canonicalOpen && canonicalOpen !== queryParams.open) {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('open', canonicalOpen);
+        window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+      } catch (e) {
+        void e;
+      }
+      queryParams.open = canonicalOpen;
+    }
+  }
+
   return { route, param, queryParams, raw: cleanPath || 'home' };
 }
 
@@ -264,9 +294,10 @@ const KNOWN_ROUTES = new Set([
   'biz-haqimizda',
   'yangiliklar',
   'hamkorlar',
+  'maxfiylik-siyosati',
 ]);
 // Katalog tayyor bo'lishini kutmaydigan sahifalar (yuklanish holatini o'zi ko'rsatadi)
-const STATIC_ROUTES = new Set(['home', 'aloqa']);
+const STATIC_ROUTES = new Set(['home', 'aloqa', 'maxfiylik-siyosati']);
 
 let lastRouteKey = null;
 
@@ -317,6 +348,8 @@ function router() {
     pageHtml = renderCartPage();
   } else if (route === 'aloqa') {
     pageHtml = renderContactPage();
+  } else if (route === 'maxfiylik-siyosati') {
+    pageHtml = renderPrivacyPolicyPage();
   } else {
     pageHtml = renderHomePage();
   }
@@ -325,7 +358,7 @@ function router() {
 
   renderApp(app, `
     ${renderHeader()}
-    <div id="page-container">${pageHtml}</div>
+    <main id="main-content" tabindex="-1"><div id="page-container">${pageHtml}</div></main>
     ${renderFooter()}
     ${renderMobileBottomNav(route)}
     ${showFloatingBtn ? `
@@ -378,11 +411,19 @@ function router() {
     window.scrollTo({ top: 0, behavior: 'instant' });
     trackPageview(route, param);
   }
+
+  if (queryParams.open && getCatalog().status === 'ready') {
+    const prod = getProductBySlug(queryParams.open);
+    if (prod && (!getActiveModalProduct() || getActiveModalProduct().id !== prod.id)) {
+      openProductModal(prod);
+    }
+  }
 }
 
 window.__retryCatalog = () => {
   loadCatalog();
 };
+window.__getCatalog = getCatalog;
 
 // Katalog holati o'zgarganda (yuklandi / xatolik) sahifani qayta chizish
 onCatalogChange((state) => {

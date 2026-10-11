@@ -96,7 +96,7 @@ export function renderProductCard(product) {
           loading="lazy"
           decoding="async"
           class="product-card-img"
-          onerror="this.onerror=null;this.src='/brand/nevo-logo-sm.png';"
+          onerror="this.onerror=null;this.src='/images/placeholder-product.svg';"
         />
 
         <!-- Hover View Prompt -->

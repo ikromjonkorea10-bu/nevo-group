@@ -233,7 +233,7 @@ function renderQuickSearchDOM() {
                       data-id="${p.id}"
                     >
                       <div class="search-prod-thumb">
-                        <img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" onerror="this.src='/brand/nevo-logo-sm.png';">
+                        <img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" onerror="this.src='/images/placeholder-product.svg';">
                       </div>
                       <div class="search-prod-info">
                         <div class="search-prod-title" title="${esc(p.name)}">${esc(p.name)}</div>

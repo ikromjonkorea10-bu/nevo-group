@@ -21,6 +21,22 @@ export function renderFooter() {
                 ${icon('map-pin', '', 16)}
                 <span>${t('deliveryTop')}</span>
               </div>
+              ${CONTACTS.address ? `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  ${icon('map-pin', '', 16)}
+                  <span>${esc(CONTACTS.address)}</span>
+                </div>
+              ` : `
+                <!-- [MA'LUMOT KERAK] Manzil: mijoz taqdim etganda ko'rsatiladi -->
+              `}
+              ${CONTACTS.workingHours ? `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  ${icon('clock', '', 16)}
+                  <span>${esc(CONTACTS.workingHours)}</span>
+                </div>
+              ` : `
+                <!-- [MA'LUMOT KERAK] Ish vaqti: mijoz taqdim etganda ko'rsatiladi -->
+              `}
               ${CONTACTS.phones.map((p) => `
                 <a href="tel:${p.tel}" style="display: flex; align-items: center; gap: 8px; color: inherit;">
                   ${icon('phone', '', 16)}
@@ -57,6 +73,7 @@ export function renderFooter() {
               <li><a href="/katta-buyurtma">${t('bulkOrderMenu')}</a></li>
               <li><a href="/savat">${t('navCart')}</a></li>
               <li><a href="/aloqa">${t('howToOrder')}</a></li>
+              <li><a href="/maxfiylik-siyosati">${t('privacyPolicy')}</a></li>
             </ul>
           </div>
 
@@ -73,7 +90,10 @@ export function renderFooter() {
 
         <div class="footer-disclaimer-box">
           <p>${t('footerDisclaimer')}</p>
-          <p>© 2026 NEVO GROUP. ${t('allRightsReserved')}</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 10px;">
+            <p style="margin: 0;">© 2026 NEVO GROUP. ${t('allRightsReserved')}</p>
+            <a href="/maxfiylik-siyosati" style="color: var(--muted); font-size: 13px; text-decoration: underline;">${t('privacyPolicy')}</a>
+          </div>
         </div>
       </div>
     </footer>
