@@ -4,6 +4,8 @@ if (window.location.pathname.replace(/\/+$/, '') === '/admin') {
 }
 
 import './style.css';
+import { syncHeroVideoHtmlClass } from './lib/heroVideo.js';
+syncHeroVideoHtmlClass();
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';

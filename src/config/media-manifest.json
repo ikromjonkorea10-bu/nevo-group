@@ -327,7 +327,6 @@
     },
     {
       "id": "home-hero-video-720",
-      "status": "unused",
       "page": "home",
       "section": "hero-video",
       "type": "video/mp4",
@@ -372,7 +371,6 @@
     },
     {
       "id": "catalog-hero-video-720",
-      "status": "unused",
       "page": "catalog",
       "section": "hero-video",
       "type": "video/mp4",

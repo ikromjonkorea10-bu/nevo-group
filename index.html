@@ -3,6 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script>
+      (function() {
+        try {
+          var p = new URLSearchParams(window.location.search);
+          var hv = p.get('hv');
+          if (hv === '1' || hv === 'true') return;
+          if (hv === '0' || hv === 'false') {
+            document.documentElement.classList.add('no-hero-video');
+            return;
+          }
+          var mq = function(q) { return window.matchMedia && window.matchMedia(q).matches; };
+          var isMobile = mq('(max-width: 899px)') || mq('(pointer: coarse)');
+          if (isMobile) {
+            var ua = navigator.userAgent || '';
+            var hostile = /miuibrowser|xiaomi|mint browser|ucbrowser|ubrowser|ucweb|quark|huaweibrowser|hbpc|honorbrowser|heytapbrowser|oppobrowser|vivobrowser|baidubrowser|baiduboxapp|mqqbrowser|\bqq\/|micromessenger|telegram|instagram|fban|fbav|fb_iab|bytedance|musical_ly|tiktok|;\s*wv[\);]|build\/.*wv|\bwv\b|android.*version\/[0-9.]+\s+(?:chrome\/[0-9.]+\s+)?mobile/i.test(ua);
+            var isSamsung = /samsungbrowser/i.test(ua);
+            var isFirefox = /firefox|fxios/i.test(ua);
+            var isChrome = /chrome|crios/i.test(ua);
+            var isSafari = /safari/i.test(ua) && !isChrome && !isSamsung;
+            var allowed = !hostile && (isChrome || isSafari || isFirefox || isSamsung);
+            if (!allowed) {
+              document.documentElement.classList.add('no-hero-video');
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta name="theme-color" content="#1D4ED8" />
     <title>NEVO GROUP — Santexnika va Qurilish Mollari Do'koni</title>
     <meta name="description" content="NEVO GROUP — O'zbekiston bo'ylab santexnika va qurilish mollari: truba va fitinglar, zapor armatura, yong'in va elektr jihozlari. Optom va chakana narxlar, yetkazib berish." />

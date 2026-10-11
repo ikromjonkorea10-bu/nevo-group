@@ -4,7 +4,7 @@ import { esc } from '../lib/format.js';
 import { renderTestimonials } from '../components/Testimonials.js';
 import { renderProductCard } from '../components/ProductCard.js';
 import { t } from '../lib/i18n.js';
-import { initHeroVideo } from '../lib/heroVideo.js';
+import { initHeroVideo, isMobileOrTouch } from '../lib/heroVideo.js';
 
 // Hero kartalari bazadagi mahsulotlardan qoida bo'yicha tanlanadi — ID yozilmaydi.
 const HERO_PICKS = [
@@ -548,7 +548,7 @@ export function renderHomePage() {
             <img src="/images/hero/hero-factory-3.jpg" alt="${t('slide3Alt')}" class="hero-slide-img" loading="lazy" />
           </div>
           <div class="hero-video-layer" id="nevo-hero-video-layer" aria-hidden="true">
-            <video class="hero-video-el" id="nevo-hero-video" muted loop playsinline webkit-playsinline disablePictureInPicture disableRemotePlayback controlsList="nodownload nofullscreen noremoteplayback" tabindex="-1" aria-hidden="true"></video>
+            <video class="hero-video-el" id="nevo-hero-video" muted loop playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5-page" x5-video-player-fullscreen="false" disablePictureInPicture disableRemotePlayback controlsList="nodownload nofullscreen noremoteplayback" tabindex="-1" aria-hidden="true"></video>
           </div>
           <div class="hero-slide-gradient-overlay"></div>
           <div class="hero-slide-ambient-glow"></div>
@@ -668,19 +668,22 @@ export function renderHomePage() {
 }
 
 export function initHomeAnimations() {
-  // 0. Hero fon video (faqat desktop; mobilda rasm slayder ishlaydi)
+  // 0. Hero fon video (desktop va ruxsat berilgan mobilda; aks holda rasm slayder qoladi)
   const heroBackdrop = document.getElementById('nevo-hero-slideshow');
   const heroVideo = document.getElementById('nevo-hero-video');
   const soundBtn = document.getElementById('hero-sound-toggle');
+  const isMobile = isMobileOrTouch();
   initHeroVideo(heroVideo, {
     poster: '/videos/home-hero-poster.webp',
-    sources: [{ src: '/videos/home-hero.mp4', type: 'video/mp4' }],
+    sources: isMobile
+      ? [{ src: '/videos/home-hero-720.mp4', type: 'video/mp4' }]
+      : [{ src: '/videos/home-hero.mp4', type: 'video/mp4' }],
     observeEl: heroBackdrop,
     onReady: () => {
       if (!heroBackdrop) return;
       heroBackdrop.classList.add('is-video-ready');
       document.querySelector('.hero-section-nevo')?.classList.add('has-video');
-      if (soundBtn) soundBtn.hidden = false;
+      if (soundBtn && !isMobile) soundBtn.hidden = false;
     },
   });
   if (soundBtn && heroVideo) {

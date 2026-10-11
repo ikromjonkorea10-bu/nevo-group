@@ -1,7 +1,7 @@
 // NEVO GROUP — hero fon video boshqaruvchisi (home va katalog uchun umumiy).
-// Fon video FAQAT desktop (>=900px va mouse pointer) da yuklanadi.
-// Mobil/touch qurilmalarda (ayniqsa Xiaomi/MIUI va boshqa OEM brauzerlar <video> ni sahifa ustidan
-// o'z pleyerida qora blok qilib ochib matnni yopgani sababli) video butunlay o'chiriladi va rasmli slayder foni qoladi.
+// Fon video desktopda to'liq, mobilda esa faqat ruxsat berilgan brauzerlarda (Chrome, Safari, Firefox, Samsung)
+// 720p manba bilan xavfsiz holda yuklanadi.
+// Xiaomi/MIUI va boshqa nosoz OEM/WebView brauzerlarda user-agent bo'yicha o'chiriladi.
 
 function mq(query) {
   try {
@@ -19,45 +19,239 @@ export function isMobileViewport() {
   return isMobileOrTouch();
 }
 
+/**
+ * Hostile / nosoz mobil brauzerlarni aniqlash:
+ * Xiaomi/MIUI, UC, Quark, Huawei/Honor, Oppo/HeyTap, Vivo, Baidu, QQ, WeChat,
+ * hamda in-app WebView'lar (Telegram, Instagram, Facebook, Android WebView "; wv")
+ * @param {string} ua
+ * @returns {boolean}
+ */
+export function isVideoHostileBrowser(ua = (typeof navigator !== 'undefined' ? navigator.userAgent : '')) {
+  if (!ua) return false;
+
+  // 1. Xiaomi / MIUI / Mint
+  if (/miuibrowser|xiaomi|mint browser/i.test(ua)) return true;
+
+  // 2. UC Browser / Quark
+  if (/ucbrowser|ubrowser|ucweb|quark/i.test(ua)) return true;
+
+  // 3. Huawei / Honor
+  if (/huaweibrowser|hbpc|honorbrowser/i.test(ua)) return true;
+
+  // 4. Oppo / HeyTap
+  if (/heytapbrowser|oppobrowser/i.test(ua)) return true;
+
+  // 5. Vivo
+  if (/vivobrowser/i.test(ua)) return true;
+
+  // 6. Baidu / QQ / WeChat
+  if (/baidubrowser|baiduboxapp|mqqbrowser|\bqq\/|micromessenger/i.test(ua)) return true;
+
+  // 7. In-app WebViews (Telegram, Instagram, Facebook, TikTok)
+  if (/telegram|instagram|fban|fbav|fb_iab|bytedance|musical_ly|tiktok/i.test(ua)) return true;
+
+  // 8. Android WebView signaturalari: "; wv", "Build/... wv" yoki Android Version/X.X Chrome/XX Mobile
+  if (/;\s*wv[\);]|build\/.*wv|\bwv\b/i.test(ua)) return true;
+  if (/android.*version\/[0-9.]+\s+(?:chrome\/[0-9.]+\s+)?mobile/i.test(ua)) return true;
+
+  return false;
+}
+
+/**
+ * Mobilda video faqat Chrome, Safari, Firefox va Samsung Internet uchun ruxsat etiladi.
+ * @param {string} ua
+ * @returns {boolean}
+ */
+export function isAllowedMobileBrowser(ua = (typeof navigator !== 'undefined' ? navigator.userAgent : '')) {
+  if (isVideoHostileBrowser(ua)) return false;
+
+  const isSamsung = /samsungbrowser/i.test(ua);
+  const isFirefox = /firefox|fxios/i.test(ua);
+  const isChrome = /chrome|crios/i.test(ua);
+  const isSafari = /safari/i.test(ua) && !isChrome && !isSamsung;
+
+  return isChrome || isSafari || isFirefox || isSamsung;
+}
+
+/**
+ * ?hv=1 majburan yoqadi, ?hv=0 majburan o'chiradi (faqat sinov uchun)
+ */
+export function getHvOverride() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const p = new URLSearchParams(window.location.search);
+    const val = p.get('hv');
+    if (val === '1' || val === 'true') return true;
+    if (val === '0' || val === 'false') return false;
+  } catch {}
+  return null;
+}
+
 export function shouldLoadHeroVideo() {
   if (typeof window === 'undefined') return false;
-  // Mobil va sensorli qurilmalarda video mutlaqo yuklanmaydi
-  if (isMobileOrTouch()) return false;
+
+  const hv = getHvOverride();
+  if (hv !== null) return hv;
+
   if (mq('(prefers-reduced-motion: reduce)')) return false;
   const conn = navigator.connection;
   if (conn && conn.saveData) return false;
+
+  if (isMobileOrTouch()) {
+    if (conn && conn.effectiveType && conn.effectiveType !== '4g') return false;
+    return isAllowedMobileBrowser();
+  }
+
+  // Desktop (>=900px, mouse pointer)
   return true;
 }
 
 /**
+ * <html class="no-hero-video"> belgisini sinxronlashtirish
+ */
+export function syncHeroVideoHtmlClass() {
+  if (typeof document === 'undefined') return;
+  if (!shouldLoadHeroVideo()) {
+    document.documentElement.classList.add('no-hero-video');
+  } else {
+    document.documentElement.classList.remove('no-hero-video');
+  }
+}
+
+// Modul yuklanganda darhol sinxronlashtirish
+if (typeof document !== 'undefined') {
+  syncHeroVideoHtmlClass();
+}
+
+/**
  * @param {HTMLVideoElement|null} video
- * @param {{ poster?: string, sources: {src:string,type:string}[], observeEl?: Element|null, onReady?: () => void }} opts
+ * @param {{ poster?: string, sources: {src:string,type:string}[], observeEl?: Element|null, onReady?: () => void, onFallback?: () => void }} opts
  * @returns {boolean} yuklash boshlandimi
  */
-export function initHeroVideo(video, { poster, sources, observeEl, onReady }) {
-  if (!video || !sources || sources.length === 0 || !shouldLoadHeroVideo()) return false;
-
-  if (poster) {
-    video.poster = poster;
+export function initHeroVideo(video, { poster, sources, observeEl, onReady, onFallback }) {
+  if (!video || !sources || sources.length === 0 || !shouldLoadHeroVideo()) {
+    syncHeroVideoHtmlClass();
+    return false;
   }
 
+  const isMobile = isMobileOrTouch();
+  let fallbackTriggered = false;
+  let playTimer = null;
+  let stallTimer = null;
+  let ready = false;
+
+  const triggerFallback = () => {
+    if (fallbackTriggered) return;
+    fallbackTriggered = true;
+
+    if (playTimer) {
+      clearTimeout(playTimer);
+      playTimer = null;
+    }
+    if (stallTimer) {
+      clearTimeout(stallTimer);
+      stallTimer = null;
+    }
+
+    try {
+      video.pause();
+      while (video.firstChild) {
+        video.removeChild(video.firstChild);
+      }
+      video.removeAttribute('src');
+      video.removeAttribute('poster');
+      video.load();
+    } catch {}
+
+    const layer = video.closest('.hero-video-layer, .catalog-bg-video-layer') || video.parentElement;
+    if (layer) {
+      layer.style.display = 'none';
+    }
+
+    const backdrop = document.getElementById('nevo-hero-slideshow') || document.getElementById('catalog-hero-bg') || observeEl;
+    if (backdrop) {
+      backdrop.classList.remove('is-video-ready');
+    }
+    const heroSection = document.querySelector('.hero-section-nevo, .catalog-hero-fullscreen') || document.getElementById('catalog-hero');
+    if (heroSection) {
+      heroSection.classList.remove('has-video');
+    }
+
+    const soundBtn = document.getElementById('hero-sound-toggle');
+    if (soundBtn) {
+      soundBtn.hidden = true;
+    }
+
+    document.documentElement.classList.add('no-hero-video');
+
+    if (typeof onFallback === 'function') {
+      try { onFallback(); } catch {}
+    }
+  };
+
+  // Video elementiga barcha mobil/desktop atributlarini o'rnatish
   video.muted = true;
   video.defaultMuted = true;
   video.loop = true;
   video.playsInline = true;
 
-  video.setAttribute('playsinline', '');
   video.setAttribute('muted', '');
-  video.setAttribute('tabindex', '-1');
-  video.setAttribute('aria-hidden', 'true');
-  video.setAttribute('controlsList', 'nodownload nofullscreen noremoteplayback');
+  video.setAttribute('playsinline', '');
+  video.setAttribute('webkit-playsinline', '');
+  video.setAttribute('x5-playsinline', '');
+  video.setAttribute('x5-video-player-type', 'h5-page');
+  video.setAttribute('x5-video-player-fullscreen', 'false');
   video.setAttribute('disablePictureInPicture', '');
   video.setAttribute('disableRemotePlayback', '');
+  video.setAttribute('controlsList', 'nodownload nofullscreen noremoteplayback');
+  video.setAttribute('tabindex', '-1');
+  video.setAttribute('aria-hidden', 'true');
 
   video.disablePictureInPicture = true;
   video.disableRemotePlayback = true;
+
+  if (poster) {
+    video.poster = poster;
+  }
   video.preload = 'auto';
 
+  // Himoyalar (3s ichida 'playing' kelmasa, fullscreen, PiP, error yoki stalled)
+  playTimer = setTimeout(() => {
+    if (!ready) {
+      triggerFallback();
+    }
+  }, 3000);
+
+  const fullscreenEvents = [
+    'webkitbeginfullscreen',
+    'enterpictureinpicture',
+    'webkitpresentationmodechanged',
+    'fullscreenchange',
+  ];
+  fullscreenEvents.forEach((evt) => {
+    video.addEventListener(evt, () => triggerFallback());
+  });
+
+  video.addEventListener('error', () => {
+    triggerFallback();
+  });
+
+  video.addEventListener('stalled', () => {
+    if (!stallTimer) {
+      stallTimer = setTimeout(() => {
+        triggerFallback();
+      }, 5000);
+    }
+  });
+
+  video.addEventListener('timeupdate', () => {
+    if (stallTimer) {
+      clearTimeout(stallTimer);
+      stallTimer = null;
+    }
+  });
+
+  // Source'larni qo'shish
   for (const s of sources) {
     const el = document.createElement('source');
     el.src = s.src;
@@ -65,10 +259,17 @@ export function initHeroVideo(video, { poster, sources, observeEl, onReady }) {
     video.appendChild(el);
   }
 
-  let ready = false;
   video.addEventListener(
     'playing',
     () => {
+      if (playTimer) {
+        clearTimeout(playTimer);
+        playTimer = null;
+      }
+      if (stallTimer) {
+        clearTimeout(stallTimer);
+        stallTimer = null;
+      }
       if (ready) return;
       ready = true;
       if (onReady) onReady();
@@ -77,13 +278,18 @@ export function initHeroVideo(video, { poster, sources, observeEl, onReady }) {
   );
 
   const tryPlay = () => {
+    if (fallbackTriggered) return;
     try {
       video.muted = true;
       const p = video.play();
       if (p && typeof p.catch === 'function') {
-        p.catch(() => {});
+        p.catch(() => {
+          if (isMobile) triggerFallback();
+        });
       }
-    } catch {}
+    } catch {
+      if (isMobile) triggerFallback();
+    }
   };
 
   video.load();
@@ -92,7 +298,7 @@ export function initHeroVideo(video, { poster, sources, observeEl, onReady }) {
   if ('IntersectionObserver' in window && observeEl) {
     const io = new IntersectionObserver(
       (entries) => {
-        if (!video.isConnected) {
+        if (!video.isConnected || fallbackTriggered) {
           io.disconnect();
           return;
         }
@@ -107,7 +313,7 @@ export function initHeroVideo(video, { poster, sources, observeEl, onReady }) {
   }
 
   document.addEventListener('visibilitychange', () => {
-    if (!video.isConnected) return;
+    if (!video.isConnected || fallbackTriggered) return;
     if (document.hidden) video.pause();
     else if (ready) tryPlay();
   });
