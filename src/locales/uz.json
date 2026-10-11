@@ -304,5 +304,7 @@
   "productNotFoundDesc": "Bunday mahsulot mavjud emas",
   "privacyPolicy": "Maxfiylik siyosati",
   "orSelectCategory": "Yoki bo'limni tanlang",
-  "searchProducts": "Mahsulot qidirish"
+  "searchProducts": "Mahsulot qidirish",
+  "heroSoundOn": "Ovozni yoqish",
+  "heroSoundOff": "Ovozni o'chirish"
 }

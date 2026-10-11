@@ -304,5 +304,7 @@
   "productNotFoundDesc": "Такого товара не существует",
   "privacyPolicy": "Политика конфиденциальности",
   "orSelectCategory": "Или выберите категорию",
-  "searchProducts": "Поиск товаров"
+  "searchProducts": "Поиск товаров",
+  "heroSoundOn": "Включить звук",
+  "heroSoundOff": "Выключить звук"
 }

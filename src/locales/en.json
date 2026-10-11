@@ -304,5 +304,7 @@
   "productNotFoundDesc": "This product does not exist",
   "privacyPolicy": "Privacy Policy",
   "orSelectCategory": "Or select a category",
-  "searchProducts": "Search products"
+  "searchProducts": "Search products",
+  "heroSoundOn": "Turn sound on",
+  "heroSoundOff": "Turn sound off"
 }

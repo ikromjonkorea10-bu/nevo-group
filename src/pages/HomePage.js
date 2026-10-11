@@ -4,6 +4,7 @@ import { esc } from '../lib/format.js';
 import { renderTestimonials } from '../components/Testimonials.js';
 import { renderProductCard } from '../components/ProductCard.js';
 import { t } from '../lib/i18n.js';
+import { initHeroVideo, isMobileViewport } from '../lib/heroVideo.js';
 
 // Hero kartalari bazadagi mahsulotlardan qoida bo'yicha tanlanadi — ID yozilmaydi.
 const HERO_PICKS = [
@@ -546,10 +547,17 @@ export function renderHomePage() {
           <div class="hero-slide-item" data-slide="2">
             <img src="/images/hero/hero-factory-3.jpg" alt="${t('slide3Alt')}" class="hero-slide-img" loading="lazy" />
           </div>
+          <div class="hero-video-layer" id="nevo-hero-video-layer" aria-hidden="true">
+            <video class="hero-video-el" id="nevo-hero-video" muted loop playsinline preload="none" poster="/videos/home-hero-poster.webp" tabindex="-1"></video>
+          </div>
           <div class="hero-slide-gradient-overlay"></div>
           <div class="hero-slide-ambient-glow"></div>
           <div class="hero-slide-blueprint-grid"></div>
         </div>
+        <button type="button" class="hero-sound-toggle" id="hero-sound-toggle" hidden aria-pressed="false" data-on="${t('heroSoundOn')}" data-off="${t('heroSoundOff')}" aria-label="${t('heroSoundOn')}">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path class="snd-waves" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/><path class="snd-mute" d="m17 9 5 6m0-6-5 6"/></svg>
+          <span class="hero-sound-label">${t('heroSoundOn')}</span>
+        </button>
 
         <div class="shell hero-nevo-shell">
           <div class="hero-nevo-center-wrap">
@@ -660,6 +668,41 @@ export function renderHomePage() {
 }
 
 export function initHomeAnimations() {
+  // 0. Hero fon video (faqat qulay sharoitda; aks holda rasm slayder qoladi)
+  const heroBackdrop = document.getElementById('nevo-hero-slideshow');
+  const heroVideo = document.getElementById('nevo-hero-video');
+  const soundBtn = document.getElementById('hero-sound-toggle');
+  const mobileVideo = isMobileViewport();
+  initHeroVideo(heroVideo, {
+    sources: mobileVideo
+      ? [{ src: '/videos/home-hero-720.mp4', type: 'video/mp4' }]
+      : [{ src: '/videos/home-hero.mp4', type: 'video/mp4' }],
+    observeEl: heroBackdrop,
+    onReady: () => {
+      if (!heroBackdrop) return;
+      heroBackdrop.classList.add('is-video-ready');
+      document.querySelector('.hero-section-nevo')?.classList.add('has-video');
+      if (window.__heroSlideInterval) clearInterval(window.__heroSlideInterval);
+      if (soundBtn && !mobileVideo) soundBtn.hidden = false;
+    },
+  });
+  if (soundBtn && heroVideo) {
+    soundBtn.addEventListener('click', () => {
+      heroVideo.muted = !heroVideo.muted;
+      const on = !heroVideo.muted;
+      soundBtn.setAttribute('aria-pressed', String(on));
+      const label = on ? soundBtn.dataset.off : soundBtn.dataset.on;
+      soundBtn.setAttribute('aria-label', label);
+      const lbl = soundBtn.querySelector('.hero-sound-label');
+      if (lbl) lbl.textContent = label;
+      soundBtn.classList.toggle('is-on', on);
+      if (on) {
+        const p = heroVideo.play();
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+      }
+    });
+  }
+
   // 1. Bespoke NEVO Hero 8K Industrial Slideshow Controller
   let heroCurrent = 0;
   const heroSlides = document.querySelectorAll('#nevo-hero-slideshow .hero-slide-item');
@@ -682,6 +725,7 @@ export function initHomeAnimations() {
       clearInterval(window.__heroSlideInterval);
     }
     window.__heroSlideInterval = setInterval(() => {
+      if (heroBackdrop && heroBackdrop.classList.contains('is-video-ready')) return;
       window.__switchHeroSlide(heroCurrent + 1);
     }, 5500);
 
