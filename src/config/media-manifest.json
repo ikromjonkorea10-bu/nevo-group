@@ -334,8 +334,7 @@
       "aspectRatio": "16:9",
       "altKey": "heroTitle",
       "source": "nevo",
-      "path": "/videos/home-hero-720.mp4",
-      "status": "unused"
+      "path": "/videos/home-hero-720.mp4"
     },
     {
       "id": "home-hero-video-poster",
@@ -379,8 +378,7 @@
       "aspectRatio": "16:9",
       "altKey": "heroTitle",
       "source": "nevo",
-      "path": "/videos/catalog-hero-720.mp4",
-      "status": "unused"
+      "path": "/videos/catalog-hero-720.mp4"
     },
     {
       "id": "catalog-hero-video-poster",
