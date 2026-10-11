@@ -8893,9 +8893,20 @@ body.search-modal-open {
     radial-gradient(circle at center, rgba(6, 11, 24, 0.3) 0%, rgba(6, 11, 24, 0.58) 70%, #060B18 100%),
     linear-gradient(180deg, rgba(6, 11, 24, 0.4) 0%, transparent 45%, rgba(6, 11, 24, 0.92) 100%);
 }
+@media (max-width: 899px) {
+  .catalog-bg-video {
+    object-position: 50% 12%;
+    transform: translateY(-14%) scale(1.15);
+    transform-origin: 50% 30%;
+  }
+  .catalog-hero-fullscreen.has-video .catalog-hero-dark-overlay {
+    background: linear-gradient(to top, rgba(5, 10, 20, 0.75) 0%, rgba(5, 10, 20, 0.5) 50%, rgba(5, 10, 20, 0.25) 100%);
+  }
+}
 @media (min-width: 900px) {
   .catalog-bg-video {
     transform: translateX(16%) scale(1.4);
     transform-origin: 50% 50%;
   }
 }
+
