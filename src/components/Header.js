@@ -117,14 +117,6 @@ export function renderHeader() {
           </div>
 
           <div class="header-actions">
-            <!-- Mobile Language Switcher -->
-            <div class="header-mobile-lang" role="group" aria-label="Language selection">
-              <button type="button" class="lang-toggle-btn-sm ${currentLang === 'uz' ? 'active' : ''}" onclick="window.__setLanguage('uz')">UZ</button>
-              <span class="lang-divider">|</span>
-              <button type="button" class="lang-toggle-btn-sm ${currentLang === 'ru' ? 'active' : ''}" onclick="window.__setLanguage('ru')">RU</button>
-              <span class="lang-divider">|</span>
-              <button type="button" class="lang-toggle-btn-sm ${currentLang === 'en' ? 'active' : ''}" onclick="window.__setLanguage('en')">EN</button>
-            </div>
             <a href="/savat" class="header-icon-btn" aria-label="${t('navCart')}">
               ${icon('shopping-cart', '', 20)}
               <span class="cart-count-badge" id="header-cart-badge" style="${cartCount > 0 ? '' : 'display:none;'}">

@@ -50,7 +50,7 @@ export function renderTanlashPage() {
         </nav>
 
         <div style="text-align: center; margin: 24px 0 36px;">
-          <div style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; background: #eff6ff; color: var(--nevo-blue); border-radius: 50%; margin-bottom: 14px;">
+          <div style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; background: rgba(29, 78, 216, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 50%; margin-bottom: 14px;">
             ${icon('check', '', 28)}
           </div>
           <h1 style="font-size: 30px; font-weight: 800; color: var(--ink);">Sizga mos 3 ta taklif</h1>
@@ -62,7 +62,7 @@ export function renderTanlashPage() {
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;">
           <!-- Offer 1 -->
           <div>
-            <div style="background: #eff6ff; border: 1px solid var(--tint-border); border-radius: 12px 12px 0 0; padding: 10px 14px; text-align: center; font-size: 13px; font-weight: 700; color: var(--nevo-blue);">
+            <div style="background: rgba(29, 78, 216, 0.18); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px 12px 0 0; padding: 10px 14px; text-align: center; font-size: 13px; font-weight: 700; color: #60a5fa;">
               ⭐ Taklif 1: Hamyonbop variant
             </div>
             ${renderProductCard(offer1)}
@@ -70,7 +70,7 @@ export function renderTanlashPage() {
 
           <!-- Offer 2 -->
           <div>
-            <div style="background: #f1f5f9; border: 1px solid var(--border); border-radius: 12px 12px 0 0; padding: 10px 14px; text-align: center; font-size: 13px; font-weight: 700; color: var(--ink);">
+            <div style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border); border-radius: 12px 12px 0 0; padding: 10px 14px; text-align: center; font-size: 13px; font-weight: 700; color: #f8fafc;">
               ⚖️ Taklif 2: Muqobil / O'rtacha
             </div>
             ${renderProductCard(offer2)}
@@ -78,7 +78,7 @@ export function renderTanlashPage() {
 
           <!-- Offer 3 -->
           <div>
-            <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 12px 12px 0 0; padding: 10px 14px; text-align: center; font-size: 13px; font-weight: 700; color: #b45309;">
+            <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 12px 12px 0 0; padding: 10px 14px; text-align: center; font-size: 13px; font-weight: 700; color: #fbbf24;">
               💎 Taklif 3: Sifatliroq / Katta o'lcham
             </div>
             ${renderProductCard(offer3)}
