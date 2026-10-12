@@ -3,7 +3,7 @@
   "budgets": {
     "imageMaxBytes": 256000,
     "heroPosterMaxBytes": 153600,
-    "videoMaxBytes": 6291456
+    "videoMaxBytes": 33554432
   },
   "slots": [
     {
