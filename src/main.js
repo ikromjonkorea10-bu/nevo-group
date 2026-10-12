@@ -307,7 +307,8 @@ function router() {
   const app = document.getElementById('app');
   if (!app) return;
 
-  const isPreview = localStorage.getItem('nevo_admin_preview') === '1';
+  const p = new URLSearchParams(window.location.search);
+  const isPreview = localStorage.getItem('nevo_admin_preview') === '1' || p.get('preview') === '1' || p.get('site') === '1';
   if (!isPreview) {
     app.innerHTML = renderMaintenanceScreen();
     initMaintenanceUnlock();

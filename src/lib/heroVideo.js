@@ -97,11 +97,6 @@ export function shouldLoadHeroVideo() {
   const conn = navigator.connection;
   if (conn && conn.saveData) return false;
 
-  // Mobil/touch qurilmalarda <video> ishlatilmaydi (Xiaomi/MIUI va boshqa brauzerlar uni o'z pleyerida ochib,
-  // qora blok chiqaradi). Mobilda animatsiyali WebP rasm ishlatiladi (initHeroMotionImage).
-  if (isMobileOrTouch()) return false;
-
-  // Desktop (>=900px, mouse pointer)
   return true;
 }
 

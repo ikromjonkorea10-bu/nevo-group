@@ -535,26 +535,47 @@ export function renderHomePage() {
 
   return `
     <main class="home-page-content">
-      <!-- SCENE 1: NEVO CINEMATIC HERO SLIDESHOW -->
-      <section class="hero-section hero-section-nevo">
-        <div class="hero-slideshow-backdrop" id="nevo-hero-slideshow">
-          <div class="hero-slide-item active" data-slide="0">
-            <img src="/images/hero/hero-plant-1.jpg" alt="${t('slide1Alt')}" class="hero-slide-img" fetchpriority="high" />
-          </div>
-          <div class="hero-slide-item" data-slide="1">
-            <img src="/images/hero/hero-valves-2.jpg" alt="${t('slide2Alt')}" class="hero-slide-img" loading="lazy" />
-          </div>
-          <div class="hero-slide-item" data-slide="2">
-            <img src="/images/hero/hero-factory-3.jpg" alt="${t('slide3Alt')}" class="hero-slide-img" loading="lazy" />
-          </div>
+      <!-- SCENE 1: NEVO CINEMATIC HERO VIDEO BACKGROUND -->
+      <section class="hero-section hero-section-nevo has-video">
+        <div class="hero-slideshow-backdrop is-video-ready" id="nevo-hero-slideshow">
+          <!-- Direct Full Commercial Video Background -->
           <div class="hero-video-layer" id="nevo-hero-video-layer" aria-hidden="true">
-            <video class="hero-video-el" id="nevo-hero-video" muted loop playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5-page" x5-video-player-fullscreen="false" disablePictureInPicture disableRemotePlayback controlsList="nodownload nofullscreen noremoteplayback" tabindex="-1" aria-hidden="true"></video>
+            <video
+              class="hero-video-el"
+              id="nevo-hero-video"
+              autoplay
+              muted
+              loop
+              playsinline
+              webkit-playsinline
+              x5-playsinline
+              x5-video-player-type="h5-page"
+              x5-video-player-fullscreen="false"
+              disablePictureInPicture
+              disableRemotePlayback
+              controlsList="nodownload nofullscreen noremoteplayback"
+              tabindex="-1"
+              aria-hidden="true"
+              poster="/videos/home-hero-poster.webp"
+              preload="auto"
+            >
+              <source src="/videos/home-hero.mp4" type="video/mp4" />
+              <source src="/videos/home-hero-720.mp4" type="video/mp4" media="(max-width: 768px)" />
+              <source src="/videos/home-hero.webm" type="video/webm" />
+            </video>
           </div>
+
+          <!-- Video Fallback Poster Image -->
+          <div class="hero-slide-item active" data-slide="0">
+            <img src="/videos/home-hero-poster.webp" alt="NEVO GROUP" class="hero-slide-img" fetchpriority="high" />
+          </div>
+
           <div class="hero-slide-gradient-overlay"></div>
           <div class="hero-slide-ambient-glow"></div>
           <div class="hero-slide-blueprint-grid"></div>
         </div>
-        <button type="button" class="hero-sound-toggle" id="hero-sound-toggle" hidden aria-pressed="false" data-on="${t('heroSoundOn')}" data-off="${t('heroSoundOff')}" aria-label="${t('heroSoundOn')}">
+
+        <button type="button" class="hero-sound-toggle" id="hero-sound-toggle" aria-pressed="false" data-on="${t('heroSoundOn')}" data-off="${t('heroSoundOff')}" aria-label="${t('heroSoundOn')}">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path class="snd-waves" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/><path class="snd-mute" d="m17 9 5 6m0-6-5 6"/></svg>
           <span class="hero-sound-label">${t('heroSoundOn')}</span>
         </button>
@@ -585,22 +606,6 @@ export function renderHomePage() {
               </a>
             </div>
           </div>
-        </div>
-
-        <!-- Slide Switcher Dots on Hero Bottom Center/Right -->
-        <div class="hero-slides-nav" id="hero-slides-dots">
-          <button type="button" class="hero-slide-dot active" data-slide="0" onclick="window.__switchHeroSlide(0)" aria-label="${t('slide1Aria')}">
-            <span class="hero-dot-fill"></span>
-            <span class="hero-dot-tooltip">${t('slide1Tip')}</span>
-          </button>
-          <button type="button" class="hero-slide-dot" data-slide="1" onclick="window.__switchHeroSlide(1)" aria-label="${t('slide2Aria')}">
-            <span class="hero-dot-fill"></span>
-            <span class="hero-dot-tooltip">${t('slide2Tip')}</span>
-          </button>
-          <button type="button" class="hero-slide-dot" data-slide="2" onclick="window.__switchHeroSlide(2)" aria-label="${t('slide3Aria')}">
-            <span class="hero-dot-fill"></span>
-            <span class="hero-dot-tooltip">${t('slide3Tip')}</span>
-          </button>
         </div>
 
         <!-- Scroll Mouse Indicator -->
@@ -668,102 +673,60 @@ export function renderHomePage() {
 }
 
 export function initHomeAnimations() {
-  // 0. Hero fon video (desktop va ruxsat berilgan mobilda; aks holda rasm slayder qoladi)
+  // 0. Hero fon video (to'g'ridan-to'g'ri fon video boshqaruvi)
   const heroBackdrop = document.getElementById('nevo-hero-slideshow');
   const heroVideo = document.getElementById('nevo-hero-video');
   const soundBtn = document.getElementById('hero-sound-toggle');
-  const isMobile = isMobileOrTouch();
-  initHeroVideo(heroVideo, {
-    poster: '/videos/home-hero-poster.webp',
-    sources: isMobile
-      ? [{ src: '/videos/home-hero-720.mp4', type: 'video/mp4' }]
-      : [{ src: '/videos/home-hero.mp4', type: 'video/mp4' }],
-    observeEl: heroBackdrop,
-    onReady: () => {
-      if (!heroBackdrop) return;
-      heroBackdrop.classList.add('is-video-ready');
-      document.querySelector('.hero-section-nevo')?.classList.add('has-video');
-      if (soundBtn && !isMobile) soundBtn.hidden = false;
-    },
-  });
-  initHeroMotionImage({
-    host: heroBackdrop,
-    before: heroBackdrop ? heroBackdrop.querySelector('.hero-slide-gradient-overlay') : null,
-    src: '/videos/home-hero-mobile.webp',
-    poster: '/videos/home-hero-mobile-poster.webp',
-    onReady: () => {
-      if (!heroBackdrop) return;
-      heroBackdrop.classList.add('is-video-ready');
-      document.querySelector('.hero-section-nevo')?.classList.add('has-video');
-      if (soundBtn) soundBtn.hidden = false;
-    },
-  });
-  // Mobil: ovoz alohida <audio> orqali (video pleyeri yo'q). Tugma bosilganda animatsiya va ovoz birga boshlanadi.
-  let mobileAudio = null;
-  let mobileSoundOn = false;
-  if (soundBtn && document.documentElement.classList.contains('has-motion-hero')) {
-    const syncBtn = (on) => {
-      soundBtn.setAttribute('aria-pressed', String(on));
-      const label = on ? soundBtn.dataset.off : soundBtn.dataset.on;
-      soundBtn.setAttribute('aria-label', label);
-      soundBtn.classList.toggle('is-on', on);
-      const lbl = soundBtn.querySelector('.hero-sound-label');
-      if (lbl) lbl.textContent = label;
-    };
-    const startAudioWithAnimation = () => {
-      if (!mobileAudio) {
-        mobileAudio = new Audio('/videos/home-hero-audio.mp3');
-        mobileAudio.preload = 'auto';
-        mobileAudio.addEventListener('ended', () => {
-          if (!mobileSoundOn) return;
-          restartHeroMotionImage(heroBackdrop);
-          mobileAudio.currentTime = 0;
-          mobileAudio.play().catch(() => {});
-        });
+
+  if (heroVideo) {
+    heroVideo.muted = true;
+    const tryPlay = () => {
+      const p = heroVideo.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => {});
       }
-      restartHeroMotionImage(heroBackdrop);
-      mobileAudio.currentTime = 0;
-      mobileAudio.play().catch(() => {
-        mobileSoundOn = false;
-        syncBtn(false);
-      });
     };
-    soundBtn.addEventListener('click', () => {
-      mobileSoundOn = !mobileSoundOn;
-      syncBtn(mobileSoundOn);
-      if (mobileSoundOn) startAudioWithAnimation();
-      else if (mobileAudio) mobileAudio.pause();
-    });
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden && mobileAudio && !mobileAudio.paused) mobileAudio.pause();
-      else if (!document.hidden && mobileSoundOn && mobileAudio && mobileAudio.paused) mobileAudio.play().catch(() => {});
-    });
+    tryPlay();
+    document.addEventListener('click', tryPlay, { once: true });
+    document.addEventListener('touchstart', tryPlay, { once: true });
+
+    if (heroBackdrop) {
+      heroBackdrop.classList.add('is-video-ready');
+      document.querySelector('.hero-section-nevo')?.classList.add('has-video');
+    }
+
+    if (soundBtn) {
+      soundBtn.hidden = false;
+      const syncBtn = (on) => {
+        soundBtn.setAttribute('aria-pressed', String(on));
+        const label = on ? soundBtn.dataset.off : soundBtn.dataset.on;
+        soundBtn.setAttribute('aria-label', label);
+        soundBtn.classList.toggle('is-on', on);
+        const lbl = soundBtn.querySelector('.hero-sound-label');
+        if (lbl) lbl.textContent = label;
+      };
+
+      soundBtn.addEventListener('click', () => {
+        heroVideo.muted = !heroVideo.muted;
+        const on = !heroVideo.muted;
+        syncBtn(on);
+        if (on) {
+          heroVideo.play().catch(() => {});
+        }
+      });
+    }
+
     if ('IntersectionObserver' in window && heroBackdrop) {
       new IntersectionObserver((entries) => {
         entries.forEach((e) => {
-          if (!mobileAudio) return;
-          if (!e.isIntersecting) mobileAudio.pause();
-          else if (mobileSoundOn && mobileAudio.paused && !document.hidden) mobileAudio.play().catch(() => {});
+          if (e.isIntersecting) {
+            heroVideo.play().catch(() => {});
+          } else {
+            heroVideo.pause();
+          }
         });
       }, { threshold: 0.1 }).observe(heroBackdrop);
     }
-  }
-  if (soundBtn && heroVideo) {
-    soundBtn.addEventListener('click', () => {
-      if (document.documentElement.classList.contains('has-motion-hero')) return;
-      heroVideo.muted = !heroVideo.muted;
-      const on = !heroVideo.muted;
-      soundBtn.setAttribute('aria-pressed', String(on));
-      const label = on ? soundBtn.dataset.off : soundBtn.dataset.on;
-      soundBtn.setAttribute('aria-label', label);
-      const lbl = soundBtn.querySelector('.hero-sound-label');
-      if (lbl) lbl.textContent = label;
-      soundBtn.classList.toggle('is-on', on);
-      if (on) {
-        const p = heroVideo.play();
-        if (p && typeof p.catch === 'function') p.catch(() => {});
-      }
-    });
   }
 
   // 1. Bespoke NEVO Hero 8K Industrial Slideshow Controller
