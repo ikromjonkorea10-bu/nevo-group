@@ -458,8 +458,24 @@ function renderHowToOrder() {
 
 function renderBrandsMarquee() {
   const brands = [
-    'ALL AYZEN', 'Absan Sanat', 'NEVO', 'FIRAT', 'VALFEX',
-    'Kalde', 'Dizayn', 'Pilsa', 'Ostendorf', 'Poelsan'
+    'NEVO',
+    'ALL AYZEN',
+    'Absan Sanat',
+    'Poelsan',
+    'HYDRO PLAST',
+    'NEO',
+    'PRADO',
+    'BESTON',
+    'HAIER',
+    'NOVA',
+    'SHIMGE',
+    'DERYA KERAMIKA',
+    'GOZO KERAMIKA',
+    'KAPLIYA KERAMIKA',
+    'BOOU',
+    'NERO',
+    'BEAR',
+    'CLIMAT HOUSE',
   ];
 
   return `
