@@ -30,7 +30,6 @@ import { renderPrivacyPolicyPage } from './pages/PrivacyPolicyPage.js';
 import { initAnalytics, trackPageview } from './lib/analytics.js';
 import { updatePageMeta } from './lib/pageMeta.js';
 import { initIntroSplash } from './components/IntroSplash.js';
-import { renderMaintenanceScreen, initMaintenanceUnlock } from './components/MaintenanceScreen.js';
 import { initProductModalGlobal, openProductModal, getActiveModalProduct } from './components/ProductModal.js';
 import { initQuickSearchGlobal } from './components/QuickSearch.js';
 import { initPriceRequestModalGlobal, openPriceRequestModal } from './components/PriceRequestModal.js';
@@ -39,20 +38,8 @@ import { resolveProductSlug } from './data/slug-redirects.js';
 
 window.__getCatalog = getCatalog;
 
-// Maintenance & Stealth Preview Gate
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('preview') === '1' || urlParams.get('preview') === 'true' || urlParams.get('admin') === '1' || window.location.hash.includes('preview=1')) {
-  localStorage.setItem('nevo_admin_preview', '1');
-}
-if (urlParams.get('exit_preview') === '1') {
-  localStorage.removeItem('nevo_admin_preview');
-}
-const isPreviewAuthorized = localStorage.getItem('nevo_admin_preview') === '1';
-
 initAnalytics();
-if (isPreviewAuthorized) {
-  initIntroSplash();
-}
+initIntroSplash();
 
 // Global add to cart helper with tactile micro-animation
 window.__addToCart = (productId, event) => {
@@ -132,13 +119,7 @@ export function navigateTo(target, replace = false) {
     path = normalizeHashToPath(path);
   }
 
-  // Preserve ?preview=1 if currently active in URL
-  const currentParams = new URLSearchParams(window.location.search);
   const targetUrl = new URL(path, window.location.origin);
-  if (currentParams.get('preview') === '1' && !targetUrl.searchParams.has('preview')) {
-    targetUrl.searchParams.set('preview', '1');
-  }
-
   const finalUrl = targetUrl.pathname + (targetUrl.search ? targetUrl.search : '') + targetUrl.hash;
 
   if (replace) {
@@ -308,14 +289,6 @@ function router() {
   const app = document.getElementById('app');
   if (!app) return;
 
-  const p = new URLSearchParams(window.location.search);
-  const isPreview = localStorage.getItem('nevo_admin_preview') === '1' || p.get('preview') === '1' || p.get('site') === '1';
-  if (!isPreview) {
-    app.innerHTML = renderMaintenanceScreen();
-    initMaintenanceUnlock();
-    return;
-  }
-
   const parsed = parseRoute();
   const route = KNOWN_ROUTES.has(parsed.route) ? parsed.route : 'home';
   const { param, queryParams, raw } = parsed;
@@ -371,11 +344,6 @@ function router() {
         <span>${t('expertConsult')}</span>
       </a>
     ` : ''}
-    <div class="nevo-preview-floating-badge" id="preview-badge" title="Faqat siz ko'ra olasiz. Oddiy foydalanuvchilarga sayt texnik rejimda ko'rinadi.">
-      <span class="preview-dot"></span>
-      <span>🛡️ Maxfiy Preview</span>
-      <button type="button" class="preview-exit-btn" onclick="localStorage.removeItem('nevo_admin_preview'); window.location.href='/';">Yopish</button>
-    </div>
   `, !isNewRoute && route === 'home');
 
   // Initialize Page-Specific Events
