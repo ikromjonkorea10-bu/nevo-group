@@ -84,9 +84,15 @@ export function initIntroSplash() {
   function finishSplash() {
     splash.classList.add('fade-out');
     sessionStorage.setItem('nevo_splash_done', '1');
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('nevo-splash-finished'));
+    }
     setTimeout(() => {
       document.body.style.overflow = '';
       splash.remove();
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('nevo-splash-finished'));
+      }
     }, 450);
   }
 

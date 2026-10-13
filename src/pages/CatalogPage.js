@@ -894,24 +894,64 @@ function initCategoryReactiveHeroBg(_categories) {
   const catBg = document.getElementById('catalog-hero-bg');
   if (catVideo) {
     catVideo.muted = true;
+    catVideo.defaultMuted = true;
+    catVideo.playsInline = true;
+    catVideo.setAttribute('muted', '');
+    catVideo.setAttribute('playsinline', '');
+    catVideo.setAttribute('webkit-playsinline', '');
+
+    const markCatVideoReady = () => {
+      if (catBg) catBg.classList.add('is-video-ready');
+      if (heroEl) heroEl.classList.add('has-video');
+    };
+
     const tryPlay = () => {
+      if (!catVideo.isConnected) return;
+      catVideo.muted = true;
+      catVideo.defaultMuted = true;
       const p = catVideo.play();
-      if (p && typeof p.catch === 'function') {
-        p.catch(() => {});
+      if (p && typeof p.then === 'function') {
+        p.then(() => {
+          markCatVideoReady();
+        }).catch(() => {});
       }
     };
-    tryPlay();
-    document.addEventListener('click', tryPlay, { once: true });
-    document.addEventListener('touchstart', tryPlay, { once: true });
 
-    if (catBg) catBg.classList.add('is-video-ready');
-    heroEl.classList.add('has-video');
+    if (catVideo.readyState >= 2 && !catVideo.paused) {
+      markCatVideoReady();
+    } else {
+      tryPlay();
+    }
+
+    catVideo.addEventListener('loadedmetadata', tryPlay);
+    catVideo.addEventListener('loadeddata', tryPlay);
+    catVideo.addEventListener('canplay', tryPlay);
+    catVideo.addEventListener('canplaythrough', tryPlay);
+    catVideo.addEventListener('playing', markCatVideoReady);
+
+    window.addEventListener('nevo-splash-finished', tryPlay);
+
+    const retryDelays = [300, 800, 1500, 2500, 3600];
+    retryDelays.forEach((delay) => {
+      setTimeout(() => {
+        if (catVideo.paused) tryPlay();
+      }, delay);
+    });
+
+    const interactionEvents = ['click', 'touchstart', 'pointerdown', 'scroll', 'keydown', 'mousemove'];
+    const onUserGesture = () => {
+      if (catVideo.paused) tryPlay();
+      interactionEvents.forEach((evt) => window.removeEventListener(evt, onUserGesture));
+    };
+    interactionEvents.forEach((evt) => {
+      window.addEventListener(evt, onUserGesture, { passive: true, once: true });
+    });
 
     if ('IntersectionObserver' in window) {
       new IntersectionObserver((entries) => {
         entries.forEach((e) => {
           if (e.isIntersecting) {
-            catVideo.play().catch(() => {});
+            if (catVideo.paused) tryPlay();
           } else {
             catVideo.pause();
           }

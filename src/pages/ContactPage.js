@@ -1,6 +1,7 @@
 import { icon } from '../icons.js';
 import { store } from '../store.js';
 import { getCatalog } from '../lib/catalog.js';
+import { t } from '../lib/i18n.js';
 import { CONTACTS, INSTAGRAM_DM_URL, TELEGRAM_URL } from '../data/content.js';
 
 // Kafolat va qaytarish bo'limi.
@@ -36,6 +37,19 @@ export function renderContactPage() {
       <p class="contact-subtitle">
         Narx, o'lcham yoki mavjudlik bo'yicha savolingiz bo'lsa — yozing. Kerakli mahsulotni topishda yordam beramiz.
       </p>
+
+      <!-- Direct Price Request Trigger -->
+      <div style="margin-bottom: 20px;">
+        <button
+          type="button"
+          class="btn-royal-gold"
+          onclick="window.__openPriceRequestModal()"
+          style="width: 100%; justify-content: center; padding: 15px 20px; font-size: 15.5px; border-radius: 16px;"
+        >
+          ${icon('phone', '', 18)}
+          <span>${t('priceModalTitle')}</span>
+        </button>
+      </div>
 
       <!-- Ready Message Box -->
       <div class="ready-message-box">

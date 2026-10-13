@@ -33,6 +33,7 @@ import { initIntroSplash } from './components/IntroSplash.js';
 import { renderMaintenanceScreen, initMaintenanceUnlock } from './components/MaintenanceScreen.js';
 import { initProductModalGlobal, openProductModal, getActiveModalProduct } from './components/ProductModal.js';
 import { initQuickSearchGlobal } from './components/QuickSearch.js';
+import { initPriceRequestModalGlobal, openPriceRequestModal } from './components/PriceRequestModal.js';
 import { t, onLangChange } from './lib/i18n.js';
 import { resolveProductSlug } from './data/slug-redirects.js';
 
@@ -471,6 +472,8 @@ window.addEventListener('hashchange', router);
 window.addEventListener('nevolangchanged', router);
 initProductModalGlobal();
 initQuickSearchGlobal();
+initPriceRequestModalGlobal();
+window.__openPriceRequestModal = openPriceRequestModal;
 
 // Katalog so'rovi birinchi bo'lib jo'natiladi; sahifa keyingi vazifada bir marta chiziladi,
 // shunda og'ir birinchi render so'rovning tarmoqqa chiqishini kechiktirmaydi.

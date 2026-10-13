@@ -209,12 +209,14 @@ export function initHeroVideo(video, { poster, sources, observeEl, onReady, onFa
   }
   video.preload = 'auto';
 
-  // Himoyalar (3s ichida 'playing' kelmasa, fullscreen, PiP, error yoki stalled)
-  playTimer = setTimeout(() => {
-    if (!ready) {
-      triggerFallback();
-    }
-  }, 3000);
+  // Himoyalar faqat nosoz mobil brauzerlar uchun (desktopda video hech qachon o'chirilmaydi)
+  if (isMobile) {
+    playTimer = setTimeout(() => {
+      if (!ready) {
+        triggerFallback();
+      }
+    }, 6000);
+  }
 
   const fullscreenEvents = [
     'webkitbeginfullscreen',

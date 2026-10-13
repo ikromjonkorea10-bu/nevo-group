@@ -9044,3 +9044,385 @@ html.has-motion-hero .hero-motion-layer { opacity: 1; }
   }
   html.has-motion-hero .hero-sound-toggle[hidden] { display: none !important; }
 }
+
+/* ==========================================================================
+   NEVO Price Request & Direct Consultation Modal
+   ========================================================================== */
+body.price-modal-open {
+  overflow: hidden !important;
+}
+
+.price-modal-root {
+  display: none;
+}
+
+.price-modal-root.active {
+  display: flex;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.price-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: priceFadeIn 0.25s ease forwards;
+}
+
+.price-modal-dialog {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: #080E1E;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 24px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 50px rgba(14, 165, 233, 0.2);
+  overflow: hidden;
+  animation: priceScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes priceFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes priceScaleIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.price-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #060B18;
+}
+
+.price-modal-brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 850;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: #38BDF8;
+  text-transform: uppercase;
+}
+
+.price-modal-close-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94A3B8;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.price-modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.price-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.price-modal-intro {
+  text-align: center;
+}
+
+.price-modal-title {
+  font-size: 22px;
+  font-weight: 850;
+  color: #FFFFFF;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.price-modal-sub {
+  font-size: 13.5px;
+  color: #94A3B8;
+  line-height: 1.5;
+}
+
+.price-direct-channels {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.price-channels-label {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #38BDF8;
+}
+
+.price-phones-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 480px) {
+  .price-phones-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.price-phone-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(14, 25, 48, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  border-radius: 14px;
+  color: #fff !important;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.price-phone-card:hover {
+  background: rgba(14, 165, 233, 0.15);
+  border-color: #38BDF8;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.phone-card-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38BDF8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.phone-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.phone-card-dept {
+  font-size: 11px;
+  color: #94A3B8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.phone-card-num {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.phone-card-action {
+  font-size: 11px;
+  font-weight: 700;
+  color: #38BDF8;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.price-telegram-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #0088CC 0%, #006699 100%);
+  border-radius: 14px;
+  color: #fff !important;
+  font-size: 14px;
+  font-weight: 750;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 136, 204, 0.3);
+}
+
+.price-telegram-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 136, 204, 0.5);
+}
+
+.tg-badge {
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.price-modal-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 4px 0;
+}
+
+.price-modal-divider::before,
+.price-modal-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.price-modal-divider span {
+  padding: 0 12px;
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 600;
+}
+
+.price-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.price-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.price-form-field label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #CBD5E1;
+}
+
+.price-form-input,
+.price-form-textarea {
+  background: rgba(14, 25, 48, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #fff;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.price-form-input:focus,
+.price-form-textarea:focus {
+  outline: none;
+  border-color: #38BDF8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+  background: rgba(14, 25, 48, 0.95);
+}
+
+.price-form-textarea {
+  resize: vertical;
+  min-height: 56px;
+}
+
+.price-modal-error {
+  font-size: 12px;
+  color: #EF4444;
+  padding: 8px 12px;
+  background: rgba(239, 68, 68, 0.12);
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.price-submit-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 14px;
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.price-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.price-modal-success-state {
+  text-align: center;
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.price-success-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  border: 2px solid #10B981;
+  color: #10B981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.price-success-title {
+  font-size: 22px;
+  font-weight: 850;
+  color: #fff;
+}
+
+.price-success-desc {
+  font-size: 14px;
+  color: #94A3B8;
+  line-height: 1.6;
+  max-width: 400px;
+}
+
+.price-success-call-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 99px;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38BDF8 !important;
+  font-weight: 750;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.price-modal-done-btn {
+  padding: 12px 36px;
+  font-size: 14.5px;
+  margin-top: 10px;
+}
+

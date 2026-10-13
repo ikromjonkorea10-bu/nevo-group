@@ -5,6 +5,7 @@ import { renderTestimonials } from '../components/Testimonials.js';
 import { renderProductCard } from '../components/ProductCard.js';
 import { t } from '../lib/i18n.js';
 import { initHeroVideo, initHeroMotionImage, restartHeroMotionImage, isMobileOrTouch } from '../lib/heroVideo.js';
+import { openPriceRequestModal } from '../components/PriceRequestModal.js';
 
 // Hero kartalari bazadagi mahsulotlardan qoida bo'yicha tanlanadi — ID yozilmaydi.
 const HERO_PICKS = [
@@ -551,8 +552,8 @@ export function renderHomePage() {
   return `
     <main class="home-page-content">
       <!-- SCENE 1: NEVO CINEMATIC HERO VIDEO BACKGROUND -->
-      <section class="hero-section hero-section-nevo has-video">
-        <div class="hero-slideshow-backdrop is-video-ready" id="nevo-hero-slideshow">
+      <section class="hero-section hero-section-nevo">
+        <div class="hero-slideshow-backdrop" id="nevo-hero-slideshow">
           <!-- Direct Full Commercial Video Background -->
           <div class="hero-video-layer" id="nevo-hero-video-layer" aria-hidden="true">
             <video
@@ -615,10 +616,10 @@ export function renderHomePage() {
                 <span>${t('heroCtaCatalog')}</span>
                 ${icon('arrow-right', '', 18)}
               </a>
-              <a href="/aloqa" class="btn-royal-glass">
+              <button type="button" class="btn-royal-glass" id="btn-hero-ask-price" aria-label="${t('heroCtaFind')}">
                 ${icon('phone', '', 18)}
                 <span>${t('heroCtaFind')}</span>
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -688,27 +689,82 @@ export function renderHomePage() {
 }
 
 export function initHomeAnimations() {
-  // 0. Hero fon video (to'g'ridan-to'g'ri fon video boshqaruvi)
+  // 0. Narx so'rash tugmasi hodisasi
+  const askPriceBtn = document.getElementById('btn-hero-ask-price');
+  if (askPriceBtn) {
+    askPriceBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openPriceRequestModal();
+    });
+  }
+
+  // 1. Hero fon video (to'g'ridan-to'g'ri, kafolatlangan avtoplay)
   const heroBackdrop = document.getElementById('nevo-hero-slideshow');
+  const heroSection = document.querySelector('.hero-section-nevo');
   const heroVideo = document.getElementById('nevo-hero-video');
   const soundBtn = document.getElementById('hero-sound-toggle');
 
   if (heroVideo) {
     heroVideo.muted = true;
+    heroVideo.defaultMuted = true;
+    heroVideo.playsInline = true;
+    heroVideo.setAttribute('muted', '');
+    heroVideo.setAttribute('playsinline', '');
+    heroVideo.setAttribute('webkit-playsinline', '');
+
+    const markVideoReady = () => {
+      if (heroBackdrop) heroBackdrop.classList.add('is-video-ready');
+      if (heroSection) heroSection.classList.add('has-video');
+    };
+
     const tryPlay = () => {
+      if (!heroVideo.isConnected) return;
+      heroVideo.muted = true;
+      heroVideo.defaultMuted = true;
       const p = heroVideo.play();
-      if (p && typeof p.catch === 'function') {
-        p.catch(() => {});
+      if (p && typeof p.then === 'function') {
+        p.then(() => {
+          markVideoReady();
+        }).catch(() => {
+          // Autoplay waiting for buffer or browser gesture
+        });
       }
     };
-    tryPlay();
-    document.addEventListener('click', tryPlay, { once: true });
-    document.addEventListener('touchstart', tryPlay, { once: true });
 
-    if (heroBackdrop) {
-      heroBackdrop.classList.add('is-video-ready');
-      document.querySelector('.hero-section-nevo')?.classList.add('has-video');
+    if (heroVideo.readyState >= 2 && !heroVideo.paused) {
+      markVideoReady();
+    } else {
+      tryPlay();
     }
+
+    // Video buferlanishi va tayyor bo'lishi hodisalari
+    heroVideo.addEventListener('loadedmetadata', tryPlay);
+    heroVideo.addEventListener('loadeddata', tryPlay);
+    heroVideo.addEventListener('canplay', tryPlay);
+    heroVideo.addEventListener('canplaythrough', tryPlay);
+    heroVideo.addEventListener('playing', markVideoReady);
+
+    // Kirish animatsiyasi (splash) tugaganda darhol qayta ishga tushirish
+    window.addEventListener('nevo-splash-finished', tryPlay);
+
+    // Sovuq kesh va sekin tarmoq uchun bosqichma-bosqich urinishlar
+    const retryDelays = [300, 800, 1500, 2500, 3600];
+    retryDelays.forEach((delay) => {
+      setTimeout(() => {
+        if (heroVideo.paused) tryPlay();
+      }, delay);
+    });
+
+    // Foydalanuvchi birinchi harakatida video kafolatlangan ijrosi
+    const interactionEvents = ['click', 'touchstart', 'pointerdown', 'scroll', 'keydown', 'mousemove'];
+    const onUserGesture = () => {
+      if (heroVideo.paused) tryPlay();
+      interactionEvents.forEach((evt) => window.removeEventListener(evt, onUserGesture));
+    };
+    interactionEvents.forEach((evt) => {
+      window.addEventListener(evt, onUserGesture, { passive: true, once: true });
+    });
 
     if (soundBtn) {
       soundBtn.hidden = false;
@@ -721,7 +777,8 @@ export function initHomeAnimations() {
         if (lbl) lbl.textContent = label;
       };
 
-      soundBtn.addEventListener('click', () => {
+      soundBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         heroVideo.muted = !heroVideo.muted;
         const on = !heroVideo.muted;
         syncBtn(on);
@@ -735,7 +792,7 @@ export function initHomeAnimations() {
       new IntersectionObserver((entries) => {
         entries.forEach((e) => {
           if (e.isIntersecting) {
-            heroVideo.play().catch(() => {});
+            if (heroVideo.paused) tryPlay();
           } else {
             heroVideo.pause();
           }

@@ -306,5 +306,20 @@
   "orSelectCategory": "Или выберите категорию",
   "searchProducts": "Поиск товаров",
   "heroSoundOn": "Включить звук",
-  "heroSoundOff": "Выключить звук"
+  "heroSoundOff": "Выключить звук",
+  "priceModalTitle": "Запрос цен и прайс-листа",
+  "priceModalSub": "Расчет цен на сантехнику и стройматериалы со склада и условия доставки",
+  "priceModalCallTitle": "Быстрая связь и звонок",
+  "priceModalSales": "Отдел продаж",
+  "priceModalWarehouse": "Склад и логистика",
+  "priceModalTelegram": "Запросить цены в Telegram",
+  "priceModalFormTitle": "Или оставьте заявку — рассчитаем за 5 минут",
+  "priceModalName": "Ваше имя",
+  "priceModalPhone": "Номер телефона",
+  "priceModalNote": "Нужные товары или смета (необязательно)",
+  "priceModalSubmit": "Рассчитать цены",
+  "priceModalSubmitting": "Отправка...",
+  "priceModalSuccessTitle": "Ваш запрос успешно принят!",
+  "priceModalSuccessDesc": "Наш специалист свяжется с вами в ближайшее время и предоставит цены и расчет сметы.",
+  "priceModalClose": "Закрыть"
 }

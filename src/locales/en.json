@@ -306,5 +306,20 @@
   "orSelectCategory": "Or select a category",
   "searchProducts": "Search products",
   "heroSoundOn": "Turn sound on",
-  "heroSoundOff": "Turn sound off"
+  "heroSoundOff": "Turn sound off",
+  "priceModalTitle": "Request Pricing & Price List",
+  "priceModalSub": "Fast price calculation for plumbing and building supplies from our warehouse",
+  "priceModalCallTitle": "Direct Call & Consultation",
+  "priceModalSales": "Sales Department",
+  "priceModalWarehouse": "Warehouse & Logistics",
+  "priceModalTelegram": "Request Prices via Telegram",
+  "priceModalFormTitle": "Or submit a request — estimate in 5 minutes",
+  "priceModalName": "Your Name",
+  "priceModalPhone": "Phone Number",
+  "priceModalNote": "Required products or estimate (optional)",
+  "priceModalSubmit": "Calculate Pricing",
+  "priceModalSubmitting": "Submitting...",
+  "priceModalSuccessTitle": "Your request has been received!",
+  "priceModalSuccessDesc": "Our specialist will contact you shortly with price details and project calculations.",
+  "priceModalClose": "Close"
 }

@@ -306,5 +306,20 @@
   "orSelectCategory": "Yoki bo'limni tanlang",
   "searchProducts": "Mahsulot qidirish",
   "heroSoundOn": "Ovozni yoqish",
-  "heroSoundOff": "Ovozni o'chirish"
+  "heroSoundOff": "Ovozni o'chirish",
+  "priceModalTitle": "Narx so'rash va Prays-list",
+  "priceModalSub": "Ombordagi mahsulotlar narxlari smetasi va yetkazib berish shartlari",
+  "priceModalCallTitle": "Tezkor aloqa va qo'ng'iroq",
+  "priceModalSales": "Savdo bo'limi",
+  "priceModalWarehouse": "Ombor va logistika",
+  "priceModalTelegram": "Telegramda narx so'rash",
+  "priceModalFormTitle": "Yoki so'rov qoldiring — 5 daqiqada hisoblab beramiz",
+  "priceModalName": "Ismingiz",
+  "priceModalPhone": "Telefon raqamingiz",
+  "priceModalNote": "Kerakli mahsulotlar yoki smeta (ixtiyoriy)",
+  "priceModalSubmit": "Narxlarni hisoblab berish",
+  "priceModalSubmitting": "Yuborilmoqda...",
+  "priceModalSuccessTitle": "So'rovingiz qabul qilindi!",
+  "priceModalSuccessDesc": "Mutaxassisimiz qisqa vaqt ichida siz bilan bog'lanib, narxlar va smetani taqdim etadi.",
+  "priceModalClose": "Yopish"
 }
