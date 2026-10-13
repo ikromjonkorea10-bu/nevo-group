@@ -477,6 +477,10 @@ function renderBrandsMarquee() {
     'NERO',
     'BEAR',
     'CLIMAT HOUSE',
+    'Uzmetr',
+    'Swem',
+    'AQUALINE',
+    'TETRA PLAST',
   ];
 
   return `
