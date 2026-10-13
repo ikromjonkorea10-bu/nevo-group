@@ -77,7 +77,7 @@ export function renderMaintenanceScreen() {
         <div class="maintenance-info-footer">
           <div class="maintenance-info-row">
             ${icon('map-pin', '', 16)}
-            <span>Toshkent shahri, Chilonzor tumani · Markaziy savdo ombori ish rejimida</span>
+            <span>Toshkent shahri, Chilonzor tumani, Chorbog' ko'chasi, 43-uy</span>
           </div>
           <div class="maintenance-info-row">
             ${icon('clock', '', 16)}

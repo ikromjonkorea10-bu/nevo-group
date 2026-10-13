@@ -77,15 +77,15 @@ export function renderContactPage() {
         </h3>
 
         <div class="info-cards-grid">
-          <div class="info-box-card">
+          <a href="https://maps.google.com/?q=${encodeURIComponent(CONTACTS.address)}" target="_blank" rel="noopener" class="info-box-card" style="color: inherit; text-decoration: none;">
             <div class="info-box-icon">
               ${icon('map-pin', '', 20)}
             </div>
             <div>
-              <div class="info-box-title">Joylashuv</div>
-              <div class="info-box-value">O'zbekiston</div>
+              <div class="info-box-title">Ombor manzili</div>
+              <div class="info-box-value" style="font-size: 13.5px; line-height: 1.4;">${esc(CONTACTS.address)}</div>
             </div>
-          </div>
+          </a>
 
           <div class="info-box-card">
             <div class="info-box-icon">
@@ -108,7 +108,7 @@ export function renderContactPage() {
           </div>
 
           ${TELEGRAM_URL ? `
-            <a href="${TELEGRAM_URL}" target="_blank" rel="noopener" class="info-box-card" style="color: inherit;">
+            <a href="${TELEGRAM_URL}" target="_blank" rel="noopener" class="info-box-card" style="color: inherit; text-decoration: none;">
               <div class="info-box-icon">
                 ${icon('message-circle', '', 20)}
               </div>
@@ -124,14 +124,14 @@ export function renderContactPage() {
               ${icon('clock', '', 20)}
             </div>
             <div>
-              <div class="info-box-title">Javob vaqti</div>
-              <div class="info-box-value">Ish vaqtida javob beramiz</div>
+              <div class="info-box-title">Ish vaqti</div>
+              <div class="info-box-value" style="font-size: 13.5px;">${esc(CONTACTS.workingHours)}</div>
             </div>
           </div>
         </div>
 
         <p style="font-size: 13.5px; color: var(--muted); margin-top: 14px; line-height: 1.5;">
-          Aniq do'kon manzili va ish vaqti kompaniya tomonidan tasdiqlangach shu yerga qo'shiladi.
+          Toshkentdagi markaziy omborimizdan to'g'ridan-to'g'ri olib ketish yoki butun O'zbekiston viloyatlariga tezkor yetkazib berish xizmati mavjud.
         </p>
       </section>
 

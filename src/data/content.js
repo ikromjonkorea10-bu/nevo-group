@@ -12,8 +12,8 @@ export const CONTACTS = {
   instagram: 'nevo_group_uzbekistan',
   telegram: 'Nevo_Group',
   telegramBot: 'Nevo_Group',
-  address: '', // [MA'LUMOT KERAK] Aniq ombor/ofis manzili
-  workingHours: '', // [MA'LUMOT KERAK] Ish vaqti (masalan: Dush-Shanba 09:00 - 18:00)
+  address: "Toshkent shahri, Chilonzor tumani, Chorbog' ko'chasi, 43-uy",
+  workingHours: 'Dushanba — Shanba, 09:00 — 18:00',
 };
 
 export const MAIN_PHONE = CONTACTS.phones[0];

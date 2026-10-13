@@ -7,7 +7,7 @@ import {
   fieldError, errorAttrs, errorClass, renderFormAlert, renderSubmitButton, bindFormState, focusFirstError,
 } from '../lib/formHelpers.js';
 
-const PICKUP_ADDRESS = 'Filialdan olib ketadi (Toshkent sh., Santexnika va qurilish bozori, NEVO GROUP pavilyoni)';
+const PICKUP_ADDRESS = "Filialdan olib ketadi (Toshkent sh., Chilonzor tumani, Chorbog' ko'chasi, 43-uy, NEVO GROUP ombori)";
 
 let isCheckoutOpen = false;
 let deliveryMethod = 'delivery'; // 'delivery' | 'pickup'
@@ -151,7 +151,7 @@ function renderCheckout({ items, count, totalFormatted, hasUnavailable }) {
         ` : `
           <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; margin-bottom: 14px;">
             <h4 style="font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 4px;">Asosiy omborxona:</h4>
-            <p style="font-size: 14px; color: var(--muted); line-height: 1.5;">Toshkent sh., Santexnika va qurilish bozori, NEVO GROUP pavilyoni.<br>Ish vaqti: 08:30 - 18:00 (Har kuni)</p>
+            <p style="font-size: 14px; color: var(--muted); line-height: 1.5;">Toshkent sh., Chilonzor tumani, Chorbog' ko'chasi, 43-uy (NEVO GROUP ombori).<br>Ish vaqti: 09:00 - 18:00 (Dushanba — Shanba)</p>
           </div>
         `}
 

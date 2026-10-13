@@ -274,6 +274,21 @@ function updateStructuredData(route, param, canonicalUrl, pageTitle, pageDesc) {
           url: canonicalUrl,
         },
         {
+          '@type': 'LocalBusiness',
+          name: 'NEVO GROUP',
+          image: `${SITE_ORIGIN}/brand/nevo-logo.png`,
+          telephone: '+998915823434',
+          url: SITE_ORIGIN,
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: "Chorbog' ko'chasi, 43-uy",
+            addressLocality: 'Toshkent shahri',
+            addressRegion: 'Chilonzor tumani',
+            addressCountry: 'UZ',
+          },
+          openingHours: 'Mo-Sa 09:00-18:00',
+        },
+        {
           '@type': 'FAQPage',
           mainEntity: [
             {
