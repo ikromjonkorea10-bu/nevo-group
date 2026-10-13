@@ -313,7 +313,6 @@ function renderNevoCatalogShowcase() {
         <div class="nevo-search-box-wrap" onclick="window.__openQuickSearch ? window.__openQuickSearch() : (window.location.href='/katalog');">
           ${icon('search', '', 18)}
           <input type="text" placeholder="${esc(t('searchPlaceholderExtended'))}" readonly class="nevo-search-input-fake" />
-          <span class="search-kbd-badge">⌘K</span>
         </div>
       </div>
 

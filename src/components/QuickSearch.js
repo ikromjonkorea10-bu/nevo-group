@@ -424,7 +424,6 @@ export function renderQuickSearchTrigger() {
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
         <span class="search-placeholder-text">${t('catalogSearchPlaceholder')}</span>
-        <kbd class="kbd-chip">${kbdSymbol}</kbd>
       </div>
       <div class="beam-edge-clip" aria-hidden="true">
         <div class="beam-edge">

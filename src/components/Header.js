@@ -109,7 +109,6 @@ export function renderHeader() {
                 autocomplete="off"
                 readonly
               />
-              <kbd class="header-search-kbd">⌘K</kbd>
               <button type="button" class="header-search-btn" aria-label="${t('search')}">
                 ${icon('search', '', 18)}
               </button>
