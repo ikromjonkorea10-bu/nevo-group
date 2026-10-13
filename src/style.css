@@ -8960,7 +8960,7 @@ html.no-hero-video .catalog-bg-video-layer {
     background: linear-gradient(to top, rgba(5, 10, 20, 0.8) 0%, rgba(5, 10, 20, 0.6) 55%, rgba(5, 10, 20, 0.35) 100%);
   }
   .catalog-bg-video {
-    object-position: 50% 20%;
+    object-position: center;
     transform: none;
   }
 }

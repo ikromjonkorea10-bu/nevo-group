@@ -10,7 +10,7 @@ import { openProductModal } from '../components/ProductModal.js';
 import { renderQuickSearchTrigger } from '../components/QuickSearch.js';
 import { PDF_CATALOGS } from '../data/catalogs.js';
 import Swiper from 'swiper';
-import { initHeroVideo, initHeroMotionImage, isMobileOrTouch } from '../lib/heroVideo.js';
+import { isMobileOrTouch } from '../lib/heroVideo.js';
 
 // Category High-Res Industrial Cover Mappings (Optimized WebP, <= 120KB)
 export const CATEGORY_HERO_SLIDES = {
@@ -170,7 +170,27 @@ function renderCatalogIndexPage(categories, _products) {
             />
           </div>
           <div class="catalog-bg-video-layer" id="catalog-bg-video-layer" aria-hidden="true">
-            <video class="catalog-bg-video" id="catalog-hero-video" muted loop playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5-page" x5-video-player-fullscreen="false" disablePictureInPicture disableRemotePlayback controlsList="nodownload nofullscreen noremoteplayback" tabindex="-1" aria-hidden="true"></video>
+            <video
+              class="catalog-bg-video"
+              id="catalog-hero-video"
+              autoplay
+              muted
+              loop
+              playsinline
+              webkit-playsinline
+              x5-playsinline
+              x5-video-player-type="h5-page"
+              x5-video-player-fullscreen="false"
+              disablepictureinpicture
+              disableremoteplayback
+              tabindex="-1"
+              aria-hidden="true"
+              poster="/videos/catalog-hero-poster.webp"
+            >
+              <source src="/videos/catalog-hero.mp4" type="video/mp4" />
+              <source src="/videos/catalog-hero-720.mp4" type="video/mp4" media="(max-width: 768px)" />
+              <source src="/videos/catalog-hero.webm" type="video/webm" />
+            </video>
           </div>
           <div class="catalog-hero-dark-overlay"></div>
           <div class="catalog-hero-radial-glow"></div>
@@ -869,35 +889,36 @@ function initCategoryReactiveHeroBg(_categories) {
 
   if (!heroEl || !layerA || !layerB || !imgA || !imgB) return;
 
-  // Fon video (desktop va ruxsat berilgan mobilda; tayyor bo'lsa slayd rasmlari fallback bo'lib qoladi)
+  // Fon video (desktop va mobilda to'g'ridan-to'g'ri tiniq HD video boshqaruvi)
   const catVideo = document.getElementById('catalog-hero-video');
   const catBg = document.getElementById('catalog-hero-bg');
-  const isMobile = isMobileOrTouch();
-  initHeroVideo(catVideo, {
-    poster: '/videos/catalog-hero-poster.webp',
-    sources: isMobile
-      ? [{ src: '/videos/catalog-hero-720.mp4', type: 'video/mp4' }]
-      : [
-          { src: '/videos/catalog-hero.webm', type: 'video/webm; codecs="vp9"' },
-          { src: '/videos/catalog-hero.mp4', type: 'video/mp4' },
-        ],
-    observeEl: heroEl,
-    onReady: () => {
-      heroEl.classList.add('has-video');
-      if (catBg) catBg.classList.add('is-video-ready');
-    },
-  });
+  if (catVideo) {
+    catVideo.muted = true;
+    const tryPlay = () => {
+      const p = catVideo.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => {});
+      }
+    };
+    tryPlay();
+    document.addEventListener('click', tryPlay, { once: true });
+    document.addEventListener('touchstart', tryPlay, { once: true });
 
-  initHeroMotionImage({
-    host: catBg,
-    before: catBg ? catBg.querySelector('.catalog-hero-dark-overlay') : null,
-    src: '/videos/catalog-hero-mobile.webp',
-    poster: '/videos/catalog-hero-mobile-poster.webp',
-    onReady: () => {
-      heroEl.classList.add('has-video');
-      if (catBg) catBg.classList.add('is-video-ready');
-    },
-  });
+    if (catBg) catBg.classList.add('is-video-ready');
+    heroEl.classList.add('has-video');
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            catVideo.play().catch(() => {});
+          } else {
+            catVideo.pause();
+          }
+        });
+      }, { threshold: 0.1 }).observe(heroEl);
+    }
+  }
 
   const availableSlugs = Object.keys(CATEGORY_HERO_SLIDES);
   if (availableSlugs.length === 0) return;
